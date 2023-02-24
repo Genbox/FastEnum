@@ -1,0 +1,10 @@
+//This test checks if we are decoding all values in an enum
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen]
+public enum MyEnum
+{
+    First,
+    Second
+}

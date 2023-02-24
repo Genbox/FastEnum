@@ -1,0 +1,11 @@
+//This test checks if we are correctly handling explicitly set underlying values
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen]
+public enum MyEnum : byte
+{
+    First,
+    Second,
+    Third
+}

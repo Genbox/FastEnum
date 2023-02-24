@@ -1,0 +1,12 @@
+//When an enum is internal, we should generate the extensions and Enums class internal as well.
+//Otherwise the compiler will complain about types having different visibility
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen]
+internal enum MyEnum
+{
+    First,
+    Second,
+    Third
+}

@@ -1,0 +1,8 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <Description>Easy to use source generator for enums.</Description>
+    <PackageTags>SourceGen Enums</PackageTags>
+  </PropertyGroup>
+
+</Project>

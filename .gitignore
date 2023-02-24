@@ -1,0 +1,24 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+
+# Others
+*.pfx
+*.publishsettings
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Visual Studio cache folder
+.vs/
+
+# Rider cache folder
+.idea/
+*.sln.DotSettings.user

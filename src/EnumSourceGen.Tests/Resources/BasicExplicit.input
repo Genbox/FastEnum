@@ -1,0 +1,11 @@
+//This test evaluate if we are correctly reading member values that are explicitly set by the user
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen]
+public enum MyEnum
+{
+    First = 10,
+    Second = 11,
+    Third = 15
+}

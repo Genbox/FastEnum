@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\..\imports\Benchmarks.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnumSourceGen\EnumSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Enums.NET" />
+  </ItemGroup>
+
+</Project>

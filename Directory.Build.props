@@ -1,0 +1,73 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="ProjectInfo.props" />
+
+  <!--Default project info-->
+  <PropertyGroup>
+    <Authors>Ian Qvist</Authors>
+    <Copyright>Copyright 2023, by Ian Qvist. All rights reserved.</Copyright>
+  </PropertyGroup>
+
+  <!--Default project settings-->
+  <PropertyGroup>
+    <!--Assembly settings-->
+    <RootNamespace>Genbox.$(MSBuildProjectName)</RootNamespace>
+    <AssemblyName>Genbox.$(MSBuildProjectName)</AssemblyName>
+
+    <!--C# settings-->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <Features>strict</Features>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <WarningLevel>0</WarningLevel>
+
+    <!--.NET settings-->
+    <ImplicitUsings>true</ImplicitUsings>
+
+    <!--Package settings-->
+    <RepositoryType>Git</RepositoryType>
+    <PackageProjectUrl>https://github.com/Genbox/$(MSBuildProjectName)</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+
+    <!--Enable analyzers by default, but not during builds-->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+    <AnalysisMode>All</AnalysisMode>
+    <AnalysisLevel>latest</AnalysisLevel>
+
+    <!--Nuget settings-->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <!--Other settings-->
+    <CopyRetryCount>2</CopyRetryCount>
+    <CopyRetryDelayMilliseconds>500</CopyRetryDelayMilliseconds>
+    <ErrorReport>none</ErrorReport>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <!--Force reproducible builds-->
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <DisableImplicitLibraryPacksFolder>true</DisableImplicitLibraryPacksFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
+    <!--SourceLink-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <!--Only report compiler warnings when compiling in Visual Studio or Rider-->
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true'">
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>
+
+</Project>
