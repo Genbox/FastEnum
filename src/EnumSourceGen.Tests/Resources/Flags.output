@@ -15,7 +15,7 @@ public static partial class Enums
                 "First",
                 "Second",
                 "Third",
-                "Third"
+                "Other"
             };
 
         private static Some.Namespace.Here.MyEnum[]? _values;
@@ -24,7 +24,7 @@ public static partial class Enums
                 Some.Namespace.Here.MyEnum.First,
                 Some.Namespace.Here.MyEnum.Second,
                 Some.Namespace.Here.MyEnum.Third,
-                Some.Namespace.Here.MyEnum.Third
+                Some.Namespace.Here.MyEnum.Other
             };
 
         private static Int32[]? _underlyingValue;
@@ -53,9 +53,9 @@ public static partial class Enums
                 result = Some.Namespace.Here.MyEnum.Third;
                 return true;
             }
-            if (string.Equals(value, "Third", comparer))
+            if (string.Equals(value, "Other", comparer))
             {
-                result = Some.Namespace.Here.MyEnum.Third;
+                result = Some.Namespace.Here.MyEnum.Other;
                 return true;
             }
 
@@ -91,13 +91,13 @@ public static partial class MyEnumExtensions
             MyEnum.First => "First",
             MyEnum.Second => "Second",
             MyEnum.Third => "Third",
-            MyEnum.Third => "Third",
+            MyEnum.Other => "Other",
             _ => value.ToString()
         };
 
     public static bool TryGetUnderlyingValue(this MyEnum value, out Int32 underlyingValue)
     {
-        switch(value)
+        switch (value)
         {
             case MyEnum.First:
                 underlyingValue = 0;
@@ -108,7 +108,7 @@ public static partial class MyEnumExtensions
             case MyEnum.Third:
                 underlyingValue = 8;
                 return true;
-            case MyEnum.Third:
+            case MyEnum.Other:
                 underlyingValue = 256;
                 return true;
         }

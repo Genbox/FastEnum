@@ -4,8 +4,8 @@ namespace Genbox.EnumSourceGen.Tests;
 
 public class FunctionalityTests
 {
-    private static readonly TestEnum _valid = TestEnum.First;
-    private static readonly TestEnum _invalid = (TestEnum)100;
+    private const TestEnum _valid = TestEnum.First;
+    private const TestEnum _invalid = (TestEnum)100;
 
     [Fact]
     public void GetStringTest()

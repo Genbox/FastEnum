@@ -68,7 +68,7 @@ public static partial class MyEnumExtensions
 
     public static bool TryGetUnderlyingValue(this MyEnum value, out Int32 underlyingValue)
     {
-        switch(value)
+        switch (value)
         {
             case MyEnum.First:
                 underlyingValue = 0;

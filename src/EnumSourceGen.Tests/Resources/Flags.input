@@ -9,5 +9,5 @@ public enum MyEnum
     First = 0,
     Second = 2,
     Third = 8,
-    Third = 256,
+    Other = 256,
 }

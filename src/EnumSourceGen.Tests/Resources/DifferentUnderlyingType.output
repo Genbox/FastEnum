@@ -7,47 +7,31 @@ public static partial class Enums
 {
     public static partial class MyEnum
     {
-        public const int MemberCount = 3;
+        public const int MemberCount = 1;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
             => _names ??= new[] {
-                "First",
-                "Second",
-                "Third"
+                "Value"
             };
 
         private static Some.Namespace.Here.MyEnum[]? _values;
         public static Some.Namespace.Here.MyEnum[] GetMemberValues()
             => _values ??= new[] {
-                Some.Namespace.Here.MyEnum.First,
-                Some.Namespace.Here.MyEnum.Second,
-                Some.Namespace.Here.MyEnum.Third
+                Some.Namespace.Here.MyEnum.Value
             };
 
         private static Byte[]? _underlyingValue;
         public static Byte[] GetUnderlyingValues()
             => _underlyingValue ??= new Byte[] {
-                0,
-                1,
-                2
+                0
             };
 
         public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, StringComparison comparer = StringComparison.Ordinal)
         {
-            if (string.Equals(value, "First", comparer))
+            if (string.Equals(value, "Value", comparer))
             {
-                result = Some.Namespace.Here.MyEnum.First;
-                return true;
-            }
-            if (string.Equals(value, "Second", comparer))
-            {
-                result = Some.Namespace.Here.MyEnum.Second;
-                return true;
-            }
-            if (string.Equals(value, "Third", comparer))
-            {
-                result = Some.Namespace.Here.MyEnum.Third;
+                result = Some.Namespace.Here.MyEnum.Value;
                 return true;
             }
 
@@ -65,7 +49,7 @@ public static partial class Enums
 
         public static bool IsFlagEnum => false;
 
-        private static Byte _validFlags = 0b11;
+        private static Byte _validFlags = 0b0;
         public static bool IsDefined(Some.Namespace.Here.MyEnum input) => (_validFlags & (Byte)input) == (Byte)input;
     }
 }
@@ -80,24 +64,16 @@ public static partial class MyEnumExtensions
     public static string GetString(this MyEnum value)
         => value switch
         {
-            MyEnum.First => "First",
-            MyEnum.Second => "Second",
-            MyEnum.Third => "Third",
+            MyEnum.Value => "Value",
             _ => value.ToString()
         };
 
     public static bool TryGetUnderlyingValue(this MyEnum value, out Byte underlyingValue)
     {
-        switch(value)
+        switch (value)
         {
-            case MyEnum.First:
+            case MyEnum.Value:
                 underlyingValue = 0;
-                return true;
-            case MyEnum.Second:
-                underlyingValue = 1;
-                return true;
-            case MyEnum.Third:
-                underlyingValue = 2;
                 return true;
         }
         underlyingValue = default;
