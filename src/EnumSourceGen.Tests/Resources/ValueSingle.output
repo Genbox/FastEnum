@@ -8,6 +8,7 @@ public static partial class Enums
     public static partial class MyEnum
     {
         public const int MemberCount = 1;
+        public const bool IsFlagEnum => false;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -46,8 +47,6 @@ public static partial class Enums
 
             return result;
         }
-
-        public static bool IsFlagEnum => false;
 
         public static bool IsDefined(Some.Namespace.Here.MyEnum input) => 0 == (Int32)input;
     }

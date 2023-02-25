@@ -28,6 +28,7 @@ public static partial class {{en}}
     {{vi}} static partial class {{cn}}
     {
         public const int MemberCount = {{mc}};
+        public const bool IsFlagEnum => {{enumSpec.HasFlags.ToString().ToLowerInvariant()}};
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -62,8 +63,6 @@ public static partial class {{en}}
 
             return result;
         }
-
-        public static bool IsFlagEnum => {{enumSpec.HasFlags.ToString().ToLowerInvariant()}};
 
         public static bool IsDefined({{sn}} input) => {{GetIsDefined(enumSpec, ut)}};
 """;
