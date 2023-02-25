@@ -73,9 +73,7 @@ internal static class TestHelper
         StringBuilder sb = new StringBuilder();
 
         foreach (SyntaxTree tree in trees.Skip(1))
-        {
             sb.AppendLine(tree.ToString());
-        }
 
         return sb.ToString();
     }

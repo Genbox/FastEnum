@@ -28,7 +28,7 @@ public static partial class {{en}}
     {{vi}} static partial class {{cn}}
     {
         public const int MemberCount = {{mc}};
-        public const bool IsFlagEnum => {{enumSpec.HasFlags.ToString().ToLowerInvariant()}};
+        public const bool IsFlagEnum = {{enumSpec.HasFlags.ToString().ToLowerInvariant()}};
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -42,9 +42,9 @@ public static partial class {{en}}
                 {{GetMemberValues()}}
             };
 
-        private static {{ut}}[]? _underlyingValue;
+        private static {{ut}}[]? _underlyingValues;
         public static {{ut}}[] GetUnderlyingValues()
-            => _underlyingValue ??= new {{ut}}[] {
+            => _underlyingValues ??= new {{ut}}[] {
                 {{GetUnderlyingValues()}}
             };
 
@@ -59,7 +59,7 @@ public static partial class {{en}}
         public static {{sn}} Parse(string value, StringComparison comparer = StringComparison.Ordinal)
         {
             if (!TryParse(value, out {{sn}} result, comparer))
-                throw new ArgumentOutOfRangeException("Invalid value " + value);
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
         }

@@ -10,7 +10,7 @@
     <ProjectReference Include="..\EnumSourceGen\EnumSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Enums.NET" />
   </ItemGroup>

@@ -50,7 +50,7 @@ public class FunctionalityTests
     }
 
     [Fact]
-    public void HasFlagTest()
+    public void IsFlagSetTest()
     {
         TestEnum e = TestEnum.First;
         Assert.True(e.IsFlagSet(TestEnum.First));
@@ -84,7 +84,13 @@ public class FunctionalityTests
     }
 
     [Fact]
-    public void ParseTest()
+    public void IsFlagEnumTest()
+    {
+        Assert.True(Enums.TestEnum.IsFlagEnum);
+    }
+
+    [Fact]
+    public void TryParseTest()
     {
         Assert.True(Enums.TestEnum.TryParse("First", out TestEnum result));
         Assert.Equal(TestEnum.First, result);
@@ -94,8 +100,14 @@ public class FunctionalityTests
 
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
+    }
+
+    [Fact]
+    public void ParseTest()
+    {
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("First"));
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", StringComparison.OrdinalIgnoreCase));
+        Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
 
     [Fact]
@@ -176,11 +188,5 @@ public class FunctionalityTests
         };
 
         Assert.Equal(descriptions, Enums.TestEnum.GetDescriptions());
-    }
-
-    [Fact]
-    public void IsFlagEnumTest()
-    {
-        Assert.True(Enums.TestEnum.IsFlagEnum);
     }
 }

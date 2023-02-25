@@ -8,7 +8,7 @@ public static partial class Enums
     public static partial class MyEnum
     {
         public const int MemberCount = 4;
-        public const bool IsFlagEnum => true;
+        public const bool IsFlagEnum = true;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -28,9 +28,9 @@ public static partial class Enums
                 Some.Namespace.Here.MyEnum.Other
             };
 
-        private static Int32[]? _underlyingValue;
+        private static Int32[]? _underlyingValues;
         public static Int32[] GetUnderlyingValues()
-            => _underlyingValue ??= new Int32[] {
+            => _underlyingValues ??= new Int32[] {
                 0,
                 2,
                 8,
@@ -67,7 +67,7 @@ public static partial class Enums
         public static Some.Namespace.Here.MyEnum Parse(string value, StringComparison comparer = StringComparison.Ordinal)
         {
             if (!TryParse(value, out Some.Namespace.Here.MyEnum result, comparer))
-                throw new ArgumentOutOfRangeException("Invalid value " + value);
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
         }
@@ -117,7 +117,7 @@ public static partial class MyEnumExtensions
     public static Int32 GetUnderlyingValue(this MyEnum value)
     {
         if (!TryGetUnderlyingValue(value, out Int32 underlyingValue))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return underlyingValue;
     }

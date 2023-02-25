@@ -41,7 +41,7 @@ using System.Diagnostics.CodeAnalysis;
     public static {{ut}} GetUnderlyingValue(this {{sn}} value)
     {
         if (!TryGetUnderlyingValue(value, out {{ut}} underlyingValue))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return underlyingValue;
     }
@@ -65,7 +65,7 @@ using System.Diagnostics.CodeAnalysis;
     public static string GetDisplayName(this {{sn}} value)
     {
         if (!TryGetDisplayName(value, out string? displayName))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return displayName;
     }
@@ -90,7 +90,7 @@ using System.Diagnostics.CodeAnalysis;
     public static string GetDescription(this {{sn}} value)
     {
         if (!TryGetDescription(value, out string? description))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return description;
     }

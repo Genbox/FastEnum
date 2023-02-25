@@ -8,7 +8,7 @@ public static partial class Enums
     public static partial class MyEnum
     {
         public const int MemberCount = 1;
-        public const bool IsFlagEnum => false;
+        public const bool IsFlagEnum = false;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -22,9 +22,9 @@ public static partial class Enums
                 Some.Namespace.Here1.MyEnum.Value
             };
 
-        private static Int32[]? _underlyingValue;
+        private static Int32[]? _underlyingValues;
         public static Int32[] GetUnderlyingValues()
-            => _underlyingValue ??= new Int32[] {
+            => _underlyingValues ??= new Int32[] {
                 0
             };
 
@@ -43,7 +43,7 @@ public static partial class Enums
         public static Some.Namespace.Here1.MyEnum Parse(string value, StringComparison comparer = StringComparison.Ordinal)
         {
             if (!TryParse(value, out Some.Namespace.Here1.MyEnum result, comparer))
-                throw new ArgumentOutOfRangeException("Invalid value " + value);
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
         }
@@ -81,7 +81,7 @@ public static partial class MyEnumExtensions
     public static Int32 GetUnderlyingValue(this MyEnum value)
     {
         if (!TryGetUnderlyingValue(value, out Int32 underlyingValue))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return underlyingValue;
     }
@@ -96,7 +96,7 @@ public static partial class Enums
     public static partial class MyEnum
     {
         public const int MemberCount = 1;
-        public const bool IsFlagEnum => false;
+        public const bool IsFlagEnum = false;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
@@ -110,9 +110,9 @@ public static partial class Enums
                 Some.Namespace.Here2.MyEnum.Value
             };
 
-        private static Int32[]? _underlyingValue;
+        private static Int32[]? _underlyingValues;
         public static Int32[] GetUnderlyingValues()
-            => _underlyingValue ??= new Int32[] {
+            => _underlyingValues ??= new Int32[] {
                 0
             };
 
@@ -131,7 +131,7 @@ public static partial class Enums
         public static Some.Namespace.Here2.MyEnum Parse(string value, StringComparison comparer = StringComparison.Ordinal)
         {
             if (!TryParse(value, out Some.Namespace.Here2.MyEnum result, comparer))
-                throw new ArgumentOutOfRangeException("Invalid value " + value);
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
         }
@@ -169,7 +169,7 @@ public static partial class MyEnumExtensions
     public static Int32 GetUnderlyingValue(this MyEnum value)
     {
         if (!TryGetUnderlyingValue(value, out Int32 underlyingValue))
-            throw new ArgumentOutOfRangeException("Invalid value " + value);
+            throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
         return underlyingValue;
     }
