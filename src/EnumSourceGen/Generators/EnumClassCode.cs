@@ -65,8 +65,7 @@ public static partial class {{en}}
 
         public static bool IsFlagEnum => {{enumSpec.HasFlags.ToString().ToLowerInvariant()}};
 
-        private static {{ut}} _validFlags = 0b{{GenerateBitString(enumSpec)}};
-        public static bool IsDefined({{sn}} input) => (_validFlags & ({{ut}})input) == ({{ut}})input;
+        public static bool IsDefined({{sn}} input) => {{GetIsDefined(enumSpec, ut)}};
 """;
 
         if (enumSpec.HasDisplay)
@@ -187,14 +186,20 @@ public static partial class {{en}}
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
         }
 
-        string GenerateBitString(EnumSpec spec)
+        string GetIsDefined(EnumSpec spec, string ut)
         {
+            if (spec.Members.Count == 0)
+                return "false";
+
             long value = 0;
 
             foreach (EnumMember member in spec.Members)
                 value |= (long)Convert.ChangeType(member.Value, typeof(long));
 
-            return Convert.ToString(value, 2);
+            if (value == 0)
+                return $"0 == ({ut})input";
+
+            return "(0b" + Convert.ToString(value, 2) + $" & ({ut})input) == ({ut})input";
         }
 
         return res + "\n    }\n}";
