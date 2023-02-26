@@ -7,7 +7,8 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.EnumSourceGen;
 
-internal readonly record struct EnumSpec(string EnumName, string EnumFullName, string EnumFullyQualifiedName, string EnumNamespace, Generate Generate, string ExtName, string? ExtNamespace, string EnumsClassName, string? EnumsClassNamespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
+internal readonly record struct AttributeOptions(Generate Generate, string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride);
+internal readonly record struct EnumSpec(string Name, string FullName, string FullyQualifiedName, string? Namespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
 internal readonly record struct EnumMember(string Name, object? Value, string? DisplayName, string? Description);
 
 [Generator]
@@ -28,29 +29,29 @@ public class EnumGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
         {
-            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec enumSpec))
+            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
                 return;
 
             StringBuilder sb = new StringBuilder();
 
-            string fqn = enumSpec.EnumFullyQualifiedName;
+            string fqn = es.FullyQualifiedName;
 
-            switch (enumSpec.Generate)
+            switch (op.Generate)
             {
                 case Generate.ClassAndExtensions:
-                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(enumSpec, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
                     break;
                 case Generate.ClassOnly:
-                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(enumSpec, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
                     break;
                 case Generate.ExtensionsOnly:
-                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
                     break;
                 default:
-                    throw new InvalidOperationException($"Value '{enumSpec.Generate}' is outside of supported values");
+                    throw new InvalidOperationException($"Value '{op.Generate}' is outside of supported values");
             }
         });
     }
@@ -84,26 +85,26 @@ public class EnumGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static bool TryGetTypesToGenerate(CompilationInfo info, ISymbol? symbol, out EnumSpec enumSpec)
+    private static bool TryGetTypesToGenerate(CompilationInfo info, ISymbol? symbol, out EnumSpec enumSpec, out AttributeOptions options)
     {
         // nothing to do if this type isn't available
         if (info.EnumAttr == null)
         {
             enumSpec = default;
+            options = default;
             return false;
         }
 
         if (symbol is not INamedTypeSymbol enumSymbol)
             throw new InvalidOperationException("BUG");
 
-        string setExtName = enumSymbol.Name + "Extensions";
-        string setEnumsName = "Enums";
+        string? optExtensionsName = null;
+        string? optExtensionsNamespace = null;
+        string? optEnumsName = null;
+        string? optEnumsNamespace = null;
+        string? optEnumNameOverride = null;
 
-        string? ns = enumSymbol.ContainingNamespace.IsGlobalNamespace ? null : enumSymbol.ContainingNamespace.ToDisplayString();
-        string? setExtNamespace = ns;
-        string? setEnumsNamespace = ns;
-
-        Generate setGenerate = Generate.ClassAndExtensions;
+        Generate optGenerate = Generate.ClassAndExtensions;
 
         INamedTypeSymbol? flagsAttr = info.FlagsAttr;
         bool hasFlags = false;
@@ -133,19 +134,22 @@ public class EnumGenerator : IIncrementalGenerator
                 switch (na.Key)
                 {
                     case nameof(EnumSourceGenAttribute.Generate):
-                        setGenerate = (Generate)na.Value.Value;
+                        optGenerate = (Generate)na.Value.Value;
                         break;
                     case nameof(EnumSourceGenAttribute.ExtensionClassName):
-                        setExtName = (string)na.Value.Value;
+                        optExtensionsName = (string)na.Value.Value;
                         break;
                     case nameof(EnumSourceGenAttribute.ExtensionClassNamespace):
-                        setExtNamespace = (string?)na.Value.Value;
+                        optExtensionsNamespace = (string?)na.Value.Value;
                         break;
                     case nameof(EnumSourceGenAttribute.EnumsClassName):
-                        setEnumsName = (string)na.Value.Value;
+                        optEnumsName = (string)na.Value.Value;
                         break;
                     case nameof(EnumSourceGenAttribute.EnumsClassNamespace):
-                        setEnumsNamespace = (string)na.Value.Value;
+                        optEnumsNamespace = (string)na.Value.Value;
+                        break;
+                    case nameof(EnumSourceGenAttribute.EnumNameOverride):
+                        optEnumNameOverride = (string)na.Value.Value;
                         break;
                     default:
                         throw new ArgumentException("BUG: Unsupported value");
@@ -236,11 +240,13 @@ public class EnumGenerator : IIncrementalGenerator
             fqnSb.Append(part);
         }
 
+        string enumName = enumSymbol.Name;
+        string enumFullName = enumFullSb.ToString(); //This include the nested type name (if any)
         string fqn = fqnSb.ToString();
-        string enumNamespace = namespaceSb.ToString().TrimEnd('.');
-        string enumFullName = enumFullSb.ToString();
+        string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
-        enumSpec = new EnumSpec(enumSymbol.Name, enumFullName, fqn, enumNamespace, setGenerate, setExtName, setExtNamespace, setEnumsName, setEnumsNamespace, isPublic, hasDisplay, hasDescription, hasFlags, underlyingType, members);
+        options = new AttributeOptions(optGenerate, optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride);
+        enumSpec = new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasDisplay, hasDescription, hasFlags, underlyingType, members);
         return true;
     }
 

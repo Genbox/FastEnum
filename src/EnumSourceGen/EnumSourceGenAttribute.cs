@@ -8,18 +8,21 @@ public sealed class EnumSourceGenAttribute : global::System.Attribute
     /// <summary>Use this to control if the static Enums class member and/or enum extension should be generated </summary>
     public Generate Generate { get; set; }
 
-    /// <summary>The namespace used for the extensions class. If not provided the namespace of the enum will be used</summary>
-    public string? ExtensionClassNamespace { get; set; }
-
     /// <summary>
     /// Override the name of the extension class. If not provided, the enum name with "Extensions" appended will be used. For example for an Enum called StatusCodes, the default name
     /// will be StatusCodesExtensions
     /// </summary>
     public string? ExtensionClassName { get; set; }
 
-    /// <summary>The namespace use for Enums class. If not provided the namespace of the enum will be used</summary>
-    public string? EnumsClassNamespace { get; set; }
+    /// <summary>The namespace used for the extensions class. If not provided the namespace of the enum will be used</summary>
+    public string? ExtensionClassNamespace { get; set; }
 
     /// <summary>Override the name of the Enums class. If not provided, it will be "Enums"</summary>
     public string? EnumsClassName { get; set; }
+
+    /// <summary>The namespace use for Enums class. If not provided the namespace of the enum will be used</summary>
+    public string? EnumsClassNamespace { get; set; }
+
+    /// <summary>Use this to override the name of your enum. This is useful in cases where you have overridden the namespace for the generated code, but now have two enums named the same</summary>
+    public string? EnumNameOverride { get; set; }
 }
