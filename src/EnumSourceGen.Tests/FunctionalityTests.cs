@@ -101,7 +101,7 @@ public class FunctionalityTests
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
         //Check that we also support parsing display names
-        Assert.True(Enums.TestEnum.TryParse("FirstDisplayName", out result));
+        Assert.True(Enums.TestEnum.TryParse("FirstDisplayName", out result, TestEnumFormat.DisplayName));
         Assert.Equal(TestEnum.First, result);
     }
 
