@@ -18,8 +18,8 @@ internal static class Program
         //Enums
         Console.WriteLine("Number of members: " + Enums.TestEnum.MemberCount);
 
-        Console.WriteLine("Parse: " + Enums.TestEnum.Parse("value1", StringComparison.OrdinalIgnoreCase));
-        Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, StringComparison.OrdinalIgnoreCase) + " value: " + val);
+        Console.WriteLine("Parse: " + Enums.TestEnum.Parse("Value1"));
+        Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, TestEnumFormat.Default, StringComparer.OrdinalIgnoreCase) + " value: " + val);
         Console.WriteLine("Is Value1 part of the enum: " + Enums.TestEnum.IsDefined(TestEnum.Value1));
         Console.WriteLine("Is 42 part of the enum: " + Enums.TestEnum.IsDefined((TestEnum)42));
 

@@ -95,18 +95,21 @@ public class FunctionalityTests
         Assert.True(Enums.TestEnum.TryParse("First", out TestEnum result));
         Assert.Equal(TestEnum.First, result);
 
-        Assert.True(Enums.TestEnum.TryParse("first", out result, StringComparison.OrdinalIgnoreCase));
+        Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparer.OrdinalIgnoreCase));
         Assert.Equal(TestEnum.First, result);
 
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
+        //Check that we also support parsing display names
+        Assert.True(Enums.TestEnum.TryParse("FirstDisplayName", out result));
+        Assert.Equal(TestEnum.First, result);
     }
 
     [Fact]
     public void ParseTest()
     {
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("First"));
-        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", TestEnumFormat.Default, StringComparer.OrdinalIgnoreCase));
         Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
 

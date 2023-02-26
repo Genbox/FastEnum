@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.EnumSourceGen;
 
-internal readonly record struct EnumSpec(string EnumName, string EnumFullName, string EnumFullyQualifiedName, string EnumNamespace, Generate Generate, string ExtName, string? ExtNamespace, string EnumsClassName, string EnumsClassNamespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
+internal readonly record struct EnumSpec(string EnumName, string EnumFullName, string EnumFullyQualifiedName, string EnumNamespace, Generate Generate, string ExtName, string? ExtNamespace, string EnumsClassName, string? EnumsClassNamespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
 internal readonly record struct EnumMember(string Name, object? Value, string? DisplayName, string? Description);
 
 [Generator]
@@ -16,8 +16,6 @@ public class EnumGenerator : IIncrementalGenerator
     private const string DisplayAttribute = "System.ComponentModel.DataAnnotations.DisplayAttribute";
     private const string FlagsAttribute = "System.FlagsAttribute";
     private const string EnumExtensionsAttribute = "Genbox.EnumSourceGen.EnumSourceGenAttribute";
-
-    public const bool Debug = false;
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -28,37 +26,28 @@ public class EnumGenerator : IIncrementalGenerator
                                                        .CreateSyntaxProvider(Predicate, Transform)
                                                        .Where(s => s != null)!;
 
-        Dictionary<string, int> uniq = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        StringBuilder sb = new StringBuilder();
-
         context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
         {
             if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec enumSpec))
                 return;
 
-            sb.Clear();
+            StringBuilder sb = new StringBuilder();
 
-            string safeName = enumSpec.EnumFullName;
-
-            if (uniq.TryGetValue(enumSpec.EnumFullName, out int count))
-                uniq[enumSpec.EnumFullName] = ++count;
-            else
-                uniq.Add(enumSpec.EnumFullName, 0);
-
-            if (count > 0)
-                safeName += count;
+            string fqn = enumSpec.EnumFullyQualifiedName;
 
             switch (enumSpec.Generate)
             {
                 case Generate.ClassAndExtensions:
-                    spc.AddSource(safeName + $"_Enums{(Debug ? null : ".g")}.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
-                    spc.AddSource(safeName + $"_Extensions{(Debug ? null : ".g")}.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
                     break;
                 case Generate.ClassOnly:
-                    spc.AddSource(safeName + $"_Enums{(Debug ? null : ".g")}.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(enumSpec, sb), Encoding.UTF8));
                     break;
                 case Generate.ExtensionsOnly:
-                    spc.AddSource(safeName + $"_Extensions{(Debug ? null : ".g")}.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
+                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(enumSpec, sb), Encoding.UTF8));
                     break;
                 default:
                     throw new InvalidOperationException($"Value '{enumSpec.Generate}' is outside of supported values");
@@ -110,12 +99,12 @@ public class EnumGenerator : IIncrementalGenerator
         string setExtName = enumSymbol.Name + "Extensions";
         string setEnumsName = "Enums";
 
-        string? setExtNamespace = enumSymbol.ContainingNamespace.IsGlobalNamespace ? null : enumSymbol.ContainingNamespace.ToDisplayString();
-        string setEnumsNamespace = "Genbox.EnumSourceGen";
+        string? ns = enumSymbol.ContainingNamespace.IsGlobalNamespace ? null : enumSymbol.ContainingNamespace.ToDisplayString();
+        string? setExtNamespace = ns;
+        string? setEnumsNamespace = ns;
 
         Generate setGenerate = Generate.ClassAndExtensions;
 
-        //We now read attributes applied directly to the enum itself
         INamedTypeSymbol? flagsAttr = info.FlagsAttr;
         bool hasFlags = false;
 
