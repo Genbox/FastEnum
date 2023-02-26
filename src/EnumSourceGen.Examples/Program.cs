@@ -17,6 +17,7 @@ internal static class Program
 
         //Enums
         Console.WriteLine("Number of members: " + Enums.TestEnum.MemberCount);
+        Console.WriteLine("Is it a flags enum: " + Enums.TestEnum.IsFlagEnum);
 
         Console.WriteLine("Parse: " + Enums.TestEnum.Parse("Value1"));
         Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, TestEnumFormat.Default, StringComparer.OrdinalIgnoreCase) + " value: " + val);
