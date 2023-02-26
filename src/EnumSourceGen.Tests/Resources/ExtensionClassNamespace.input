@@ -1,0 +1,9 @@
+//This test checks if ExtensionClassNamespace functions correctly
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen(ExtensionClassNamespace = "Test.Namespace")]
+public enum MyEnum
+{
+    Value
+}
