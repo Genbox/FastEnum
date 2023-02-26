@@ -6,7 +6,7 @@ internal static class EnumFormatCode
 {
     internal static string Generate(EnumSpec es, AttributeOptions op, StringBuilder sb)
     {
-        string? ns = op.EnumsClassNamespace ?? es.Namespace;
+        string? ns = op.EnumsClassNamespace ?? es.Namespace; //We use the same namespace as the Enums class
         string cn = op.EnumNameOverride ?? es.Name;
 
         string res = $$"""

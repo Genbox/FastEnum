@@ -8,7 +8,7 @@ internal static class ExtensionCode
     {
         sb.Clear();
 
-        string? ns = op.EnumsClassNamespace ?? es.Namespace;
+        string? ns = op.ExtensionsNamespace ?? es.Namespace;
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.ExtensionsName ?? cn + "Extensions";
         string sn = es.FullyQualifiedName;
