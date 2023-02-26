@@ -5,11 +5,11 @@ using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using RunMode = BenchmarkDotNet.Jobs.RunMode;
 
-Job shortInProcess = new Job(InfrastructureMode.InProcess, RunMode.Default);
+Job job = new Job(InfrastructureMode.InProcess, RunMode.Default);
 
 ManualConfig config = ManualConfig
                       .Create(DefaultConfig.Instance)
-                      .AddJob(shortInProcess)
+                      .AddJob(job)
                       .WithOptions(ConfigOptions.DisableLogFile)
                       .AddDiagnoser(new MemoryDiagnoser(new MemoryDiagnoserConfig()));
 
