@@ -109,20 +109,18 @@ public class EnumGenerator : IIncrementalGenerator
         INamedTypeSymbol? flagsAttr = info.FlagsAttr;
         bool hasFlags = false;
 
-        ImmutableArray<AttributeData> sAttrs = enumSymbol.GetAttributes();
+        ImmutableArray<AttributeData> attr = enumSymbol.GetAttributes();
 
-        for (int i = 0; i < sAttrs.Length; i++)
+        for (int i = 0; i < attr.Length; i++)
         {
-            AttributeData ad = sAttrs[i];
+            AttributeData ad = attr[i];
 
+            //Check if the attribute is the FlagsAttribute
             if (flagsAttr != null && flagsAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
             {
                 hasFlags = true;
                 continue;
             }
-
-            if (!enumSymbol.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
-                continue;
 
             for (int j = 0; j < ad.NamedArguments.Length; j++)
             {
