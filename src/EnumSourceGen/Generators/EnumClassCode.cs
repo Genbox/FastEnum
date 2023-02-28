@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using Genbox.EnumSourceGen.Misc;
 using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
@@ -281,7 +281,7 @@ public static partial class {{en}}
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
         }
 
-        string GetIsDefined(EnumSpec spec, string ut)
+        string GetIsDefined(EnumSpec spec, string underlyingType)
         {
             if (spec.Members.Count == 0)
                 return "false";
@@ -292,9 +292,9 @@ public static partial class {{en}}
                 value |= (long)Convert.ChangeType(member.Value, typeof(long));
 
             if (value == 0)
-                return $"0 == ({ut})input";
+                return $"0 == ({underlyingType})input";
 
-            return "(0b" + Convert.ToString(value, 2) + $" & ({ut})input) == ({ut})input";
+            return "(0b" + Convert.ToString(value, 2) + $" & ({underlyingType})input) == ({underlyingType})input";
         }
 
         return res + "\n    }\n}";
