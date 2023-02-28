@@ -49,53 +49,52 @@ public static partial class Enums
                 256
             };
 
-        public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, IEqualityComparer<string?>? comparer = null)
+        public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            comparer ??= StringComparer.Ordinal;
 
             if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
             {
-                if (comparer.Equals(value, "First"))
+                if (string.Equals(value, "First", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.First;
                     return true;
                 }
 
-                if (comparer.Equals(value, "Second"))
+                if (string.Equals(value, "Second", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Second;
                     return true;
                 }
 
-                if (comparer.Equals(value, "Third"))
+                if (string.Equals(value, "Third", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Third;
                     return true;
                 }
 
-                if (comparer.Equals(value, "Other"))
+                if (string.Equals(value, "Other", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Other;
                     return true;
                 }
             }
             if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Value))
-            {                if (comparer.Equals(value, "0"))
+            {                if (string.Equals(value, "0", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.First;
                     return true;
                 }
-                if (comparer.Equals(value, "2"))
+                if (string.Equals(value, "2", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Second;
                     return true;
                 }
-                if (comparer.Equals(value, "8"))
+                if (string.Equals(value, "8", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Third;
                     return true;
                 }
-                if (comparer.Equals(value, "256"))
+                if (string.Equals(value, "256", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Other;
                     return true;
@@ -106,9 +105,9 @@ public static partial class Enums
             return false;
         }
 
-        public static Some.Namespace.Here.MyEnum Parse(string value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, IEqualityComparer<string?>? comparer = null)
+        public static Some.Namespace.Here.MyEnum Parse(string value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparer))
+            if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparison))
                 throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;

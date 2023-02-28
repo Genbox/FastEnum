@@ -40,20 +40,19 @@ public static partial class Enums
                 0
             };
 
-        public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, Test.Namespace.MyEnumFormat format = Test.Namespace.MyEnumFormat.Default, IEqualityComparer<string?>? comparer = null)
+        public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, Test.Namespace.MyEnumFormat format = Test.Namespace.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            comparer ??= StringComparer.Ordinal;
 
             if (format.HasFlag(Test.Namespace.MyEnumFormat.Name))
             {
-                if (comparer.Equals(value, "Value"))
+                if (string.Equals(value, "Value", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Value;
                     return true;
                 }
             }
             if (format.HasFlag(Test.Namespace.MyEnumFormat.Value))
-            {                if (comparer.Equals(value, "0"))
+            {                if (string.Equals(value, "0", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Value;
                     return true;
@@ -64,9 +63,9 @@ public static partial class Enums
             return false;
         }
 
-        public static Some.Namespace.Here.MyEnum Parse(string value, Test.Namespace.MyEnumFormat format = Test.Namespace.MyEnumFormat.Default, IEqualityComparer<string?>? comparer = null)
+        public static Some.Namespace.Here.MyEnum Parse(string value, Test.Namespace.MyEnumFormat format = Test.Namespace.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparer))
+            if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparison))
                 throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;

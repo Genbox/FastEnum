@@ -20,7 +20,7 @@ internal static class Program
         Console.WriteLine("Is it a flags enum: " + Enums.TestEnum.IsFlagEnum);
 
         Console.WriteLine("Parse: " + Enums.TestEnum.Parse("Value1"));
-        Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, TestEnumFormat.Default, StringComparer.OrdinalIgnoreCase) + " value: " + val);
+        Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, TestEnumFormat.Default, StringComparison.OrdinalIgnoreCase) + " value: " + val);
         Console.WriteLine("Is Value1 part of the enum: " + Enums.TestEnum.IsDefined(TestEnum.Value1));
         Console.WriteLine("Is 42 part of the enum: " + Enums.TestEnum.IsDefined((TestEnum)42));
 

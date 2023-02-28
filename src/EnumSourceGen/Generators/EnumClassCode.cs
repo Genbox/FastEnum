@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using Genbox.EnumSourceGen.Misc;
 using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
@@ -49,18 +49,17 @@ public static partial class {{en}}
                 {{GetUnderlyingValues()}}
             };
 
-        public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, IEqualityComparer<string?>? comparer = null)
+        public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            comparer ??= StringComparer.Ordinal;
 {{GetTryParseSwitch()}}
 
             result = default;
             return false;
         }
 
-        public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, IEqualityComparer<string?>? comparer = null)
+        public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (!TryParse(value, out {{sn}} result, format, comparer))
+            if (!TryParse(value, out {{sn}} result, format, comparison))
                 throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
@@ -146,7 +145,7 @@ public static partial class {{en}}
 
                 sb.Append($$"""
 
-                if (comparer.Equals(value, "{{enumVal.Name}}"))
+                if (string.Equals(value, "{{enumVal.Name}}", comparison))
                 {
                     result = {{sn}}.{{enumVal.Name}};
                     return true;
@@ -170,7 +169,7 @@ public static partial class {{en}}
                 EnumMember enumVal = es.Members[i];
 
                 sb.Append($$"""
-                if (comparer.Equals(value, "{{enumVal.Value}}"))
+                if (string.Equals(value, "{{enumVal.Value}}", comparison))
                 {
                     result = {{sn}}.{{enumVal.Name}};
                     return true;
@@ -199,7 +198,7 @@ public static partial class {{en}}
                     {
                         sb.Append($$"""
 
-                if (comparer.Equals(value, "{{enumVal.DisplayName}}"))
+                if (string.Equals(value, "{{enumVal.DisplayName}}", comparison))
                 {
                     result = {{sn}}.{{enumVal.Name}};
                     return true;
@@ -229,7 +228,7 @@ public static partial class {{en}}
                     {
                         sb.Append($$"""
 
-                if (comparer.Equals(value, "{{enumVal.Description}}"))
+                if (string.Equals(value, "{{enumVal.Description}}", comparison))
                 {
                     result = {{sn}}.{{enumVal.Name}};
                     return true;

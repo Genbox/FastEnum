@@ -95,7 +95,7 @@ public class FunctionalityTests
         Assert.True(Enums.TestEnum.TryParse("First", out TestEnum result));
         Assert.Equal(TestEnum.First, result);
 
-        Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparer.OrdinalIgnoreCase));
+        Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
         Assert.Equal(TestEnum.First, result);
 
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
@@ -109,7 +109,7 @@ public class FunctionalityTests
     public void ParseTest()
     {
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("First"));
-        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", TestEnumFormat.Default, StringComparer.OrdinalIgnoreCase));
+        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", TestEnumFormat.Default, StringComparison.OrdinalIgnoreCase));
         Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
 
