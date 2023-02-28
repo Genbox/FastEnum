@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EnumSourceGen\EnumSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <PackageReference Include="Genbox.EnumSourceGen" PrivateAssets="all" ExcludeAssets="runtime" />
   </ItemGroup>
 
 </Project>
