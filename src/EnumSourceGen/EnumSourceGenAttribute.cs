@@ -2,6 +2,7 @@
 namespace Genbox.EnumSourceGen;
 
 /// <summary>Add to enums to indicate that extension methods should be generated for the type</summary>
+[global::System.Diagnostics.Conditional("ENUMSOURCEGEN_INCLUDE_ATTRIBUTE")]
 [global::System.AttributeUsage(AttributeTargets.Enum)]
 public sealed class EnumSourceGenAttribute : global::System.Attribute
 {
