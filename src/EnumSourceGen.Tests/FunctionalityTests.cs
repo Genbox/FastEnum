@@ -16,7 +16,7 @@ public class FunctionalityTests
     [Fact]
     public void GetUnderlyingValueTest()
     {
-        Assert.True(_valid.TryGetUnderlyingValue(out int underlyingValue));
+        Assert.True(_valid.TryGetUnderlyingValue(out long underlyingValue));
         Assert.Equal(8, underlyingValue);
 
         Assert.False(_invalid.TryGetUnderlyingValue(out underlyingValue));
@@ -80,7 +80,7 @@ public class FunctionalityTests
     [Fact]
     public void MemberCountTest()
     {
-        Assert.Equal(4, Enums.TestEnum.MemberCount);
+        Assert.Equal(5, Enums.TestEnum.MemberCount);
     }
 
     [Fact]
@@ -121,6 +121,7 @@ public class FunctionalityTests
     public void IsDefinedTest()
     {
         //Test flag combinations
+        Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third | TestEnum.Other | TestEnum.Min));
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third | TestEnum.Other));
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third));
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second));
@@ -141,7 +142,8 @@ public class FunctionalityTests
             nameof(TestEnum.First),
             nameof(TestEnum.Second),
             nameof(TestEnum.Third),
-            nameof(TestEnum.Other)
+            nameof(TestEnum.Other),
+            nameof(TestEnum.Min)
         };
 
         Assert.Equal(names, Enums.TestEnum.GetMemberNames());
@@ -155,7 +157,8 @@ public class FunctionalityTests
             TestEnum.First,
             TestEnum.Second,
             TestEnum.Third,
-            TestEnum.Other
+            TestEnum.Other,
+            TestEnum.Min
         };
 
         Assert.Equal(values, Enums.TestEnum.GetMemberValues());
@@ -164,12 +167,13 @@ public class FunctionalityTests
     [Fact]
     public void GetUnderlyingValuesTest()
     {
-        int[] underlyingValues =
+        long[] underlyingValues =
         {
             8,
             1,
             2,
-            256
+            256,
+            long.MinValue
         };
 
         Assert.Equal(underlyingValues, Enums.TestEnum.GetUnderlyingValues());

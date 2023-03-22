@@ -3,21 +3,23 @@
 namespace Genbox.EnumSourceGen.Tests.Code
 {
     [EnumSourceGen]
-    public enum NonFlagsEnum
+    public enum NonFlagsEnum : ulong
     {
         Value1,
-        Value2
+        Value2,
+        Max = ulong.MaxValue
     }
 
     [Flags]
     [EnumSourceGen]
-    public enum TestEnum
+    public enum TestEnum : long
     {
         [Display(Name = "FirstDisplayName", Description = "FirstDescription")]
         First = 8,
         Second = 1,
         Third = 2,
-        Other = 256
+        Other = 256,
+        Min = long.MinValue
     }
 }
 

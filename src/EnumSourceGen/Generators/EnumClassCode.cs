@@ -81,7 +81,7 @@ public static partial class {{en}}
             return result;
         }
 
-        public static bool IsDefined({{sn}} input) => {{GetIsDefined(es, ut)}};
+        public static bool IsDefined({{sn}} input) => {{GetIsDefined(es, ut, sn)}};
 """;
 
         if (es.HasDisplay)
@@ -296,27 +296,30 @@ public static partial class {{en}}
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
         }
 
-        string GetIsDefined(EnumSpec spec, string underlyingType)
+        string GetIsDefined(EnumSpec spec, string underlyingType, string symbolName)
         {
             if (spec.Members.Count == 0)
                 return "false";
 
-            long value = 0;
+            ulong value = 0;
 
             foreach (EnumMember member in spec.Members)
             {
                 string strVal = member.Value.ToString();
 
                 if (strVal.StartsWith("-", StringComparison.Ordinal))
-                    value |= long.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+                    value |= unchecked((ulong)long.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
                 else
-                    value |= unchecked((long)ulong.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
+                    value |= ulong.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
             }
 
             if (value == 0)
                 return $"0 == ({underlyingType})input";
 
-            return "(0b" + Convert.ToString(value, 2) + $" & ({underlyingType})input) == ({underlyingType})input";
+            if (spec.HasFlags)
+                return $"unchecked((({underlyingType}){value}UL & ({underlyingType})input) == ({underlyingType})input)";
+            else
+                return $"Enum.IsDefined(typeof({symbolName}), input)";
         }
 
         return res + "\n    }\n}";
