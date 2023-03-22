@@ -29,11 +29,11 @@ public class EnumGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
         {
+            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
+                return;
+
             try
             {
-                if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
-                    return;
-
                 StringBuilder sb = new StringBuilder();
 
                 string fqn = es.FullyQualifiedName;
@@ -58,7 +58,7 @@ public class EnumGenerator : IIncrementalGenerator
             }
             catch (Exception e)
             {
-                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", "An exception happened: " + e.Message, "errors", DiagnosticSeverity.Error, true);
+                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", $"An error happened while generating code for {es.FullName}. Error: {e.Message}", "errors", DiagnosticSeverity.Error, true);
                 spc.ReportDiagnostic(Diagnostic.Create(report, Location.None ));
             }
         });
