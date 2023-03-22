@@ -2,6 +2,9 @@
 
 namespace Genbox.EnumSourceGen.Tests;
 
+/// <summary>
+/// The tests in this class used to produce diagnostic errors. They should no longer do that, or it is a regression.
+/// </summary>
 public class BugTests
 {
     [Fact]
@@ -17,7 +20,6 @@ public enum TestEnum : ulong
     Max = ulong.MaxValue
 }
 """;
-
         Assert.NotEmpty(TestHelper.GetGeneratedOutput<EnumGenerator>(code));
     }
 
