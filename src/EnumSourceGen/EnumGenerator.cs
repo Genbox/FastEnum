@@ -9,7 +9,7 @@ namespace Genbox.EnumSourceGen;
 
 internal readonly record struct AttributeOptions(Generate Generate, string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride);
 internal readonly record struct EnumSpec(string Name, string FullName, string FullyQualifiedName, string? Namespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
-internal readonly record struct EnumMember(string Name, object? Value, string? DisplayName, string? Description);
+internal readonly record struct EnumMember(string Name, object Value, string? DisplayName, string? Description);
 
 [Generator]
 public class EnumGenerator : IIncrementalGenerator
@@ -208,6 +208,9 @@ public class EnumGenerator : IIncrementalGenerator
             hasDisplay |= displayName != null;
             hasDescription |= description != null;
 
+            if (field.ConstantValue == null)
+                throw new InvalidOperationException("The fields value was null");
+            
             members.Add(new EnumMember(member.Name, field.ConstantValue, displayName, description));
         }
 
