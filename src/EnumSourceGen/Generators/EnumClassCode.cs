@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using Genbox.EnumSourceGen.Misc;
 using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
@@ -301,15 +301,22 @@ public static partial class {{en}}
             if (spec.Members.Count == 0)
                 return "false";
 
-            ulong value = 0;
+            long value = 0;
 
             foreach (EnumMember member in spec.Members)
-                value |= (ulong)Convert.ChangeType(member.Value, typeof(ulong));
+            {
+                string strVal = member.Value.ToString();
+
+                if (strVal.StartsWith("-", StringComparison.Ordinal))
+                    value |= long.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+                else
+                    value |= unchecked((long)ulong.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
+            }
 
             if (value == 0)
                 return $"0 == ({underlyingType})input";
 
-            return "(0b" + Convert.ToString(unchecked((long)value), 2) + $" & ({underlyingType})input) == ({underlyingType})input";
+            return "(0b" + Convert.ToString(value, 2) + $" & ({underlyingType})input) == ({underlyingType})input";
         }
 
         return res + "\n    }\n}";
