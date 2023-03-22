@@ -45,14 +45,14 @@ public static partial class Enums
 
             if (format.HasFlag(Some.Namespace.Here.ClassOnlyEnumFormat.Name))
             {
-                if (string.Equals(value, "ClassOnly", comparison))
+                if (value.Equals("ClassOnly", comparison))
                 {
                     result = Some.Namespace.Here.ClassOnlyEnum.ClassOnly;
                     return true;
                 }
             }
             if (format.HasFlag(Some.Namespace.Here.ClassOnlyEnumFormat.Value))
-            {                if (string.Equals(value, "0", comparison))
+            {                if (value.Equals("0", comparison))
                 {
                     result = Some.Namespace.Here.ClassOnlyEnum.ClassOnly;
                     return true;
@@ -61,6 +61,37 @@ public static partial class Enums
 
             result = default;
             return false;
+        }
+
+        public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.ClassOnlyEnum result, Some.Namespace.Here.ClassOnlyEnumFormat format = Some.Namespace.Here.ClassOnlyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+
+            if (format.HasFlag(Some.Namespace.Here.ClassOnlyEnumFormat.Name))
+            {
+                if (value.Equals("ClassOnly", comparison))
+                {
+                    result = Some.Namespace.Here.ClassOnlyEnum.ClassOnly;
+                    return true;
+                }
+            }
+            if (format.HasFlag(Some.Namespace.Here.ClassOnlyEnumFormat.Value))
+            {                if (value.Equals("0", comparison))
+                {
+                    result = Some.Namespace.Here.ClassOnlyEnum.ClassOnly;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
+        }
+
+        public static Some.Namespace.Here.ClassOnlyEnum Parse(ReadOnlySpan<char> value, Some.Namespace.Here.ClassOnlyEnumFormat format = Some.Namespace.Here.ClassOnlyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (!TryParse(value, out Some.Namespace.Here.ClassOnlyEnum result, format, comparison))
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+
+            return result;
         }
 
         public static Some.Namespace.Here.ClassOnlyEnum Parse(string value, Some.Namespace.Here.ClassOnlyEnumFormat format = Some.Namespace.Here.ClassOnlyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)

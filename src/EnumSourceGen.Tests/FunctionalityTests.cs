@@ -98,6 +98,10 @@ public class FunctionalityTests
         Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
         Assert.Equal(TestEnum.First, result);
 
+        //Check if we support span inputs
+        ReadOnlySpan<char> span = "first";
+        Assert.True(Enums.TestEnum.TryParse(span, out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
+        
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
         //Check that we also support parsing display names

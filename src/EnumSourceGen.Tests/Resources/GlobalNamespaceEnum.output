@@ -41,14 +41,14 @@ public static partial class Enums
 
             if (format.HasFlag(MyEnumFormat.Name))
             {
-                if (string.Equals(value, "First", comparison))
+                if (value.Equals("First", comparison))
                 {
                     result = MyEnum.First;
                     return true;
                 }
             }
             if (format.HasFlag(MyEnumFormat.Value))
-            {                if (string.Equals(value, "0", comparison))
+            {                if (value.Equals("0", comparison))
                 {
                     result = MyEnum.First;
                     return true;
@@ -57,6 +57,37 @@ public static partial class Enums
 
             result = default;
             return false;
+        }
+
+        public static bool TryParse(ReadOnlySpan<char> value, out MyEnum result, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+
+            if (format.HasFlag(MyEnumFormat.Name))
+            {
+                if (value.Equals("First", comparison))
+                {
+                    result = MyEnum.First;
+                    return true;
+                }
+            }
+            if (format.HasFlag(MyEnumFormat.Value))
+            {                if (value.Equals("0", comparison))
+                {
+                    result = MyEnum.First;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
+        }
+
+        public static MyEnum Parse(ReadOnlySpan<char> value, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (!TryParse(value, out MyEnum result, format, comparison))
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+
+            return result;
         }
 
         public static MyEnum Parse(string value, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)

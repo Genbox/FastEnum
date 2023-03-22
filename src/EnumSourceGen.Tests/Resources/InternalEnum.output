@@ -51,36 +51,36 @@ public static partial class Enums
 
             if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
             {
-                if (string.Equals(value, "First", comparison))
+                if (value.Equals("First", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.First;
                     return true;
                 }
 
-                if (string.Equals(value, "Second", comparison))
+                if (value.Equals("Second", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Second;
                     return true;
                 }
 
-                if (string.Equals(value, "Third", comparison))
+                if (value.Equals("Third", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Third;
                     return true;
                 }
             }
             if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Value))
-            {                if (string.Equals(value, "0", comparison))
+            {                if (value.Equals("0", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.First;
                     return true;
                 }
-                if (string.Equals(value, "1", comparison))
+                if (value.Equals("1", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Second;
                     return true;
                 }
-                if (string.Equals(value, "2", comparison))
+                if (value.Equals("2", comparison))
                 {
                     result = Some.Namespace.Here.MyEnum.Third;
                     return true;
@@ -89,6 +89,59 @@ public static partial class Enums
 
             result = default;
             return false;
+        }
+
+        public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+
+            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
+            {
+                if (value.Equals("First", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.First;
+                    return true;
+                }
+
+                if (value.Equals("Second", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.Second;
+                    return true;
+                }
+
+                if (value.Equals("Third", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.Third;
+                    return true;
+                }
+            }
+            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Value))
+            {                if (value.Equals("0", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.First;
+                    return true;
+                }
+                if (value.Equals("1", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.Second;
+                    return true;
+                }
+                if (value.Equals("2", comparison))
+                {
+                    result = Some.Namespace.Here.MyEnum.Third;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
+        }
+
+        public static Some.Namespace.Here.MyEnum Parse(ReadOnlySpan<char> value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparison))
+                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+
+            return result;
         }
 
         public static Some.Namespace.Here.MyEnum Parse(string value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
