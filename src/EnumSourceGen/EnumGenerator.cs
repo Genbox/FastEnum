@@ -29,29 +29,37 @@ public class EnumGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
         {
-            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
-                return;
-
-            StringBuilder sb = new StringBuilder();
-
-            string fqn = es.FullyQualifiedName;
-
-            switch (op.Generate)
+            try
             {
-                case Generate.ClassAndExtensions:
-                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
-                    break;
-                case Generate.ClassOnly:
-                    spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
-                    spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
-                    break;
-                case Generate.ExtensionsOnly:
-                    spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
-                    break;
-                default:
-                    throw new InvalidOperationException($"Value '{op.Generate}' is outside of supported values");
+                if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
+                    return;
+
+                StringBuilder sb = new StringBuilder();
+
+                string fqn = es.FullyQualifiedName;
+
+                switch (op.Generate)
+                {
+                    case Generate.ClassAndExtensions:
+                        spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
+                        spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
+                        spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
+                        break;
+                    case Generate.ClassOnly:
+                        spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
+                        spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
+                        break;
+                    case Generate.ExtensionsOnly:
+                        spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Value '{op.Generate}' is outside of supported values");
+                }
+            }
+            catch (Exception e)
+            {
+                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", "An exception happened: " + e.Message, "errors", DiagnosticSeverity.Error, true);
+                spc.ReportDiagnostic(Diagnostic.Create(report, Location.None ));
             }
         });
     }
