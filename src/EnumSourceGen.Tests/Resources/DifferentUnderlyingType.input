@@ -7,3 +7,10 @@ public enum MyEnum : byte
 {
     Value
 }
+
+//Adding this as ulong used to give problems
+[EnumSourceGen]
+public enum MyEnum2 : ulong
+{
+    Value
+}
