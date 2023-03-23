@@ -16,20 +16,17 @@ internal static class TestHelper
         return _headerCache ??= ReadResource("Genbox.EnumSourceGen.Tests.Resources._Header.dat");
     }
 
-    public static void TestResource<T>(string resourceName) where T : IIncrementalGenerator, new()
+    public static void TestResource<T>(string testName) where T : IIncrementalGenerator, new()
     {
-        string inputSource = ReadResource(resourceName);
-
-        //Add the header
-        inputSource = GetHeader() + "\n" + inputSource;
+        string inputSource = ReadResource(testName);
 
         string actual = GetGeneratedOutput<T>(inputSource).ReplaceLineEndings("\n");
-        string expected = ReadResource(Path.ChangeExtension(resourceName, "output"));
+        string expected = ReadResource(Path.ChangeExtension(testName, "output"));
 
         Assert.Equal(expected, actual);
     }
 
-    private static string ReadResource(string name)
+    public static string ReadResource(string name)
     {
         Assembly assembly = typeof(TestHelper).Assembly;
 
@@ -44,6 +41,9 @@ internal static class TestHelper
 
     public static string GetGeneratedOutput<T>(string source) where T : IIncrementalGenerator, new()
     {
+        //Add a few headers by default
+        source = GetHeader() + "\n" + source;
+
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
         IEnumerable<PortableExecutableReference> refs = AppDomain.CurrentDomain.GetAssemblies()
                                                                  .Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location))

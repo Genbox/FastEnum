@@ -23,4 +23,15 @@ public class CodeGenTests
                 yield return new object[] { resource };
         }
     }
+
+    [Theory(Skip = "This is to update all tests with new formatting")]
+    // [Theory]
+    [MemberData(nameof(GetTests))]
+    public void UpdateResources(string testName)
+    {
+        string inputSource = TestHelper.ReadResource(testName);
+        string actual = TestHelper.GetGeneratedOutput<EnumGenerator>(inputSource).ReplaceLineEndings("\n");
+
+        File.WriteAllText(@"..\..\..\Resources\" + Path.ChangeExtension(testName.Substring(37), ".output"), actual);
+    }
 }
