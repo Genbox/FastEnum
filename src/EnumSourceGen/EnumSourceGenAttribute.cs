@@ -26,4 +26,7 @@ public sealed class EnumSourceGenAttribute : global::System.Attribute
 
     /// <summary>Use this to override the name of your enum. This is useful in cases where you have overridden the namespace for the generated code, but now have two enums named the same</summary>
     public string? EnumNameOverride { get; set; }
+
+    /// <summary>Enable this to avoid generating the static Enums class that wraps all the enums. Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace across projects</summary>
+    public bool DisableEnumsWrapper { get; set; }
 }

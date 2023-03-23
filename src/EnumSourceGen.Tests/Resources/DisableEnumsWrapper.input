@@ -1,0 +1,7 @@
+//This test checks if we correctly remove the Enums wrapper class
+
+[EnumSourceGen(DisableEnumsWrapper = true)]
+public enum MyEnum
+{
+    Value
+}

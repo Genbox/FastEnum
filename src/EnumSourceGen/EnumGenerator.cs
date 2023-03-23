@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.EnumSourceGen;
 
-internal readonly record struct AttributeOptions(Generate Generate, string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride);
+internal readonly record struct AttributeOptions(Generate Generate, string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride, bool DisableEnumsWrapper);
 internal readonly record struct EnumSpec(string Name, string FullName, string FullyQualifiedName, string? Namespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
 internal readonly record struct EnumMember(string Name, object Value, string? DisplayName, string? Description);
 
@@ -59,7 +59,7 @@ public class EnumGenerator : IIncrementalGenerator
             catch (Exception e)
             {
                 DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", $"An error happened while generating code for {es.FullName}. Error: {e.Message}", "errors", DiagnosticSeverity.Error, true);
-                spc.ReportDiagnostic(Diagnostic.Create(report, Location.None ));
+                spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
             }
         });
     }
@@ -111,6 +111,7 @@ public class EnumGenerator : IIncrementalGenerator
         string? optEnumsName = null;
         string? optEnumsNamespace = null;
         string? optEnumNameOverride = null;
+        bool optDisableEnumsWrapper = false;
 
         Generate optGenerate = Generate.ClassAndExtensions;
 
@@ -156,6 +157,9 @@ public class EnumGenerator : IIncrementalGenerator
                         break;
                     case nameof(EnumSourceGenAttribute.EnumNameOverride):
                         optEnumNameOverride = (string)na.Value.Value;
+                        break;
+                    case nameof(EnumSourceGenAttribute.DisableEnumsWrapper):
+                        optDisableEnumsWrapper = (bool)na.Value.Value;
                         break;
                     default:
                         throw new ArgumentException("BUG: Unsupported value");
@@ -210,7 +214,7 @@ public class EnumGenerator : IIncrementalGenerator
 
             if (field.ConstantValue == null)
                 throw new InvalidOperationException("The fields value was null");
-            
+
             members.Add(new EnumMember(member.Name, field.ConstantValue, displayName, description));
         }
 
@@ -254,7 +258,7 @@ public class EnumGenerator : IIncrementalGenerator
         string fqn = fqnSb.ToString();
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
-        options = new AttributeOptions(optGenerate, optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride);
+        options = new AttributeOptions(optGenerate, optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride, optDisableEnumsWrapper);
         enumSpec = new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasDisplay, hasDescription, hasFlags, underlyingType, members);
         return true;
     }
