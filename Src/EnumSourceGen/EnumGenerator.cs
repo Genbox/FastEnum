@@ -197,9 +197,6 @@ public class EnumGenerator : IIncrementalGenerator
             hasDisplay |= displayName != null;
             hasDescription |= description != null;
 
-            if (field.ConstantValue == null)
-                throw new InvalidOperationException("The fields value was null");
-
             members.Add(new EnumMember(member.Name, field.ConstantValue, displayName, description));
         }
 
