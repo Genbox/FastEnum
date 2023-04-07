@@ -30,21 +30,21 @@ internal static class EnumClassCode
         public const int MemberCount = {{mc}};
         public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
 
-        private static string[]? _names;
+        {{(op.DisableCache ? null : "private static string[]? _names;")}}
         public static string[] GetMemberNames()
-            => _names ??= new[] {
+            => {{CachedAssignment("_names")}} new[] {
                 {{GetMemberNames()}}
             };
 
-        private static {{sn}}[]? _values;
+        {{(op.DisableCache ? null : $"private static {sn}[]? _values;")}}
         public static {{sn}}[] GetMemberValues()
-            => _values ??= new[] {
+            => {{CachedAssignment("_values")}} new[] {
                 {{GetMemberValues()}}
             };
 
-        private static {{ut}}[]? _underlyingValues;
+        {{(op.DisableCache ? null : $"private static {ut}[]? _underlyingValues;")}}
         public static {{ut}}[] GetUnderlyingValues()
-            => _underlyingValues ??= new {{ut}}[] {
+            => {{CachedAssignment("_underlyingValues")}} new {{ut}}[] {
                 {{GetUnderlyingValues()}}
             };
 
@@ -89,9 +89,9 @@ internal static class EnumClassCode
                 $$"""
 
 
-        private static ({{sn}}, string)[]? _displayNames;
+        {{(op.DisableCache ? null : $"private static ({sn}, string)[]? _displayNames;")}}
         public static ({{sn}}, string)[] GetDisplayNames()
-            => _displayNames ??= new [] {
+            => {{CachedAssignment("_displayNames")}} new [] {
                 {{GetDisplayNames()}}
             };
 """;
@@ -103,12 +103,17 @@ internal static class EnumClassCode
                 $$"""
 
 
-        private static ({{sn}}, string)[]? _descriptions;
+        {{(op.DisableCache ? null : $"private static ({sn}, string)[]? _descriptions;")}}
         public static ({{sn}}, string)[] GetDescriptions()
-            => _descriptions ??= new[] {
+            => {{CachedAssignment("_descriptions")}} new[] {
                 {{GetDescriptions()}}
             };
 """;
+        }
+
+        string CachedAssignment(string name)
+        {
+            return !op.DisableCache ? $"{name} ??=" : string.Empty;
         }
 
         string GetMemberNames()

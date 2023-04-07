@@ -6,9 +6,6 @@ namespace Genbox.EnumSourceGen;
 [global::System.AttributeUsage(AttributeTargets.Enum)]
 public sealed class EnumSourceGenAttribute : global::System.Attribute
 {
-    /// <summary>Use this to control if the static Enums class member and/or enum extension should be generated </summary>
-    public Generate Generate { get; set; }
-
     /// <summary>
     /// Override the name of the extension class. If not provided, the enum name with "Extensions" appended will be used. For example for an Enum called StatusCodes, the default name
     /// will be StatusCodesExtensions
@@ -29,4 +26,7 @@ public sealed class EnumSourceGenAttribute : global::System.Attribute
 
     /// <summary>Enable this to avoid generating the static Enums class that wraps all the enums. Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace across projects</summary>
     public bool DisableEnumsWrapper { get; set; }
+
+    /// <summary>By default arrays from GetValues(), GetNames() etc. is cached. Set this to true to avoid caching.</summary>
+    public bool DisableCache { get; set; }
 }

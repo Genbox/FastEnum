@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.EnumSourceGen;
 
-internal readonly record struct AttributeOptions(Generate Generate, string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride, bool DisableEnumsWrapper);
+internal readonly record struct AttributeOptions(string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride, bool DisableEnumsWrapper, bool DisableCache);
 internal readonly record struct EnumSpec(string Name, string FullName, string FullyQualifiedName, string? Namespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
 internal readonly record struct EnumMember(string Name, object Value, string? DisplayName, string? Description);
 
@@ -38,23 +38,9 @@ public class EnumGenerator : IIncrementalGenerator
 
                 string fqn = es.FullyQualifiedName;
 
-                switch (op.Generate)
-                {
-                    case Generate.ClassAndExtensions:
-                        spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
-                        spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
-                        spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
-                        break;
-                    case Generate.ClassOnly:
-                        spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
-                        spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
-                        break;
-                    case Generate.ExtensionsOnly:
-                        spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
-                        break;
-                    default:
-                        throw new InvalidOperationException($"Value '{op.Generate}' is outside of supported values");
-                }
+                spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
+                spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
+                spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(ExtensionCode.Generate(es, op, sb), Encoding.UTF8));
             }
             catch (Exception e)
             {
@@ -112,8 +98,7 @@ public class EnumGenerator : IIncrementalGenerator
         string? optEnumsNamespace = null;
         string? optEnumNameOverride = null;
         bool optDisableEnumsWrapper = false;
-
-        Generate optGenerate = Generate.ClassAndExtensions;
+        bool optDisableCache = false;
 
         INamedTypeSymbol? flagsAttr = info.FlagsAttr;
         bool hasFlags = false;
@@ -140,9 +125,6 @@ public class EnumGenerator : IIncrementalGenerator
 
                 switch (na.Key)
                 {
-                    case nameof(EnumSourceGenAttribute.Generate):
-                        optGenerate = (Generate)na.Value.Value;
-                        break;
                     case nameof(EnumSourceGenAttribute.ExtensionClassName):
                         optExtensionsName = (string)na.Value.Value;
                         break;
@@ -160,6 +142,9 @@ public class EnumGenerator : IIncrementalGenerator
                         break;
                     case nameof(EnumSourceGenAttribute.DisableEnumsWrapper):
                         optDisableEnumsWrapper = (bool)na.Value.Value;
+                        break;
+                    case nameof(EnumSourceGenAttribute.DisableCache):
+                        optDisableCache = (bool)na.Value.Value;
                         break;
                     default:
                         throw new ArgumentException("BUG: Unsupported value");
@@ -258,7 +243,7 @@ public class EnumGenerator : IIncrementalGenerator
         string fqn = fqnSb.ToString();
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
-        options = new AttributeOptions(optGenerate, optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride, optDisableEnumsWrapper);
+        options = new AttributeOptions(optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride, optDisableEnumsWrapper, optDisableCache);
         enumSpec = new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasDisplay, hasDescription, hasFlags, underlyingType, members);
         return true;
     }
