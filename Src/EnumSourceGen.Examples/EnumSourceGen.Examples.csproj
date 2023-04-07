@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\imports\Examples.props" />
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Genbox.EnumSourceGen" PrivateAssets="all" ExcludeAssets="runtime" />
+    <ProjectReference Remove="..\EnumSourceGen\EnumSourceGen.csproj" />
+    <PackageReference Include="Genbox.EnumSourceGen" />
   </ItemGroup>
 
 </Project>

@@ -3,14 +3,13 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <IsPackable>false</IsPackable>
-    <BaseProject>$(MSBuildProjectName.Replace('.Tests',''))</BaseProject>
   </PropertyGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
     <Using Include="Xunit.Abstractions" />
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverageAttribute" />
-    <ProjectReference Include="..\$(BaseProject)\$(BaseProject).csproj" Condition="Exists('$(MSBuildProjectDirectory)\..\$(BaseProject)\$(BaseProject).csproj')" />
+    <ProjectReference Include="../$(BaseProject)/$(BaseProject).csproj" Condition="Exists('../$(BaseProject)/$(BaseProject).csproj')" />
   </ItemGroup>
 
   <!--packages-->
@@ -22,8 +21,10 @@
 
   <!--analyzers-->
   <ItemGroup>
-<!--    <PackageReference Include="Roslynator.Testing.CSharp.Xunit" PrivateAssets="all" />-->
+    <PackageReference Include="Roslynator.Testing.CSharp.Xunit" PrivateAssets="all" />
     <PackageReference Include="xunit.analyzers" PrivateAssets="all" />
   </ItemGroup>
+
+  <Import Project="../Locals/Tests.props" Condition="Exists('../Locals/Tests.props')" />
 
 </Project>

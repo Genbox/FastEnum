@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="..\..\imports\Tests.props" />
-
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
@@ -11,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Remove="..\EnumSourceGen\EnumSourceGen.csproj" />
     <ProjectReference Include="..\EnumSourceGen\EnumSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 

@@ -22,9 +22,9 @@
       },
       "IDisposableAnalyzers": {
         "type": "Direct",
-        "requested": "[4.0.2, )",
-        "resolved": "4.0.2",
-        "contentHash": "bmfujLOOEKcTULCu8XerA4V5p0WSNFfN4MXMUVMfyvhv0eDcqkdSKgf32nkSOeHQgoNzdDrSG2tTfxZchmRApQ=="
+        "requested": "[4.0.4, )",
+        "resolved": "4.0.4",
+        "contentHash": "z8ifVti6Wa4lp4XEonPrIhxhnOOgEeFuc3BTGqSUB9uhmgAHa5xYTYVTx2mbHnQw0vxRCbxvadFclvf3QSfLwA=="
       },
       "JetBrains.Annotations": {
         "type": "Direct",
@@ -40,9 +40,9 @@
       },
       "Meziantou.Analyzer": {
         "type": "Direct",
-        "requested": "[2.0.19, )",
-        "resolved": "2.0.19",
-        "contentHash": "U47LexxlNfmHcwGZqMkUIitgQg/aA94P7W02ZpcEOHxNz9MkG+keeWKBnh5UPHM7zYoZb8PjxNLoSKei7rD9aA=="
+        "requested": "[2.0.29, )",
+        "resolved": "2.0.29",
+        "contentHash": "/6AjxrA+gzQw8nzXoawHLuxZBojKbImq4MdClbeps8eJ4AC/bXeR4Z8kI5fVlOlQCHPr56SxkKha/NHxImYHFw=="
       },
       "Microsoft.CodeAnalysis.Analyzers": {
         "type": "Direct",
@@ -58,6 +58,12 @@
         "dependencies": {
           "Microsoft.CodeAnalysis.Common": "[4.5.0]"
         }
+      },
+      "Microsoft.CodeAnalysis.PublicApiAnalyzers": {
+        "type": "Direct",
+        "requested": "[3.3.4, )",
+        "resolved": "3.3.4",
+        "contentHash": "kNLTfXtXUWDHVt5iaPkkiPuyHYlMgLI6SOFT4w88bfeI2vqSeGgHunFkdvlaCM8RDfcY0t2+jnesQtidRJJ/DA=="
       },
       "Microsoft.SourceLink.GitHub": {
         "type": "Direct",
@@ -110,9 +116,9 @@
       },
       "SharpSource": {
         "type": "Direct",
-        "requested": "[1.23.0, )",
-        "resolved": "1.23.0",
-        "contentHash": "Z5fQlkZUfohxuXpQscgl95QNefPcOayvXDfL+qcAi2Y8SQw2REaiYnIjRz/K9U99rtestsnyDEjvqli5Nndymw=="
+        "requested": "[1.23.2, )",
+        "resolved": "1.23.2",
+        "contentHash": "nuDClxRHJBLybm8XMxi6Iq1mMQBxTT4REOzfpcx63/99tgZVfrhdlBU2nH04aPLv3KLsFeiv0N4rdslliJxUGg=="
       },
       "SmartAnalyzers.ExceptionAnalyzer": {
         "type": "Direct",
@@ -128,9 +134,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[8.53.0.62665, )",
-        "resolved": "8.53.0.62665",
-        "contentHash": "95zMbdyOocAs7TCvfw+sRMSWMOCYDV6kKkoBW7vO1yY0RZOb3gg6k7ql9EzgWY6tZknBqYg7qWUa2CPoiQkt5w=="
+        "requested": "[8.55.0.65544, )",
+        "resolved": "8.55.0.65544",
+        "contentHash": "YyvIQwnu4lKiYsXPA6/px4rbMqJtql6tiDZRTd9IBG04M0UN1P7QrjxFQhVsnQSabHwgUX/zemUAGn2hamNa8A=="
       },
       "ToStringWithoutOverrideAnalyzer": {
         "type": "Direct",
