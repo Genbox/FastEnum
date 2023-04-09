@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 namespace Genbox.EnumSourceGen.Helpers;
 
@@ -40,12 +40,14 @@ internal static class TransformHelper
             //Input:     [HelloWORLD]
             //Transform: [U_____llll]
             //Output:    [HelloWorld]
-            int minLength = Math.Min(name.Length, advancedTransform.Length);
+
+            if (name.Length != advancedTransform.Length)
+                throw new InvalidOperationException($"The length of your AdvancedTransform template must be as long as the enum value. AdvancedTransform: {advancedTransform} ({advancedTransform.Length}) Enum value: {name} ({name.Length})");
 
             char[] chars = new char[name.Length];
 
             int ptr = 0;
-            for (int i = 0; i < minLength; i++)
+            for (int i = 0; i < name.Length; i++)
             {
                 if (advancedTransform[i] == 'U')
                 {
@@ -64,6 +66,7 @@ internal static class TransformHelper
                     //do nothing
                 }
             }
+
             return new string(chars, 0, ptr);
         }
 
