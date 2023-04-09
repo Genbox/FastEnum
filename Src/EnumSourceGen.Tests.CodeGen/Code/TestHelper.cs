@@ -5,16 +5,11 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
-namespace Genbox.EnumSourceGen.Tests.Code;
+namespace Genbox.EnumSourceGen.Tests.CodeGen.Code;
 
 internal static class TestHelper
 {
     private static string? _headerCache;
-
-    private static string GetHeader()
-    {
-        return _headerCache ??= ReadResource("Genbox.EnumSourceGen.Tests.Resources._Header.dat");
-    }
 
     public static void TestResource<T>(string testName) where T : IIncrementalGenerator, new()
     {
@@ -76,5 +71,10 @@ internal static class TestHelper
             sb.AppendLine(tree.ToString());
 
         return sb.ToString();
+    }
+
+    private static string GetHeader()
+    {
+        return _headerCache ??= ReadResource("Genbox.EnumSourceGen.Tests.CodeGen.Resources._Header.dat");
     }
 }

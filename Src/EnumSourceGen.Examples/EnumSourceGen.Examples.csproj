@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Remove="..\EnumSourceGen\EnumSourceGen.csproj" />
-    <PackageReference Include="Genbox.EnumSourceGen" />
+    <PackageReference Include="Genbox.EnumSourceGen" ExcludeAssets="runtime" />
   </ItemGroup>
 
 </Project>

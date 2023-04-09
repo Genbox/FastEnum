@@ -1,6 +1,6 @@
-using Genbox.EnumSourceGen.Tests.Code;
+using Genbox.EnumSourceGen.Tests.Functionality.Code;
 
-namespace Genbox.EnumSourceGen.Tests;
+namespace Genbox.EnumSourceGen.Tests.Functionality;
 
 public class FunctionalityTests
 {
@@ -101,7 +101,7 @@ public class FunctionalityTests
         //Check if we support span inputs
         ReadOnlySpan<char> span = "first";
         Assert.True(Enums.TestEnum.TryParse(span, out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
-        
+
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
         //Check that we also support parsing display names

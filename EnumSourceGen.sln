@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnumSourceGen", "Src\EnumSo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnumSourceGen.Examples", "Src\EnumSourceGen.Examples\EnumSourceGen.Examples.csproj", "{276D1EB6-57A2-4808-AC3F-DCC14E996C30}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnumSourceGen.Tests", "Src\EnumSourceGen.Tests\EnumSourceGen.Tests.csproj", "{24047F09-FAE0-4920-BFDB-0D8D3064B403}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EnumSourceGen.Tests.CodeGen", "Src\EnumSourceGen.Tests.CodeGen\EnumSourceGen.Tests.CodeGen.csproj", "{24047F09-FAE0-4920-BFDB-0D8D3064B403}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Items", "_Items", "{EF1D19B3-97F1-4504-95AB-BE249F5BF29A}"
 	ProjectSection(SolutionItems) = preProject
@@ -67,6 +67,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{6A21
 		Imports\Tests.props = Imports\Tests.props
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EnumSourceGen.Tests.Functionality", "Src\EnumSourceGen.Tests.Functionality\EnumSourceGen.Tests.Functionality.csproj", "{0AC60E27-303B-4777-8FF5-7B0C86B94E00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,18 @@ Global
 		{58EFED35-F40A-48C6-9138-EACC2848B43D}.Release|x64.Build.0 = Release|Any CPU
 		{58EFED35-F40A-48C6-9138-EACC2848B43D}.Release|x86.ActiveCfg = Release|Any CPU
 		{58EFED35-F40A-48C6-9138-EACC2848B43D}.Release|x86.Build.0 = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|x64.Build.0 = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Debug|x86.Build.0 = Debug|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|x64.ActiveCfg = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|x64.Build.0 = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|x86.ActiveCfg = Release|Any CPU
+		{0AC60E27-303B-4777-8FF5-7B0C86B94E00}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

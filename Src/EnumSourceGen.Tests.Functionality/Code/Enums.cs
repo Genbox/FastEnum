@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Genbox.EnumSourceGen.Tests.Code
+namespace Genbox.EnumSourceGen.Tests.Functionality.Code
 {
     [EnumSourceGen]
     public enum NonFlagsEnum : ulong
@@ -23,7 +23,7 @@ namespace Genbox.EnumSourceGen.Tests.Code
     }
 }
 
-namespace Genbox.EnumSourceGen.Tests.Code2
+namespace Genbox.EnumSourceGen.Tests.Functionality.OtherNamespace
 {
     [EnumSourceGen]
     public enum TestEnum

@@ -1,6 +1,6 @@
-﻿using Genbox.EnumSourceGen.Tests.Code;
+﻿using Genbox.EnumSourceGen.Tests.CodeGen.Code;
 
-namespace Genbox.EnumSourceGen.Tests;
+namespace Genbox.EnumSourceGen.Tests.CodeGen;
 
 /// <summary>
 /// The tests in this class used to produce diagnostic errors. They should no longer do that, or it is a regression.

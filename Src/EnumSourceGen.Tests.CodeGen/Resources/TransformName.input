@@ -1,0 +1,23 @@
+//This tests if the transforms are being used. Also test if OmitExclude works.
+
+[EnumSourceGen]
+internal enum MyEnum
+{
+    [EnumConfig(Omit = true)]
+    Omit = 0,
+
+    [EnumConfig(Omit = true, OmitExclude = EnumOmitExclude.GetString)]
+    OmitWithFilter,
+
+    [EnumConfig(NameOverride = "NotFirst")]
+    First,
+
+    [EnumConfig(SimpleTransform = EnumTransform.UpperCase)]
+    Second,
+
+    [EnumConfig(AdvancedTransform = "LUUUU")]
+    Third,
+
+    [EnumConfig(AdvancedTransform = "/^../Something/")]
+    Other
+}
