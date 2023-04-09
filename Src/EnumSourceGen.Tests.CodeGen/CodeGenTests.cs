@@ -21,7 +21,7 @@ public class CodeGenTests
         string inputSource = ReadResource(testName);
         string actual = GetGeneratedOutput<EnumGenerator>(inputSource).ReplaceLineEndings("\n");
 
-        File.WriteAllText(@"..\..\..\Resources\" + Path.ChangeExtension(testName.Substring(37), ".output"), actual);
+        File.WriteAllText(@"..\..\..\Resources\" + Path.ChangeExtension(testName.Substring(45), ".output"), actual);
     }
 
     public static IEnumerable<object[]> GetTests()

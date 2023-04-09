@@ -193,11 +193,12 @@ internal static partial class MyEnumExtensions
     public static string GetString(this MyEnum value)
         => value switch
         {
+            MyEnum.Omit => string.Empty,
             MyEnum.OmitWithFilter => "OmitWithFilter",
-            MyEnum.First => "First",
-            MyEnum.Second => "Second",
-            MyEnum.Third => "Third",
-            MyEnum.Other => "Other",
+            MyEnum.First => "NotFirst",
+            MyEnum.Second => "SECOND",
+            MyEnum.Third => "tHIRD",
+            MyEnum.Other => "Somethingher",
             _ => value.ToString()
         };
 
