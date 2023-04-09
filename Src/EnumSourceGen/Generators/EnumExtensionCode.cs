@@ -1,4 +1,5 @@
 using System.Text;
+using Genbox.EnumSourceGen.Helpers;
 
 namespace Genbox.EnumSourceGen.Generators;
 
@@ -117,9 +118,14 @@ using System.Diagnostics.CodeAnalysis;
                 EnumMember enumMember = es.Members[i];
 
                 if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetString))
+                {
+                    sb.Append(sn).Append('.').Append(enumMember.Name).Append(" => string.Empty,\n            ");
                     continue;
+                }
 
-                sb.Append(sn).Append('.').Append(enumMember.Name).Append(" => \"").Append(enumMember.Name).Append("\",\n            ");
+                string transformed = TransformHelper.TransformName(enumMember);
+
+                sb.Append(sn).Append('.').Append(enumMember.Name).Append(" => \"").Append(transformed).Append("\",\n            ");
             }
 
             return sb.ToString().TrimEnd();

@@ -1,9 +1,11 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace Genbox.EnumSourceGen.Helpers;
 
 internal static class TransformHelper
 {
+    public static string TransformName(EnumMember enumMember) => TransformName(enumMember.Name, enumMember.NameOverride, enumMember.SimpleTransform, enumMember.AdvancedTransform);
+
     public static string TransformName(string name, string? nameOverride, EnumTransform? simpleTransform, string? advancedTransform)
     {
         if (nameOverride != null)

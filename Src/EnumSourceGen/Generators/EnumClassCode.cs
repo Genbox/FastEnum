@@ -125,7 +125,7 @@ internal static class EnumClassCode
                 if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetMemberNames))
                     continue;
 
-                string name = TransformHelper.TransformName(enumMember.Name, enumMember.NameOverride, enumMember.SimpleTransform, enumMember.AdvancedTransform);
+                string name = TransformHelper.TransformName(enumMember);
                 sb.Append('"').Append(name).Append("\",\n").Append(Indent(4));
             }
 
