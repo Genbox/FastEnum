@@ -4,9 +4,9 @@
     "net7.0": {
       "Genbox.EnumSourceGen": {
         "type": "Direct",
-        "requested": "[1.0.0-alpha.6, )",
-        "resolved": "1.0.0-alpha.6",
-        "contentHash": "82kBb6awnCSLoalanL9tLJFSzm2pgbmdK/kG54ZZWx9EtJUjqKL+k7tp3YJLexY4GZa4eCPR+HjElnc/UeAJXw=="
+        "requested": "[1.0.0-alpha.7, )",
+        "resolved": "1.0.0-alpha.7",
+        "contentHash": "JRBZQGmd0WHkdYcqGJX8Jx9TOx0LKMi8n2hm657nMxqHu+/bRxfdl9+BrZC67Nnbs09O+vJpmP5o/vR2H8ciYg=="
       }
     }
   }

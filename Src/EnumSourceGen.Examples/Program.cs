@@ -1,54 +1,78 @@
 using System.ComponentModel.DataAnnotations;
+using static Genbox.EnumSourceGen.Examples.Utilities;
 
 namespace Genbox.EnumSourceGen.Examples;
 
 internal static class Program
 {
-    private static void Main(string[] args)
+    private static void Main()
     {
-        TestEnum e = TestEnum.Value1;
+        EnumExtensions();
+        EnumClass();
+        Transforms();
+    }
+
+    private static void EnumExtensions()
+    {
+        PrintHeader("Enum Extensions");
+
+        MyEnum e = MyEnum.Value1;
 
         //Extensions
         Console.WriteLine("String value: " + e.GetString());
         Console.WriteLine("Underlying value: " + e.GetUnderlyingValue());
         Console.WriteLine("Display name: " + e.GetDisplayName());
         Console.WriteLine("Description: " + e.GetDescription());
-        Console.WriteLine("Has Value1 flag: " + e.IsFlagSet(TestEnum.Value1));
-
-        //Enums
-        Console.WriteLine("Number of members: " + Enums.TestEnum.MemberCount);
-        Console.WriteLine("Is it a flags enum: " + Enums.TestEnum.IsFlagEnum);
-
-        Console.WriteLine("Parse: " + Enums.TestEnum.Parse("Value1"));
-        Console.WriteLine("TryParse success: " + Enums.TestEnum.TryParse("value1", out TestEnum val, TestEnumFormat.Default, StringComparison.OrdinalIgnoreCase) + " value: " + val);
-        Console.WriteLine("Is Value1 part of the enum: " + Enums.TestEnum.IsDefined(TestEnum.Value1));
-        Console.WriteLine("Is 42 part of the enum: " + Enums.TestEnum.IsDefined((TestEnum)42));
-
-        PrintArray("Member names:", Enums.TestEnum.GetMemberNames());
-        PrintArray("Member values:", Enums.TestEnum.GetMemberValues());
-        PrintArray("Underlying values:", Enums.TestEnum.GetUnderlyingValues());
-        PrintArray("Display names:", Enums.TestEnum.GetDisplayNames());
-        PrintArray("Descriptions:", Enums.TestEnum.GetDescriptions());
+        Console.WriteLine("Has Value1 flag: " + e.IsFlagSet(MyEnum.Value1));
     }
 
-    private static void PrintArray<T>(string title, IEnumerable<T> arr)
+    private static void EnumClass()
     {
-        Console.WriteLine(title);
+        PrintHeader("Enum Class");
 
-        foreach (T a in arr)
-            Console.WriteLine("- " + a);
+        //Enums
+        Console.WriteLine("Number of members: " + Enums.MyEnum.MemberCount);
+        Console.WriteLine("Is it a flags enum: " + Enums.MyEnum.IsFlagEnum);
+
+        Console.WriteLine("Parse: " + Enums.MyEnum.Parse("Value1"));
+        Console.WriteLine("TryParse success: " + Enums.MyEnum.TryParse("value1", out MyEnum val, MyEnumFormat.Default, StringComparison.OrdinalIgnoreCase) + " value: " + val);
+        Console.WriteLine("Is Value1 part of the enum: " + Enums.MyEnum.IsDefined(MyEnum.Value1));
+        Console.WriteLine("Is 42 part of the enum: " + Enums.MyEnum.IsDefined((MyEnum)42));
+
+        PrintArray("Member names:", Enums.MyEnum.GetMemberNames());
+        PrintArray("Member values:", Enums.MyEnum.GetMemberValues());
+        PrintArray("Underlying values:", Enums.MyEnum.GetUnderlyingValues());
+        PrintArray("Display names:", Enums.MyEnum.GetDisplayNames());
+        PrintArray("Descriptions:", Enums.MyEnum.GetDescriptions());
+    }
+
+    private static void Transforms()
+    {
+        PrintHeader("Transforms");
+
+        PrintArray("Transformed names:", Enums.MyEnumWithTransforms.GetMemberNames());
     }
 
     [EnumSourceGen]
     [Flags]
-    internal enum TestEnum : byte
+    internal enum MyEnum
     {
         [Display(Name = "Value1Name", Description = "Value1Description")]
         Value1 = 0,
-        [Display(Name = "DisplayNameForValue2")]
-        Value2 = 1,
-        [Display(Description = "Description for Value3")]
-        Value3 = 2,
-        Value4 = 4
+        [EnumConfig(Omit = true)]
+        DontShowMe
+    }
+
+    [EnumSourceGen]
+    internal enum MyEnumWithTransforms
+    {
+        [EnumConfig(SimpleTransform = EnumTransform.UpperCase)]
+        imuppercase,
+        [EnumConfig(AdvancedTransform = "_LU_____U_U________")]
+        MYcasingiscorrected,
+        [EnumConfig(AdvancedTransform = "/^/Very/")]
+        SimpleReplacement,
+        [EnumConfig(Omit = true)]
+        DontShowMe
     }
 }
