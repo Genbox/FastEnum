@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Helpers;
 using Genbox.EnumSourceGen.Misc;
 using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
@@ -8,9 +9,11 @@ namespace Genbox.EnumSourceGen.Generators;
 
 internal static class EnumClassCode
 {
-    internal static string Generate(EnumSpec es, AttributeOptions op, StringBuilder sb)
+    internal static string Generate(EnumSpec es, StringBuilder sb)
     {
         sb.Clear();
+
+        EnumSourceGenData op = es.SourceGenData;
 
         string? ns = op.EnumsClassNamespace ?? es.Namespace;
         string cn = op.EnumNameOverride ?? es.Name;
@@ -18,7 +21,7 @@ internal static class EnumClassCode
         string sn = es.FullyQualifiedName; //We always use FQN. The class name is the same as the enum name
         string vi = es.IsPublic ? "public" : "internal";
         string ut = es.UnderlyingType;
-        string mc = (es.Members.Count - es.Members.Count(x => x.Omit)).ToString(NumberFormatInfo.InvariantInfo);
+        string mc = (es.Members.Count - es.Members.Count(x => x.OmitValueData != null)).ToString(NumberFormatInfo.InvariantInfo);
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
 
         string res = $$"""
@@ -81,7 +84,7 @@ internal static class EnumClassCode
             return result;
         }
 
-        public static bool IsDefined({{sn}} input) => {{IsDefined(es, ut, sn)}};
+        public static bool IsDefined({{sn}} input) => {{IsDefined()}};
 """;
 
         if (es.HasDisplay)
@@ -118,14 +121,12 @@ internal static class EnumClassCode
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetMemberNames))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetMemberNames))
                     continue;
 
-                string name = TransformHelper.TransformName(enumMember);
+                string name = TransformHelper.TransformName(em);
                 sb.Append('"').Append(name).Append("\",\n").Append(Indent(4));
             }
 
@@ -136,14 +137,12 @@ internal static class EnumClassCode
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetMemberValues))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetMemberValues))
                     continue;
 
-                sb.Append(sn).Append('.').Append(enumMember.Name).Append(",\n").Append(Indent(4));
+                sb.Append(sn).Append('.').Append(em.Name).Append(",\n").Append(Indent(4));
             }
 
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
@@ -153,14 +152,12 @@ internal static class EnumClassCode
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetUnderlyingValue))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues))
                     continue;
 
-                sb.Append(enumMember.Value).Append(",\n").Append(Indent(4));
+                sb.Append(em.Value).Append(",\n").Append(Indent(4));
             }
 
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
@@ -178,16 +175,16 @@ internal static class EnumClassCode
 
             for (int i = 0; i < es.Members.Count; i++)
             {
-                EnumMember enumMember = es.Members[i];
+                EnumMember em = es.Members[i];
 
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.Parse))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
                     continue;
 
                 sb.Append($$"""
 
-                if (value.Equals("{{enumMember.Name}}", comparison))
+                if (value.Equals("{{em.Name}}", comparison))
                 {
-                    result = {{sn}}.{{enumMember.Name}};
+                    result = {{sn}}.{{em.Name}};
                     return true;
                 }
 """);
@@ -206,16 +203,16 @@ internal static class EnumClassCode
 
             for (int i = 0; i < es.Members.Count; i++)
             {
-                EnumMember enumMember = es.Members[i];
+                EnumMember em = es.Members[i];
 
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.Parse))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
                     continue;
 
                 sb.Append($$"""
 
-                if (value.Equals("{{enumMember.Value}}", comparison))
+                if (value.Equals("{{em.Value}}", comparison))
                 {
-                    result = {{sn}}.{{enumMember.Name}};
+                    result = {{sn}}.{{em.Name}};
                     return true;
                 }
 """);
@@ -236,18 +233,18 @@ internal static class EnumClassCode
 
                 for (int i = 0; i < es.Members.Count; i++)
                 {
-                    EnumMember enumMember = es.Members[i];
+                    EnumMember em = es.Members[i];
 
-                    if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.Parse))
+                    if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
                         continue;
 
-                    if (enumMember.DisplayName != null)
+                    if (em.DisplayData?.Name != null)
                     {
                         sb.Append($$"""
 
-                if (value.Equals("{{enumMember.DisplayName}}", comparison))
+                if (value.Equals("{{em.DisplayData.Name}}", comparison))
                 {
-                    result = {{sn}}.{{enumMember.Name}};
+                    result = {{sn}}.{{em.Name}};
                     return true;
                 }
 """);
@@ -269,18 +266,18 @@ internal static class EnumClassCode
 
                 for (int i = 0; i < es.Members.Count; i++)
                 {
-                    EnumMember enumMember = es.Members[i];
+                    EnumMember em = es.Members[i];
 
-                    if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.Parse))
+                    if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
                         continue;
 
-                    if (enumMember.Description != null)
+                    if (em.DisplayData?.Description != null)
                     {
                         sb.Append($$"""
 
-                if (value.Equals("{{enumMember.Description}}", comparison))
+                if (value.Equals("{{em.DisplayData.Description}}", comparison))
                 {
-                    result = {{sn}}.{{enumMember.Name}};
+                    result = {{sn}}.{{em.Name}};
                     return true;
                 }
 """);
@@ -300,17 +297,15 @@ internal static class EnumClassCode
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetDisplayName))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName))
                     continue;
 
-                if (enumMember.DisplayName == null)
+                if (em.DisplayData?.Name == null)
                     continue;
 
-                sb.Append('(').Append(sn).Append('.').Append(enumMember.Name).Append(", \"").Append(enumMember.DisplayName).Append("\"),\n").Append(Indent(4));
+                sb.Append('(').Append(sn).Append('.').Append(em.Name).Append(", \"").Append(em.DisplayData.Name).Append("\"),\n").Append(Indent(4));
             }
 
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
@@ -320,35 +315,33 @@ internal static class EnumClassCode
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetDescription))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDescription))
                     continue;
 
-                if (enumMember.Description == null)
+                if (em.DisplayData?.Description == null)
                     continue;
 
-                sb.Append('(').Append(sn).Append('.').Append(enumMember.Name).Append(", \"").Append(enumMember.Description).Append("\"),\n").Append(Indent(4));
+                sb.Append('(').Append(sn).Append('.').Append(em.Name).Append(", \"").Append(em.DisplayData.Description).Append("\"),\n").Append(Indent(4));
             }
 
             return sb.ToString().TrimEnd(CodeConstants.TrimChars);
         }
 
-        string IsDefined(EnumSpec spec, string underlyingType, string symbolName)
+        string IsDefined()
         {
-            if (spec.Members.Count == 0)
+            if (es.Members.Count == 0)
                 return "false";
 
             ulong value = 0;
 
-            foreach (EnumMember enumMember in spec.Members)
+            foreach (EnumMember em in es.Members)
             {
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.IsDefined))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.IsDefined))
                     continue;
 
-                string strVal = enumMember.Value.ToString();
+                string strVal = em.Value.ToString();
 
                 if (strVal.StartsWith("-", StringComparison.Ordinal))
                     value |= unchecked((ulong)long.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
@@ -357,12 +350,12 @@ internal static class EnumClassCode
             }
 
             if (value == 0)
-                return $"0 == ({underlyingType})input";
+                return $"0 == ({ut})input";
 
-            if (spec.HasFlags)
-                return $"unchecked((({underlyingType}){value}UL & ({underlyingType})input) == ({underlyingType})input)";
-            else
-                return $"Enum.IsDefined(typeof({symbolName}), input)";
+            if (es.HasFlags)
+                return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
+
+            return $"Enum.IsDefined(typeof({sn}), input)";
         }
 
         res += "\n    }";

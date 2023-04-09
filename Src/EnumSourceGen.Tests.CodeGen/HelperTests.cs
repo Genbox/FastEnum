@@ -16,7 +16,7 @@ public class HelperTests
     [InlineData("HelloWorld", "HiWorld", null, null, "/^...../Hi/")]
     public void TransformHelperTest(string input, string expected, string nameOverride, EnumTransform? simpleTransform, string? advancedTransform)
     {
-        string actual = TransformHelper.TransformName(input, nameOverride, simpleTransform, advancedTransform);
+        string actual = TransformHelper.TransformName(input, nameOverride, simpleTransform ?? EnumTransform.None, advancedTransform);
         Assert.Equal(expected, actual);
     }
 }

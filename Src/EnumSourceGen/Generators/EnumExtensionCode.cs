@@ -1,17 +1,20 @@
 using System.Text;
+using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Helpers;
 
 namespace Genbox.EnumSourceGen.Generators;
 
 internal static class EnumExtensionCode
 {
-    public static string Generate(EnumSpec es, AttributeOptions op, StringBuilder sb)
+    public static string Generate(EnumSpec es, StringBuilder sb)
     {
         sb.Clear();
 
-        string? ns = op.ExtensionsNamespace ?? es.Namespace;
+        EnumSourceGenData op = es.SourceGenData;
+
+        string? ns = op.ExtensionClassNamespace ?? es.Namespace;
         string cn = op.EnumNameOverride ?? es.Name;
-        string en = op.ExtensionsName ?? cn + "Extensions";
+        string en = op.ExtensionClassName ?? cn + "Extensions";
         string sn = es.FullyQualifiedName;
         string vi = es.IsPublic ? "public" : "internal";
         string ut = es.UnderlyingType;
@@ -113,19 +116,17 @@ using System.Diagnostics.CodeAnalysis;
         {
             sb.Clear();
 
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember enumMember = es.Members[i];
-
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetString))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetString))
                 {
-                    sb.Append(sn).Append('.').Append(enumMember.Name).Append(" => string.Empty,\n            ");
+                    sb.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,\n            ");
                     continue;
                 }
 
-                string transformed = TransformHelper.TransformName(enumMember);
+                string transformed = TransformHelper.TransformName(em);
 
-                sb.Append(sn).Append('.').Append(enumMember.Name).Append(" => \"").Append(transformed).Append("\",\n            ");
+                sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(transformed).Append("\",\n            ");
             }
 
             return sb.ToString().TrimEnd();
@@ -137,14 +138,14 @@ using System.Diagnostics.CodeAnalysis;
 
             for (int i = 0; i < es.Members.Count; i++)
             {
-                EnumMember enumMember = es.Members[i];
+                EnumMember em = es.Members[i];
 
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetUnderlyingValue))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue))
                     continue;
 
                 sb.Append($$"""
-            case {{sn}}.{{enumMember.Name}}:
-                underlyingValue = {{enumMember.Value}};
+            case {{sn}}.{{em.Name}}:
+                underlyingValue = {{em.Value}};
                 return true;
 """);
 
@@ -161,17 +162,17 @@ using System.Diagnostics.CodeAnalysis;
 
             for (int i = 0; i < es.Members.Count; i++)
             {
-                EnumMember enumMember = es.Members[i];
+                EnumMember em = es.Members[i];
 
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetDisplayName))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName))
                     continue;
 
-                if (enumMember.DisplayName == null)
+                if (em.DisplayData?.Name == null)
                     continue;
 
                 sb.Append($$"""
-            case {{sn}}.{{enumMember.Name}}:
-                displayName = "{{enumMember.DisplayName}}";
+            case {{sn}}.{{em.Name}}:
+                displayName = "{{em.DisplayData.Name}}";
                 return true;
 """);
 
@@ -188,17 +189,17 @@ using System.Diagnostics.CodeAnalysis;
 
             for (int i = 0; i < es.Members.Count; i++)
             {
-                EnumMember enumMember = es.Members[i];
+                EnumMember em = es.Members[i];
 
-                if (enumMember.Omit && !enumMember.OmitFiler.HasFlag(EnumOmitExclude.GetDescription))
+                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDescription))
                     continue;
 
-                if (enumMember.Description == null)
+                if (em.DisplayData?.Description == null)
                     continue;
 
                 sb.Append($$"""
-            case {{sn}}.{{enumMember.Name}}:
-                description = "{{enumMember.Description}}";
+            case {{sn}}.{{em.Name}}:
+                description = "{{em.DisplayData.Description}}";
                 return true;
 """);
 

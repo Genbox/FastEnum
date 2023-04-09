@@ -15,34 +15,25 @@ public static partial class Enums
 {
     internal static partial class MyEnum
     {
-        public const int MemberCount = 4;
+        public const int MemberCount = 1;
         public const bool IsFlagEnum = false;
 
         private static string[]? _names;
         public static string[] GetMemberNames()
             => _names ??= new[] {
-                "NotFirst",
-                "SECOND",
-                "tHIRD",
-                "Somethingher"
+                "Value"
             };
 
         private static MyEnum[]? _values;
         public static MyEnum[] GetMemberValues()
             => _values ??= new[] {
-                MyEnum.First,
-                MyEnum.Second,
-                MyEnum.Third,
-                MyEnum.Other
+                MyEnum.Value
             };
 
         private static Int32[]? _underlyingValues;
         public static Int32[] GetUnderlyingValues()
             => _underlyingValues ??= new Int32[] {
-                0,
-                1,
-                2,
-                3
+                0
             };
 
         public static bool TryParse(string value, out MyEnum result, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
@@ -50,55 +41,21 @@ public static partial class Enums
 
             if (format.HasFlag(MyEnumFormat.Name))
             {
-                if (value.Equals("First", comparison))
+                if (value.Equals("Value", comparison))
                 {
-                    result = MyEnum.First;
+                    result = MyEnum.Value;
                     return true;
                 }
 
-                if (value.Equals("Second", comparison))
-                {
-                    result = MyEnum.Second;
-                    return true;
-                }
-
-                if (value.Equals("Third", comparison))
-                {
-                    result = MyEnum.Third;
-                    return true;
-                }
-
-                if (value.Equals("Other", comparison))
-                {
-                    result = MyEnum.Other;
-                    return true;
-                }
             }
             if (format.HasFlag(MyEnumFormat.Value))
             {
                 if (value.Equals("0", comparison))
                 {
-                    result = MyEnum.First;
+                    result = MyEnum.Value;
                     return true;
                 }
 
-                if (value.Equals("1", comparison))
-                {
-                    result = MyEnum.Second;
-                    return true;
-                }
-
-                if (value.Equals("2", comparison))
-                {
-                    result = MyEnum.Third;
-                    return true;
-                }
-
-                if (value.Equals("3", comparison))
-                {
-                    result = MyEnum.Other;
-                    return true;
-                }
             }
 
             result = default;
@@ -110,55 +67,21 @@ public static partial class Enums
 
             if (format.HasFlag(MyEnumFormat.Name))
             {
-                if (value.Equals("First", comparison))
+                if (value.Equals("Value", comparison))
                 {
-                    result = MyEnum.First;
+                    result = MyEnum.Value;
                     return true;
                 }
 
-                if (value.Equals("Second", comparison))
-                {
-                    result = MyEnum.Second;
-                    return true;
-                }
-
-                if (value.Equals("Third", comparison))
-                {
-                    result = MyEnum.Third;
-                    return true;
-                }
-
-                if (value.Equals("Other", comparison))
-                {
-                    result = MyEnum.Other;
-                    return true;
-                }
             }
             if (format.HasFlag(MyEnumFormat.Value))
             {
                 if (value.Equals("0", comparison))
                 {
-                    result = MyEnum.First;
+                    result = MyEnum.Value;
                     return true;
                 }
 
-                if (value.Equals("1", comparison))
-                {
-                    result = MyEnum.Second;
-                    return true;
-                }
-
-                if (value.Equals("2", comparison))
-                {
-                    result = MyEnum.Third;
-                    return true;
-                }
-
-                if (value.Equals("3", comparison))
-                {
-                    result = MyEnum.Other;
-                    return true;
-                }
             }
 
             result = default;
@@ -181,7 +104,7 @@ public static partial class Enums
             return result;
         }
 
-        public static bool IsDefined(MyEnum input) => Enum.IsDefined(typeof(MyEnum), input);
+        public static bool IsDefined(MyEnum input) => 0 == (Int32)input;
     }
 }
 // <auto-generated />
@@ -193,10 +116,9 @@ internal static partial class MyEnumExtensions
     public static string GetString(this MyEnum value)
         => value switch
         {
-            MyEnum.First => "NotFirst",
-            MyEnum.Second => "SECOND",
-            MyEnum.Third => "tHIRD",
-            MyEnum.Other => "Somethingher",
+            MyEnum.Value => "Value",
+            MyEnum.Omit => string.Empty,
+            MyEnum.OmitWithFilter => "OmitWithFilter",
             _ => value.ToString()
         };
 
@@ -204,18 +126,10 @@ internal static partial class MyEnumExtensions
     {
         switch (value)
         {
-            case MyEnum.First:
+            case MyEnum.Value:
                 underlyingValue = 0;
                 return true;
-            case MyEnum.Second:
-                underlyingValue = 1;
-                return true;
-            case MyEnum.Third:
-                underlyingValue = 2;
-                return true;
-            case MyEnum.Other:
-                underlyingValue = 3;
-                return true;
+
         }
         underlyingValue = default;
         return false;

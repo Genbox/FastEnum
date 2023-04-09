@@ -1,28 +1,34 @@
 using System.Collections.Immutable;
 using System.Text;
+using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Generators;
+using Genbox.EnumSourceGen.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.EnumSourceGen;
 
-internal readonly record struct AttributeOptions(string? EnumsClassName, string? EnumsClassNamespace, string? ExtensionsName, string? ExtensionsNamespace, string? EnumNameOverride, bool DisableEnumsWrapper, bool DisableCache);
-internal readonly record struct EnumSpec(string Name, string FullName, string FullyQualifiedName, string? Namespace, bool IsPublic, bool HasDisplay, bool HasDescription, bool HasFlags, string UnderlyingType, List<EnumMember> Members);
-internal readonly record struct EnumMember(string Name, object Value, string? DisplayName, string? Description, bool Omit, EnumOmitExclude OmitFiler, string? NameOverride, EnumTransform? SimpleTransform, string? AdvancedTransform);
-
 [Generator]
 public class EnumGenerator : IIncrementalGenerator
 {
     private const string DisplayAttribute = "System.ComponentModel.DataAnnotations.DisplayAttribute";
     private const string FlagsAttribute = "System.FlagsAttribute";
-    private const string SourceGenAttribute = "Genbox.EnumSourceGen." + nameof(EnumSourceGenAttribute);
-    private const string TransformAttribute = "Genbox.EnumSourceGen." + nameof(EnumConfigAttribute);
+    private const string EnumSourceGenAttr = "Genbox.EnumSourceGen." + nameof(EnumSourceGenAttribute);
+    private const string EnumTransformAttr = "Genbox.EnumSourceGen." + nameof(EnumTransformAttribute);
+    private const string EnumTransformValueAttr = "Genbox.EnumSourceGen." + nameof(EnumTransformValueAttribute);
+    private const string EnumOmitValueAttr = "Genbox.EnumSourceGen." + nameof(EnumOmitValueAttribute);
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<CompilationInfo> cp = context.CompilationProvider
-                                                              .Select(static (c, _) => new CompilationInfo(c.GetTypeByMetadataName(SourceGenAttribute), c.GetTypeByMetadataName(DisplayAttribute), c.GetTypeByMetadataName(FlagsAttribute), c.GetTypeByMetadataName(TransformAttribute)));
+                                                              .Select(static (c, _) => new CompilationInfo(
+                                                                  c.GetTypeByMetadataName(EnumSourceGenAttr),
+                                                                  c.GetTypeByMetadataName(DisplayAttribute),
+                                                                  c.GetTypeByMetadataName(FlagsAttribute),
+                                                                  c.GetTypeByMetadataName(EnumTransformAttr),
+                                                                  c.GetTypeByMetadataName(EnumTransformValueAttr),
+                                                                  c.GetTypeByMetadataName(EnumOmitValueAttr)));
 
         IncrementalValuesProvider<ISymbol> sp = context.SyntaxProvider
                                                        .CreateSyntaxProvider(Predicate, Transform)
@@ -30,7 +36,10 @@ public class EnumGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
         {
-            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec es, out AttributeOptions op))
+            if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec? es))
+                return;
+
+            if (es == null)
                 return;
 
             try
@@ -39,9 +48,9 @@ public class EnumGenerator : IIncrementalGenerator
 
                 string fqn = es.FullyQualifiedName;
 
-                spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es, op, sb), Encoding.UTF8));
-                spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, op, sb), Encoding.UTF8));
-                spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(EnumExtensionCode.Generate(es, op, sb), Encoding.UTF8));
+                spc.AddSource(fqn + "_EnumFormat.g.cs", SourceText.From(EnumFormatCode.Generate(es), Encoding.UTF8));
+                spc.AddSource(fqn + "_Enums.g.cs", SourceText.From(EnumClassCode.Generate(es, sb), Encoding.UTF8));
+                spc.AddSource(fqn + "_Extensions.g.cs", SourceText.From(EnumExtensionCode.Generate(es, sb), Encoding.UTF8));
             }
             catch (Exception e)
             {
@@ -57,21 +66,18 @@ public class EnumGenerator : IIncrementalGenerator
     {
         EnumDeclarationSyntax syntax = (EnumDeclarationSyntax)context.Node;
 
-        for (int i = 0; i < syntax.AttributeLists.Count; i++)
+        foreach (AttributeListSyntax attrList in syntax.AttributeLists)
         {
-            AttributeListSyntax list = syntax.AttributeLists[i];
-
-            for (int j = 0; j < list.Attributes.Count; j++)
+            foreach (AttributeSyntax attrSyntax in attrList.Attributes)
             {
-                SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(list.Attributes[j], token);
+                SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(attrSyntax, token);
 
                 if (symbolInfo.Symbol == null)
                     throw new InvalidCastException("BUG");
 
-                INamedTypeSymbol ns = symbolInfo.Symbol.ContainingType;
-                string fullName = ns.ToDisplayString();
+                string fullName = symbolInfo.Symbol.ContainingType.ToDisplayString();
 
-                if (string.Equals(fullName, SourceGenAttribute, StringComparison.Ordinal))
+                if (string.Equals(fullName, EnumSourceGenAttr, StringComparison.Ordinal))
                     return context.SemanticModel.GetDeclaredSymbol(syntax, token);
             }
         }
@@ -80,161 +86,78 @@ public class EnumGenerator : IIncrementalGenerator
         return null;
     }
 
-    private static bool TryGetTypesToGenerate(CompilationInfo info, ISymbol? symbol, out EnumSpec enumSpec, out AttributeOptions options)
+    private static bool TryGetTypesToGenerate(CompilationInfo info, ISymbol? symbol, out EnumSpec? enumSpec)
     {
         // nothing to do if this type isn't available
         if (info.EnumAttr == null)
         {
-            enumSpec = default;
-            options = default;
+            enumSpec = null;
             return false;
         }
 
         if (symbol is not INamedTypeSymbol enumSymbol)
             throw new InvalidOperationException("BUG");
 
-        string? optExtensionsName = null;
-        string? optExtensionsNamespace = null;
-        string? optEnumsName = null;
-        string? optEnumsNamespace = null;
-        string? optEnumNameOverride = null;
-        bool optDisableEnumsWrapper = false;
-        bool optDisableCache = false;
-
+        INamedTypeSymbol? enumAttr = info.EnumAttr;
         INamedTypeSymbol? flagsAttr = info.FlagsAttr;
+        INamedTypeSymbol? transformAttr = info.TransformAttr;
+
         bool hasFlags = false;
+        EnumSourceGenData? enumSourceGenData = null;
+        EnumTransformData? enumTransformData = null;
 
-        ImmutableArray<AttributeData> attr = enumSymbol.GetAttributes();
-
-        for (int i = 0; i < attr.Length; i++)
+        foreach (AttributeData ad in enumSymbol.GetAttributes())
         {
-            AttributeData ad = attr[i];
-
-            //Check if the attribute is the FlagsAttribute
-            if (flagsAttr != null && flagsAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
-            {
+            if (enumAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
+                enumSourceGenData = TypeHelper.MapData<EnumSourceGenData>(ad.NamedArguments);
+            else if (flagsAttr != null && flagsAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
                 hasFlags = true;
-                continue;
-            }
-
-            for (int j = 0; j < ad.NamedArguments.Length; j++)
-            {
-                KeyValuePair<string, TypedConstant> na = ad.NamedArguments[j];
-
-                if (na.Value.Value == null)
-                    continue;
-
-                switch (na.Key)
-                {
-                    case nameof(EnumSourceGenAttribute.ExtensionClassName):
-                        optExtensionsName = (string)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.ExtensionClassNamespace):
-                        optExtensionsNamespace = (string?)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.EnumsClassName):
-                        optEnumsName = (string)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.EnumsClassNamespace):
-                        optEnumsNamespace = (string)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.EnumNameOverride):
-                        optEnumNameOverride = (string)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.DisableEnumsWrapper):
-                        optDisableEnumsWrapper = (bool)na.Value.Value;
-                        break;
-                    case nameof(EnumSourceGenAttribute.DisableCache):
-                        optDisableCache = (bool)na.Value.Value;
-                        break;
-                    default:
-                        throw new ArgumentException("BUG: Unsupported value");
-                }
-            }
+            else if (transformAttr != null && transformAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
+                enumTransformData = TypeHelper.MapData<EnumTransformData>(ad.NamedArguments);
         }
+
+        if (enumSourceGenData == null)
+            throw new InvalidCastException("Was unable to read attribute data");
 
         //Now we read attributes applied to members of the enum
         ImmutableArray<ISymbol> enumMembers = enumSymbol.GetMembers();
         List<EnumMember> members = new List<EnumMember>(enumMembers.Length);
 
         INamedTypeSymbol? displayAttr = info.DisplayAttr;
-        INamedTypeSymbol? transformAttr = info.Transform1Attr;
+        INamedTypeSymbol? transformValueAttr = info.TransformValueAttr;
+        INamedTypeSymbol? omitAttr = info.OmitAttr;
 
-        bool hasDisplay = false;
+        bool hasName = false;
         bool hasDescription = false;
 
-        for (int i = 0; i < enumMembers.Length; i++)
+        foreach (ISymbol member in enumMembers)
         {
-            ISymbol member = enumMembers[i];
-
             if (member is not IFieldSymbol field || field.ConstantValue == null)
                 continue;
 
-            string? displayName = null;
-            string? description = null;
+            DisplayData? displayData = null;
+            EnumTransformValueData? transformValueData = null;
+            EnumOmitValueData? omitValueData = null;
 
-            bool omit = false;
-            EnumOmitExclude omitExclude = EnumOmitExclude.None;
-            string? nameOverride = null;
-            EnumTransform? simpleTransform = null;
-            string? advancedTransform = null;
-
-            if (displayAttr != null || transformAttr != null)
+            if (displayAttr != null || transformValueAttr != null || omitAttr != null)
             {
-                ImmutableArray<AttributeData> mAttrs = member.GetAttributes();
-
-                for (int j = 0; j < mAttrs.Length; j++)
+                foreach (AttributeData? ad in field.GetAttributes())
                 {
-                    AttributeData ad = mAttrs[j];
-
                     if (displayAttr != null && displayAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
                     {
-                        for (int k = 0; k < ad.NamedArguments.Length; k++)
-                        {
-                            KeyValuePair<string, TypedConstant> na = ad.NamedArguments[k];
+                        displayData = TypeHelper.MapData<DisplayData>(ad.NamedArguments);
 
-                            object? value = na.Value.Value;
-
-                            if (na.Key == "Name" && value is string val1)
-                                displayName = val1;
-                            else if (na.Key == "Description" && value is string val2)
-                                description = val2;
-                        }
+                        hasName = displayData.Name != null;
+                        hasDescription = displayData.Description != null;
                     }
-                    else if (transformAttr != null && transformAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
-                    {
-                        for (int k = 0; k < ad.NamedArguments.Length; k++)
-                        {
-                            KeyValuePair<string, TypedConstant> na = ad.NamedArguments[k];
-
-                            object? value = na.Value.Value;
-
-                            if (na.Key == nameof(EnumConfigAttribute.Omit) && value is bool val1)
-                                omit = val1;
-                            if (na.Key == nameof(EnumConfigAttribute.OmitExclude) && value is int val2)
-                                omitExclude = (EnumOmitExclude)val2;
-                            else if (na.Key == nameof(EnumConfigAttribute.NameOverride) && value is string val3)
-                                nameOverride = val3;
-                            else if (na.Key == nameof(EnumConfigAttribute.SimpleTransform) && value is int val4)
-                                simpleTransform = (EnumTransform)val4;
-                            else if (na.Key == nameof(EnumConfigAttribute.AdvancedTransform) && value is string val5)
-                                advancedTransform = val5;
-                        }
-                    }
+                    else if (transformValueAttr != null && transformValueAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
+                        transformValueData = TypeHelper.MapData<EnumTransformValueData>(ad.NamedArguments);
+                    else if (omitAttr != null && omitAttr.Equals(ad.AttributeClass, SymbolEqualityComparer.Default))
+                        omitValueData = TypeHelper.MapData<EnumOmitValueData>(ad.NamedArguments);
                 }
             }
 
-            hasDisplay |= displayName != null;
-            hasDescription |= description != null;
-
-            int allowed = nameOverride != null ? 1 : 0;
-            allowed += simpleTransform != null ? 1 : 0;
-            allowed += advancedTransform != null ? 1 : 0;
-
-            if (allowed > 1)
-                throw new InvalidOperationException($"Multiple transforms (NameOverride, Simple, Advanced) set on {member.Name}. Only one is allowed.");
-
-            members.Add(new EnumMember(member.Name, field.ConstantValue, displayName, description, omit, omitExclude, nameOverride, simpleTransform, advancedTransform));
+            members.Add(new EnumMember(member.Name, field.ConstantValue, displayData, omitValueData, transformValueData));
         }
 
         string underlyingType = enumSymbol.EnumUnderlyingType?.Name ?? "int";
@@ -247,10 +170,8 @@ public class EnumGenerator : IIncrementalGenerator
         StringBuilder enumFullSb = new StringBuilder(25);
 
         bool inNamespace = false;
-        for (int i = 0; i < parts.Length; i++)
+        foreach (SymbolDisplayPart part in parts)
         {
-            SymbolDisplayPart part = parts[i];
-
             switch (part.Kind)
             {
                 case SymbolDisplayPartKind.NamespaceName:
@@ -277,11 +198,10 @@ public class EnumGenerator : IIncrementalGenerator
         string fqn = fqnSb.ToString();
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
-        options = new AttributeOptions(optEnumsName, optEnumsNamespace, optExtensionsName, optExtensionsNamespace, optEnumNameOverride, optDisableEnumsWrapper, optDisableCache);
-        enumSpec = new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasDisplay, hasDescription, hasFlags, underlyingType, members);
+        enumSpec = new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasName, hasDescription, hasFlags, underlyingType, enumSourceGenData, members, enumTransformData);
         return true;
     }
 
     //This is a record because they have equality on all members. That's needed for incremental source generators.
-    private readonly record struct CompilationInfo(INamedTypeSymbol? EnumAttr, INamedTypeSymbol? DisplayAttr, INamedTypeSymbol? FlagsAttr, INamedTypeSymbol? Transform1Attr);
+    private readonly record struct CompilationInfo(INamedTypeSymbol? EnumAttr, INamedTypeSymbol? DisplayAttr, INamedTypeSymbol? FlagsAttr, INamedTypeSymbol? TransformAttr, INamedTypeSymbol? TransformValueAttr, INamedTypeSymbol? OmitAttr);
 }

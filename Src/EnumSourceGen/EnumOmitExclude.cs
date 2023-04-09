@@ -4,14 +4,14 @@
 public enum EnumOmitExclude
 {
     None = 0,
-    GetMemberNames = 1,
-    GetMemberValues = 2,
-    GetUnderlyingValue = 4,
-    Parse = 8,
-    GetDisplayName = 16,
-    GetDescription = 32,
-    IsDefined = 64,
-    GetString = 128,
-    GetValue = 256,
-    All = int.MaxValue
+    GetMemberNames = 1 << 0,
+    GetMemberValues = 1 << 1,
+    GetUnderlyingValues = 1 << 2,
+    TryGetUnderlyingValue = 1 << 3,
+    TryParse = 1 << 4,
+    TryGetDisplayName = 1 << 5,
+    TryGetDescription = 1 << 6,
+    IsDefined = 1 << 7,
+    GetString = 1 << 8,
+    All = GetMemberNames | GetMemberValues | GetUnderlyingValues | TryGetUnderlyingValue | TryParse | TryGetDisplayName | TryGetDescription | IsDefined | GetString
 }
