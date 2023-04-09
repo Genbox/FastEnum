@@ -11,7 +11,6 @@ public class DebugTests
         _output = output;
     }
 
-    // [Fact(Skip = "This is only to help developing new features")]
     [Fact]
     public void CodeGenDemo()
     {
