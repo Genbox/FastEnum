@@ -3,7 +3,7 @@
 namespace Genbox.EnumSourceGen;
 
 [global::System.Diagnostics.Conditional("ENUMSOURCEGEN_INCLUDE_ATTRIBUTE")]
-[global::System.AttributeUsage(AttributeTargets.Field | AttributeTargets.Enum)]
+[global::System.AttributeUsage(AttributeTargets.Field)]
 public sealed class EnumConfigAttribute : global::System.Attribute
 {
     /// <summary>Set this to omit the value completely</summary>
