@@ -21,7 +21,8 @@ internal static class EnumClassCode
         string sn = es.FullyQualifiedName; //We always use FQN. The class name is the same as the enum name
         string vi = es.IsPublic ? "public" : "internal";
         string ut = es.UnderlyingType;
-        string mc = (es.Members.Count - es.Members.Count(x => x.OmitValueData != null)).ToString(NumberFormatInfo.InvariantInfo);
+        int oc = es.Members.Count(x => x.OmitValueData != null);
+        string mc = (es.Members.Count - oc).ToString(NumberFormatInfo.InvariantInfo);
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
 
         string res = $$"""
@@ -84,7 +85,11 @@ internal static class EnumClassCode
             return result;
         }
 
-        public static bool IsDefined({{sn}} input) => {{IsDefined()}};
+        {{(op.DisableCache || es.HasFlags  ? null : oc == 0 ? null : $"private static {ut}[]? _isDefinedValues;")}}
+        public static bool IsDefined({{sn}} input)
+        {
+            {{IsDefined()}}
+        }
 """;
 
         if (es.HasDisplay)
@@ -115,7 +120,7 @@ internal static class EnumClassCode
 """;
         }
 
-        string CachedAssignment(string name) => !op.DisableCache ? $"{name} ??=" : string.Empty;
+        string CachedAssignment(string name) => !op.DisableCache ? $"{name} ??=" : $"var {name} = ";
 
         string GetMemberNames()
         {
@@ -331,6 +336,44 @@ internal static class EnumClassCode
 
         string IsDefined()
         {
+            if (es.HasFlags)
+                return $"return {IsFlagDefined()};";
+
+            sb.Clear();
+
+            //If we have no omitted enum values, then we can reuse GetUnderlyingValues()
+            if (oc == 0)
+                sb.AppendLine($"{ut}[] _isDefinedValues = GetUnderlyingValues();");
+            else
+            {
+                sb.AppendLine($"{CachedAssignment("_isDefinedValues")} new {ut}[] {{");
+
+                foreach (EnumMember em in es.Members)
+                {
+                    if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.IsDefined))
+                        continue;
+
+                    sb.Append(Indent(4)).Append(em.Value).Append(",\n");
+                }
+
+                sb.Append(Indent(3)).Append("};\n");
+            }
+
+            sb.Append($$"""
+            for (int i = 0; i < _isDefinedValues.Length; i++)
+            {
+                if (_isDefinedValues[i] == ({{ut}})input)
+                    return true;
+            }
+
+            return false;
+""");
+
+            return sb.ToString();
+        }
+
+        string IsFlagDefined()
+        {
             if (es.Members.Count == 0)
                 return "false";
 
@@ -352,10 +395,7 @@ internal static class EnumClassCode
             if (value == 0)
                 return $"0 == ({ut})input";
 
-            if (es.HasFlags)
-                return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
-
-            return $"Enum.IsDefined(typeof({sn}), input)";
+            return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
         }
 
         res += "\n    }";
