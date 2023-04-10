@@ -2,13 +2,11 @@
 
 namespace Genbox.EnumSourceGen.Benchmarks.Code;
 
-[Flags]
 [EnumSourceGen]
 public enum TestEnum
 {
-    First = 0,
-
+    First,
     [Display(Name = "2nd")]
-    Second = 1,
-    Third = 2
+    Second,
+    Third
 }

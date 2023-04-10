@@ -7,14 +7,14 @@ namespace Genbox.EnumSourceGen.Benchmarks.Benchmarks;
 [BenchmarkCategory("Flags")]
 public class FlagBenchmarks
 {
-    private static readonly TestEnum _flags = TestEnum.First | TestEnum.Second;
+    private static readonly TestFlagsEnum _flags = TestFlagsEnum.One | TestFlagsEnum.Two;
 
     [Benchmark(Baseline = true)]
-    public bool EnumHasFlag() => _flags.HasFlag(TestEnum.First);
+    public bool EnumHasFlag() => _flags.HasFlag(TestFlagsEnum.One);
 
     [Benchmark]
-    public bool CodeGenHasFlag() => _flags.IsFlagSet(TestEnum.First);
+    public bool CodeGenHasFlag() => _flags.IsFlagSet(TestFlagsEnum.One);
 
     [Benchmark]
-    public bool EnumsNetHasFlag() => _flags.HasAnyFlags(TestEnum.First);
+    public bool EnumsNetHasFlag() => _flags.HasAnyFlags(TestFlagsEnum.One);
 }
