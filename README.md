@@ -13,11 +13,11 @@ Print values, parse, or get the underlying value of enums without using reflecti
 * Intuitive API with discoverability through IntelliSense. All enums can be accessed via the `Enums` class.
 * High-performance
     * Zero allocations whenever possible.
+    * `GetMemberNames()`, `GetMemberValues()` etc. are cached by default. Use `DisableCache` to disable it.
     * `MemberCount` and `IsFlagsEnum` is const to allow the compiler to fold constants.
 * Supports name and description from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0).
-    * Only generates `GetDisplayName()` and `GetDescription()`extensions when the attribute is present.
 * Support for flag enums via the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0).
-    * Only generates `IsFlagSet()` when the attribute is present.
+* Support for skipping enum values completely with `[EnumOmitValue]` on enum members.
 * Support for private/internal enums
 * Support for enums nested inside classes
 * Support for user-set underlying values such as long, uint, byte, etc.
@@ -25,152 +25,265 @@ Print values, parse, or get the underlying value of enums without using reflecti
 * Support for enums that reside in the global namespace
 * Has several options to control namespace, class name and more for generated code. See Options section below for details.
 
-### Parse/TryParse methods
-EnumSourceGen has some additional features compared to dotnet's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
-* Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0) (defaults to ordinal comparison)
-* Supports parsing `DisplayName` and `Description` from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0)
-* You can enable/disable Name, Value, DisplayName or Description parsing via a flags enum: `Enums.MyEnum.TryParse("val", out MyEnum v, MyEnumFormat.Name | MyEnumFormat.DisplayName)`
-
-### IsDefined method
-The IsDefined method is different than the one provided by dotnet. It supports flags out of the box. `Enums.MyEnum.IsDefined((MyEnum)42)` and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
-
 ### Examples
 
-For the code sections below, the following enum is defined:
+Lets create a very simple enum, and add the `[EnumSourceGen]` attribute to it.
 
 ```csharp
 [EnumSourceGen]
-[Flags]
-internal enum MyEnum
+public enum Color
 {
-    [Display(Name = "Value1Name", Description = "Value1Description")]
-    Value1 = 1,
-    [Display(Name = "DisplayNameForValue2")]
-    Value2 = 2,
-    [Display(Description = "Description for Value3")]
-    Value3 = 4
+    Red,
+    Green,
+    Blue
 }
 ```
 
 #### Extensions
 
-The following extensions are auto-generated on MyEnum:
+Extensions tell you something about an instance of an enum you have. For example, `MyEnum.Value1.GetString()` is the same as `MyEnum.Value1.ToString()` from dotnet, except that it does not need to do any work at runtime.
+
+The following extensions are auto-generated:
 
 ```csharp
-MyEnum e = MyEnum.Value1;
+Color c = Color.Red;
 
 Console.WriteLine("String value: " + e.GetString());
 Console.WriteLine("Underlying value: " + e.GetUnderlyingValue());
-Console.WriteLine("Display name: " + e.GetDisplayName());
-Console.WriteLine("Description: " + e.GetDescription());
-Console.WriteLine("Has Value1 flag: " + e.IsFlagSet(MyEnum.Value1));
 ```
 
-Output from the code above:
+Output:
 
 ```
-String value: Value1
-Underlying value: 1
-Display name: Value1Name
-Description: Value1Description
-Has Value1 flag: True
+String value: Red
+Underlying value: 0
 ```
 
 #### Enums class
 
-`Enums` is a class that contains functionality for the auto-generated enum.
+`Enums` is a class that contains metadata about the auto-generated enum.
 
 ```csharp
-Console.WriteLine("Number of members: " + Enums.MyEnum.MemberCount);
-Console.WriteLine("Parse: " + Enums.MyEnum.Parse("value1", StringComparison.OrdinalIgnoreCase));
-Console.WriteLine("TryParse success: " + Enums.MyEnum.TryParse("value1", out MyEnum val, StringComparison.OrdinalIgnoreCase) + " value: " + val);
-Console.WriteLine("Is Value1 part of the enum: " + Enums.MyEnum.IsDefined(MyEnum.Value1));
+Console.WriteLine("Number of members: " + Enums.Color.MemberCount);
+Console.WriteLine("Parse: " + Enums.Color.Parse("Red"));
+Console.WriteLine("Is Green part of the enum: " + Enums.Color.IsDefined(Color.Green));
 
-PrintArray("Member names:", Enums.MyEnum.GetMemberNames());
-PrintArray("Member values:", Enums.MyEnum.GetMemberValues());
-PrintArray("Underlying values:", Enums.MyEnum.GetUnderlyingValues());
-PrintArray("Display names:", Enums.MyEnum.GetDisplayNames());
-PrintArray("Descriptions:", Enums.MyEnum.GetDescriptions());
+PrintArray("Member names:", Enums.Color.GetMemberNames());
+PrintArray("Underlying values:", Enums.Color.GetUnderlyingValues());
 ```
 
 PrintArray simply iterates an array and list the values on separate lines.
 
-Output from the code above:
+Output:
 
 ```
 Number of members: 3
-Parse: Value1
-TryParse success: True value: Value1
-Is Value1 part of the enum: True
+Parse: Red
+Is Green part of the enum: True
 Member names:
-- Value1
-- Value2
-- Value3
-Member values:
-- Value1
-- Value2
-- Value3
+- Red
+- Green
+- Blue
 Underlying values:
+- 0
 - 1
 - 2
-- 4
-Display names:
-- (Value1, Value1Name)
-- (Value2, DisplayNameForValue2)
-Descriptions:
-- (Value1, Value1Description)
-- (Value3, Description for Value3)
 ```
 
 ### Options
 
-`EnumSourceGenAttribute` have several options to control the behavior of the generated code. They are specified in the constructor.
+`[EnumSourceGen]` have several options to control the behavior of the generated code.
 
-```csharp
-[EnumSourceGen(Generate = Generate.ClassAndExtensions, ExtensionClassName = "MyEnumExtensions")]
-internal enum MyEnum
-{
-    Value,
-}
-```
-
-##### Generate
-
-You can set 3 different values for this option:
-
-* ClassAndExtensions (default): Generates both a static Enums class member and extensions
-* ClassOnly: Only generate the static Enum class member
-* ExtensionsOnly: Only generate the enum extensions
-
-It is best practice to only enable what you need to keep the size of your assemblies small.
-
-##### ExtensionClassName
+#### ExtensionClassName
 
 The generated extension class is `partial` by default. So if you want to combine extension from your own class and the autogenerated one, you can use this option to set the name to
 the same as your extensions class. Defaults to &lt;EnumName&gt;Extensions.
 
-##### ExtensionClassNamespace
+#### ExtensionClassNamespace
 
 Use this to control which namespace the extensions class belongs to. Defaults to the namespace of the enum.
 
-##### EnumsClassName
+#### EnumsClassName
 
 Use this to set the name of the `Enums` class to something else.
 
-##### EnumsClassNamespace
+#### EnumsClassNamespace
 
 Used this to specify the namespace for the Enums class. Defaults to the namespace of the enum.
 
-##### EnumNameOverride
+#### EnumNameOverride
 
 Sometimes you might have two enums named the same, but in different namespaces. You can use this option to override the name of the enum in the generated code.
 For example, if your enum is named `MyEnum` the Enums class can be accessed like this:
+
 ```csharp
 Enums.MyEnum.GetMemberNames()
 ```
 
 If you set EnumNameOverride to `OtherEnum` it will look like this instead:
+
 ```csharp
 Enums.OtherEnum.GetMemberNames()
 ```
 
+#### DisableEnumsWrapper
+
+Enable this to avoid generating the static Enums class that wraps all the enums. When enabled, Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace
+across projects. Note that you must use `EnumNameOverride` or set `EnumsClassNamespace` to something to avoid the name collision between your enum and the generated class.
+
+#### DisableCache
+
+By default arrays from `GetMemberNames()`, `GetMemberValues()` etc. is cached to avoid an allocation each time you call them. If your application only needs the arrays once, then caching them in memory take up unnecessary space.
+Use this option to disable the cache.
+
+### Transformations
+
+You can transform the string output of enums with `[EnumTransform]` at compile time. There are a few ways to do this.
+
+```csharp
+[EnumTransform(Preset = EnumTransform.UpperCase)] //Will uppercase all enum values
+[EnumTransform(Regex = "/^Enum//")] //A regex to replace values starting with "Enum" with nothing.
+[EnumTransform(CasePattern = "U_U_U")] //Uppercase the first, third and fifth characters
+```
+
+Note: You can only specify one `[EnumTransform]` at the time.
+
+*Regex* must have the format `/regex-here/replacement-here/`.
+
+*CasePattern* is a way to either uppercase, lowercase or omit charaters.
+
+The language uses the following modifier chars:
+* U: Uppercase the char
+* L: Lowercase the char
+* O: Omit the char
+* _: Do nothing. Keep the char as-is.
+
+Let's say you want to omit the first character in all values, uppercase the third character and lowercase the rest.
+
+```csharp
+[EnumSourceGen]
+[EnumTransform(CasePattern = "OOULLLLL")]
+public enum MyEnum
+{
+    Myvalue1,
+    Myvalue2,
+    Myvalue3
+}
+```
+
+The pattern is matched as much as possible. A pattern of `U` will simply uppercase the first character, and a pattern of `UUUUUUUUUUUU` will uppercase the first 12 characters, even if the enum value is only 6 characters long.
+
+### Omitting values
+
+It is possible to omit enum value both fully and partially. This is useful if you, let's say, want to use the enum values directly in a dropdown on a website, but don't want to include a value in the list.
+
+```csharp
+[EnumSourceGen]
+public enum Color
+{
+    [EnumOmitValue] //Completely omitted
+    Unknown,
+
+    [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames] //Partially omitted
+    Red,
+    Green
+}
+```
+
+If you call `GetMemberNames()` or any other method on the `Enums.Color` class, the Unknown value will be omitted.
+
+```csharp
+foreach (string name in Enums.Color.GetMemberNames())
+{
+    Console.WriteLine(name);
+}
+```
+
+Output:
+```
+Red
+Green
+```
+
+Since we excluded `GetMemberNames()` for the Red color, it showed up in the list above, but it won't show up when calling `GetMemberValues()`.
+
+```csharp
+foreach (Color value in Enums.Color.GetMemberValues())
+{
+    Console.WriteLine(value.ToString());
+}
+```
+
+Output:
+```
+Green
+```
+
+### Notes
+
+#### Compile-time error checking
+
+The `GetDisplayName()` and `GetDescription()` extensions are only generated when you annotate your enum with the [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0). This is great for compile-time error checking.
+The same is true for `IsFlagSet()`. it is only generated when you use the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0)
+
+#### Parse/TryParse methods
+
+EnumSourceGen has some additional features compared to dotnet's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
+
+* Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0) (defaults to ordinal comparison)
+* Supports parsing `ValueOverride` when using `[EnumTransformValue]`. Also supports `DisplayName` and `Description` when using [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0)
+* You can enable/disable Name, Value, DisplayName or Description parsing via an enum: `Enums.MyEnum.TryParse("val", out MyEnum v, MyEnumFormat.Name | MyEnumFormat.DisplayName)`
+
+#### IsDefined method
+
+The IsDefined method is different than the one provided by dotnet. It supports flags out of the box. `Enums.MyEnum.IsDefined((MyEnum)42)`
+and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
+
+### Benchmarks
+
+Here are benchmarks for calling different methods in dotnet vs. using CodeGen vs. using [Enums.net](https://github.com/TylerBrinkley/Enums.NET).
+Enums.net is a high-performance library for working with enum values.
+
+The table below shows that Enums.net is between 2-80x faster than dotnet, but EnumSourceGen is 2-14x faster than Enums.net.
+
+| Method                        |          Mean |      Error |     StdDev |        Median |
+|-------------------------------|--------------:|-----------:|-----------:|--------------:|
+| EnumHasFlag                   |     0.0056 ns |  0.0083 ns |  0.0074 ns |     0.0030 ns |
+| CodeGenHasFlag                |     0.0101 ns |  0.0062 ns |  0.0058 ns |     0.0083 ns |
+| EnumsNetHasFlag               |     0.6253 ns |  0.0238 ns |  0.0211 ns |     0.6192 ns |
+|                               |               |            |            |               |
+| EnumIsDefined                 |    42.6278 ns |  0.4633 ns |  0.4334 ns |    42.5181 ns |
+| CodeGenIsDefined              |     0.0045 ns |  0.0066 ns |  0.0058 ns |     0.0013 ns |
+| EnumsNetIsDefined             |     0.4842 ns |  0.0101 ns |  0.0085 ns |     0.4845 ns |
+|                               |               |            |            |               |
+| EnumLength                    |    20.5705 ns |  0.3509 ns |  0.5566 ns |    20.5117 ns |
+| CodeGenLength                 |     0.0001 ns |  0.0004 ns |  0.0003 ns |     0.0000 ns |
+| EnumsNetLength                |     5.3362 ns |  0.1085 ns |  0.0906 ns |     5.3495 ns |
+|                               |               |            |            |               |
+| EnumGetNames                  |    17.5890 ns |  0.2905 ns |  0.2717 ns |    17.6505 ns |
+| CodeGenGetNames               |     1.5764 ns |  0.0476 ns |  0.0446 ns |     1.5843 ns |
+| EnumsNetGetNames              |     1.6052 ns |  0.0323 ns |  0.0286 ns |     1.5994 ns |
+|                               |               |            |            |               |
+| EnumToString                  |    15.3389 ns |  0.1815 ns |  0.1698 ns |    15.3113 ns |
+| CodeGenToString               |     0.8379 ns |  0.0380 ns |  0.0337 ns |     0.8267 ns |
+| EnumsNetToString              |    21.3269 ns |  0.0836 ns |  0.0653 ns |    21.3056 ns |
+|                               |               |            |            |               |
+| ReflectionGetDisplayName      | 1,008.3327 ns |  6.6111 ns |  5.8606 ns | 1,007.1464 ns |
+| CodeGenGetDisplayName         |     3.2780 ns |  0.1182 ns |  0.1495 ns |     3.2501 ns |
+| EnumsNetGetDisplayName        |     9.3953 ns |  0.1237 ns |  0.0966 ns |     9.4036 ns |
+|                               |               |            |            |               |
+| EnumTryParse                  |    31.4662 ns |  0.4013 ns |  0.3557 ns |    31.3008 ns |
+| CodeGenTryParse               |     6.4197 ns |  0.0495 ns |  0.0463 ns |     6.4246 ns |
+| EnumsNetTryParse              |    41.8299 ns |  0.4277 ns |  0.4001 ns |    41.7159 ns |
+|                               |               |            |            |               |
+| ReflectionTryParseDisplayName | 1,763.8422 ns | 17.7619 ns | 15.7455 ns | 1,764.9430 ns |
+| CodeGenTryParseDisplayName    |     3.9371 ns |  0.0177 ns |  0.0138 ns |     3.9381 ns |
+| EnumsNetTryParseDisplayName   |    40.4373 ns |  0.7966 ns |  0.7061 ns |    40.6816 ns |
+|                               |               |            |            |               |
+| EnumGetValues                 |     0.0000 ns |  0.0000 ns |  0.0000 ns |     0.0000 ns |
+| CodeGenGetValues              |     2.2281 ns |  0.0281 ns |  0.0263 ns |     2.2237 ns |
+| EnumsNetGetValues             |     4.6160 ns |  0.0868 ns |  0.0769 ns |     4.6156 ns |
+|                               |               |            |            |               |
+| EnumGetValues                 |   254.3910 ns |  2.2232 ns |  1.8565 ns |   253.8503 ns |
+| CodeGenGetValues              |     1.6647 ns |  0.0508 ns |  0.0475 ns |     1.6750 ns |
+| EnumsNetGetValues             |     2.4889 ns |  0.0416 ns |  0.0389 ns |     2.4874 ns |
