@@ -30,11 +30,11 @@ public class EnumGenerator : IIncrementalGenerator
                                                                   c.GetTypeByMetadataName(EnumTransformValueAttr),
                                                                   c.GetTypeByMetadataName(EnumOmitValueAttr)));
 
-        IncrementalValuesProvider<ISymbol> sp = context.SyntaxProvider
-                                                       .CreateSyntaxProvider(Predicate, Transform)
-                                                       .Where(s => s != null)!;
+        IncrementalValuesProvider<ISymbol?> sp = context.SyntaxProvider
+                                                        .ForAttributeWithMetadataName(EnumSourceGenAttr, static (node, _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0, Transform)
+                                                        .Where(static x => x is not null);
 
-        context.RegisterSourceOutput(sp.Combine(cp), (spc, source) =>
+        context.RegisterSourceOutput(sp.Combine(cp), static (spc, source) =>
         {
             if (!TryGetTypesToGenerate(source.Right, source.Left, out EnumSpec? es))
                 return;
@@ -60,11 +60,9 @@ public class EnumGenerator : IIncrementalGenerator
         });
     }
 
-    private static bool Predicate(SyntaxNode node, CancellationToken _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0;
-
-    private static ISymbol? Transform(GeneratorSyntaxContext context, CancellationToken token)
+    private static ISymbol? Transform(GeneratorAttributeSyntaxContext context, CancellationToken token)
     {
-        EnumDeclarationSyntax syntax = (EnumDeclarationSyntax)context.Node;
+        EnumDeclarationSyntax syntax = (EnumDeclarationSyntax)context.TargetNode;
 
         foreach (AttributeListSyntax attrList in syntax.AttributeLists)
         {
