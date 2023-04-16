@@ -10,6 +10,7 @@ internal static class Program
         EnumExtensions();
         EnumClass();
         Transforms();
+        OmittingValues();
     }
 
     private static void EnumExtensions()
@@ -50,29 +51,79 @@ internal static class Program
     {
         PrintHeader("Transforms");
 
-        PrintArray("Transformed names:", Enums.MyEnumWithTransforms.GetMemberNames());
+        Console.WriteLine("\nPreset:");
+        foreach (EnumWithPresetTransform value in Enums.EnumWithPresetTransform.GetMemberValues())
+            Console.WriteLine(value + " -> " + value.GetString());
+
+        Console.WriteLine("\nRegex:");
+        foreach (EnumWithRegexTransform value in Enums.EnumWithRegexTransform.GetMemberValues())
+            Console.WriteLine(value + " -> " + value.GetString());
+
+        Console.WriteLine("\nCase pattern:");
+        foreach (EnumWithCasePatternTransform value in Enums.EnumWithCasePatternTransform.GetMemberValues())
+            Console.WriteLine(value + " -> " + value.GetString());
     }
 
-    [EnumSourceGen]
+    private static void OmittingValues()
+    {
+        PrintHeader("Omitting values");
+
+        Console.WriteLine("Value1 is defined: " + Enums.EnumWithOmit.IsDefined(EnumWithOmit.Value1));
+        Console.WriteLine("ThisIsOmitted is defined: " + Enums.EnumWithOmit.IsDefined(EnumWithOmit.ThisIsOmitted));
+        Console.WriteLine("NotOmittedInIsDefined is defined: " + Enums.EnumWithOmit.IsDefined(EnumWithOmit.NotOmittedInIsDefined));
+    }
+
     [Flags]
+    [EnumSourceGen]
     internal enum MyEnum
     {
         [Display(Name = "Value1Name", Description = "Value1Description")]
         Value1 = 0,
-        [EnumConfig(Omit = true)]
-        DontShowMe
+        Value2
     }
 
     [EnumSourceGen]
-    internal enum MyEnumWithTransforms
+    [EnumTransform(Preset = EnumTransform.UpperCase)]
+    internal enum EnumWithPresetTransform
     {
-        [EnumConfig(SimpleTransform = EnumTransform.UpperCase)]
         imuppercase,
-        [EnumConfig(AdvancedTransform = "_LU_____U_U________")]
-        MYcasingiscorrected,
-        [EnumConfig(AdvancedTransform = "/^/Very/")]
-        SimpleReplacement,
-        [EnumConfig(Omit = true)]
-        DontShowMe
+        [EnumTransformValue(ValueOverride = "my-value")]
+        myvalue,
+    }
+
+    [EnumSourceGen]
+    [EnumTransform(Regex = "/^Enum//")] //Replace "Enum" with nothing
+    internal enum EnumWithRegexTransform
+    {
+        EnumValue1,
+        EnumValue2,
+    }
+
+    [EnumSourceGen]
+    [EnumTransform(CasePattern = "U_U_U")] //Uppercase the first, third and fifth characters
+    internal enum EnumWithCasePatternTransform
+    {
+        Value1,
+        Value2,
+    }
+
+    [EnumSourceGen]
+    internal enum EnumWithOmit
+    {
+        [Display(Name = "Value1Name", Description = "Value1Description")]
+        Value1 = 0,
+
+        [EnumOmitValue]
+        ThisIsOmitted,
+
+        [EnumOmitValue(Exclude = EnumOmitExclude.IsDefined)]
+        NotOmittedInIsDefined
+    }
+
+    [EnumSourceGen]
+    internal enum MyEnum2
+    {
+        [Display(Name = "Value1Name")]
+        Value1
     }
 }
