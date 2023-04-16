@@ -1,17 +1,15 @@
 //This tests if the transforms are being used.
 
 [EnumSourceGen]
-internal enum MyEnum
+internal enum MyEnum1
 {
     [EnumTransformValue(NameOverride = "NotFirst")]
-    First,
+    First
+}
 
-    [EnumTransformValue(TransformPreset = EnumTransform.UpperCase)]
-    Second,
-
-    [EnumTransformValue(Transform = "LUUUU")]
-    Third,
-
-    [EnumTransformValue(Transform = "/^../Something/")]
-    Other
+[EnumSourceGen]
+[EnumTransform(TransformPreset = EnumTransform.UpperCase)]
+internal enum MyEnum2
+{
+    First
 }

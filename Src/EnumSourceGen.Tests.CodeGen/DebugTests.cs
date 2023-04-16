@@ -15,14 +15,13 @@ public class DebugTests
     public void CodeGenDemo()
     {
         string source = """
-namespace Some.Namespace.Here2;
+namespace Some.Namespace.Here2
 {
     [EnumSourceGen]
     public enum MyEnum
     {
-       [EnumTransform(SimpleTransform = EnumTransformType.UpperCase)]
-       Value,
-       Value2
+        Value,
+        Value2
     }
 }
 """;

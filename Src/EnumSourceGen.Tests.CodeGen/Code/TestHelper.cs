@@ -11,6 +11,11 @@ internal static class TestHelper
 {
     private static string? _headerCache;
 
+    private static readonly HashSet<string> _ignore = new HashSet<string>
+    {
+        "CS8019",
+    };
+
     public static void TestResource<T>(string testName) where T : IIncrementalGenerator, new()
     {
         string inputSource = ReadResource(testName);
@@ -59,8 +64,13 @@ internal static class TestHelper
         T generator = new T();
 
         CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+
         driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> diagnostics);
-        Assert.Empty(diagnostics);
+
+        IEnumerable<Diagnostic> compilerDiag = outputCompilation.GetDiagnostics().Where(x => !_ignore.Contains(x.Id));
+
+        Assert.Empty(compilerDiag); //C# compiler diagnostics
+        Assert.Empty(diagnostics); //CodeGen diagnostics
 
         List<SyntaxTree> trees = outputCompilation.SyntaxTrees.ToList();
         Assert.True(trees.Count > 1);
