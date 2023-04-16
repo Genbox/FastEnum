@@ -22,7 +22,7 @@ internal enum MyEnum3
 }
 
 [EnumSourceGen]
-[EnumTransform(CaseSpec = "LUUUU")]
+[EnumTransform(CasePattern = "LUUUU")]
 internal enum MyEnum4
 {
     First

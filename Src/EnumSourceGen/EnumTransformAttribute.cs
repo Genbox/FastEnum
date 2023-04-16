@@ -13,7 +13,7 @@ public sealed class EnumTransformAttribute : global::System.Attribute
     public string? Regex { get; set; }
 
     /// <summary>Use a simple transform language string like 'UL__O_'. U = uppercase, L = lowercase, O = omit, _ = skip</summary>
-    public string? CaseSpec { get; set; }
+    public string? CasePattern { get; set; }
 
     public EnumOrder SortMemberNames { get; set; }
 

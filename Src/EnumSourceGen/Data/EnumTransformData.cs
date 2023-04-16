@@ -14,7 +14,7 @@ internal class EnumTransformData
 
     public EnumTransform Preset { get; set; }
     public string? Regex { get; set; }
-    public string? CaseSpec { get; set; }
+    public string? CasePattern { get; set; }
     public EnumOrder SortMemberNames { get; set; }
     public EnumOrder SortMemberValues { get; set; }
     public EnumOrder SortUnderlyingValues { get; set; }

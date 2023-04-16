@@ -15,12 +15,12 @@ internal static class TransformHelper
 
         //Then we fall back to using the EnumTransform (if set)
         if (enumSpec.TransformData != null)
-            return TransformName(enumMember.Name, enumSpec.TransformData.Preset, enumSpec.TransformData.Regex, enumSpec.TransformData.CaseSpec);
+            return TransformName(enumMember.Name, enumSpec.TransformData.Preset, enumSpec.TransformData.Regex, enumSpec.TransformData.CasePattern);
 
         return enumMember.Name;
     }
 
-    public static string TransformName(string name, EnumTransform preset, string? regex, string? caseSpec)
+    public static string TransformName(string name, EnumTransform preset, string? regex, string? casePattern)
     {
         if (preset != EnumTransform.None)
         {
@@ -49,7 +49,7 @@ internal static class TransformHelper
             return Regex.Replace(name, regexStr, replacementStr, RegexOptions.None, TimeSpan.FromSeconds(1));
         }
 
-        if (caseSpec != null)
+        if (casePattern != null)
         {
             //Input:     [HelloWORLD]
             //Transform: [U_____llll]
@@ -60,19 +60,19 @@ internal static class TransformHelper
             int ptr = 0;
             for (int i = 0; i < name.Length; i++)
             {
-                if (caseSpec[i] == 'U')
+                if (casePattern[i] == 'U')
                 {
                     chars[ptr++] = char.ToUpperInvariant(name[i]);
                 }
-                else if (caseSpec[i] == 'L')
+                else if (casePattern[i] == 'L')
                 {
                     chars[ptr++] = char.ToLowerInvariant(name[i]);
                 }
-                else if (caseSpec[i] == '_')
+                else if (casePattern[i] == '_')
                 {
                     chars[ptr++] = name[i];
                 }
-                else if (caseSpec[i] == 'O')
+                else if (casePattern[i] == 'O')
                 {
                     //do nothing
                 }
