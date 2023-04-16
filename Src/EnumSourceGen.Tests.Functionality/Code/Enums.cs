@@ -23,18 +23,17 @@ namespace Genbox.EnumSourceGen.Tests.Functionality.Code
     }
 
     [EnumSourceGen]
+    [EnumTransform(Preset = EnumTransform.UpperCase)]
     public enum TestTransformsEnum : long
     {
-        [EnumTransformValue(NameOverride = "ThisWasOverriden")]
+        [EnumTransformValue(ValueOverride = "ThisWasOverriden")]
         OverrideMe,
-        [EnumTransformValue(TransformPreset = EnumTransform.UpperCase)]
-        UpperCase,
-        [EnumTransformValue(TransformPreset = EnumTransform.LowerCase)]
-        LowerCase,
-        [EnumTransformValue(Transform = "ULULU____O")]
-        MixedCase1,
-        [EnumTransformValue(Transform = "/1//")]
-        R1e1m1o1v1e1A1l1l1O1n1e1s,
+        uppercase
+    }
+
+    [EnumSourceGen]
+    public enum TestOmitEnum
+    {
         [EnumOmitValue]
         Omitted,
         [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]

@@ -3,13 +3,27 @@
 [EnumSourceGen]
 internal enum MyEnum1
 {
-    [EnumTransformValue(NameOverride = "NotFirst")]
+    [EnumTransformValue(ValueOverride = "NotFirst")]
     First
 }
 
 [EnumSourceGen]
-[EnumTransform(TransformPreset = EnumTransform.UpperCase)]
+[EnumTransform(Preset = EnumTransform.UpperCase)]
 internal enum MyEnum2
+{
+    First
+}
+
+[EnumSourceGen]
+[EnumTransform(Regex = "/First/Last/")]
+internal enum MyEnum3
+{
+    First
+}
+
+[EnumSourceGen]
+[EnumTransform(CaseSpec = "LUUUU")]
+internal enum MyEnum4
 {
     First
 }

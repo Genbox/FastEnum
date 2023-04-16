@@ -116,7 +116,7 @@ using System.Diagnostics.CodeAnalysis;
                     continue;
                 }
 
-                string transformed = TransformHelper.TransformName(em);
+                string transformed = TransformHelper.TransformName(es, em);
 
                 sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(transformed).Append("\",\n            ");
             }

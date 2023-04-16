@@ -7,7 +7,13 @@ namespace Genbox.EnumSourceGen;
 public sealed class EnumTransformAttribute : global::System.Attribute
 {
     /// <summary>Transform all enum strings on the enum to either </summary>
-    public EnumTransform Transform { get; set; }
+    public EnumTransform Preset { get; set; }
+
+    /// <summary>Match a pattern and replace it with something else. For example: /regex-here/replacement-here/</summary>
+    public string? Regex { get; set; }
+
+    /// <summary>Use a simple transform language string like 'UL__O_'. U = uppercase, L = lowercase, O = omit, _ = skip</summary>
+    public string? CaseSpec { get; set; }
 
     public EnumOrder SortMemberNames { get; set; }
 

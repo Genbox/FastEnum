@@ -5,21 +5,23 @@ namespace Genbox.EnumSourceGen.Helpers;
 
 internal static class TransformHelper
 {
-    public static string TransformName(EnumMember enumMember)
+    public static string TransformName(EnumSpec enumSpec, EnumMember enumMember)
     {
+        //First we use the explicitly set override
         EnumTransformValueData? tranVal = enumMember.TransformValueData;
 
-        if (tranVal == null)
-            return enumMember.Name;
+        if (tranVal != null && tranVal.ValueOverride != null)
+            return tranVal.ValueOverride;
 
-        return TransformName(enumMember.Name, tranVal.NameOverride, tranVal.TransformPreset, tranVal.Transform);
+        //Then we fall back to using the EnumTransform (if set)
+        if (enumSpec.TransformData != null)
+            return TransformName(enumMember.Name, enumSpec.TransformData.Preset, enumSpec.TransformData.Regex, enumSpec.TransformData.CaseSpec);
+
+        return enumMember.Name;
     }
 
-    public static string TransformName(string name, string? nameOverride, EnumTransform preset, string? transform)
+    public static string TransformName(string name, EnumTransform preset, string? regex, string? caseSpec)
     {
-        if (nameOverride != null)
-            return nameOverride;
-
         if (preset != EnumTransform.None)
         {
             return preset switch
@@ -30,49 +32,47 @@ internal static class TransformHelper
             };
         }
 
-        if (transform != null)
+        if (regex != null)
         {
             //Input:     [HelloWORLD]
             //Transform: [/WORLD/World/]
             //Output:    [HelloWorld]
-            if (transform.StartsWith("/", StringComparison.Ordinal)) //Regex mode
-            {
-                int idx = transform.IndexOf('/', 1);
 
-                if (idx <= 0)
-                    throw new InvalidOperationException($"Invalid transform regex specified on {name}");
+            int idx = regex.IndexOf('/', 1);
 
-                string regexStr = transform.Substring(1, idx - 1);
-                string replacementStr = transform.Substring(idx + 1, transform.Length - idx - 2);
+            if (idx <= 0)
+                throw new InvalidOperationException($"Invalid transform regex specified on {name}");
 
-                return Regex.Replace(name, regexStr, replacementStr, RegexOptions.None, TimeSpan.FromSeconds(1));
-            }
+            string regexStr = regex.Substring(1, idx - 1);
+            string replacementStr = regex.Substring(idx + 1, regex.Length - idx - 2);
 
+            return Regex.Replace(name, regexStr, replacementStr, RegexOptions.None, TimeSpan.FromSeconds(1));
+        }
+
+        if (caseSpec != null)
+        {
             //Input:     [HelloWORLD]
             //Transform: [U_____llll]
             //Output:    [HelloWorld]
-
-            if (name.Length != transform.Length)
-                throw new InvalidOperationException($"The length of your AdvancedTransform template must be as long as the enum value. AdvancedTransform: {transform} ({transform.Length}) Enum value: {name} ({name.Length})");
 
             char[] chars = new char[name.Length];
 
             int ptr = 0;
             for (int i = 0; i < name.Length; i++)
             {
-                if (transform[i] == 'U')
+                if (caseSpec[i] == 'U')
                 {
                     chars[ptr++] = char.ToUpperInvariant(name[i]);
                 }
-                else if (transform[i] == 'L')
+                else if (caseSpec[i] == 'L')
                 {
                     chars[ptr++] = char.ToLowerInvariant(name[i]);
                 }
-                else if (transform[i] == '_')
+                else if (caseSpec[i] == '_')
                 {
                     chars[ptr++] = name[i];
                 }
-                else if (transform[i] == 'O')
+                else if (caseSpec[i] == 'O')
                 {
                     //do nothing
                 }

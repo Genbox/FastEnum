@@ -105,7 +105,7 @@ using System;
                 if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetMemberNames))
                     continue;
 
-                yield return $"\"{TransformHelper.TransformName(em)}\"";
+                yield return $"\"{TransformHelper.TransformName(es, em)}\"";
             }
         }
 
