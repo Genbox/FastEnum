@@ -55,30 +55,45 @@ internal static class TransformHelper
             //Transform: [U_____llll]
             //Output:    [HelloWorld]
 
+            //Input:     [HelloWorld]
+            //Transform: [LOO]
+            //Output:    [hloWorld]
+
             char[] chars = new char[name.Length];
 
-            int ptr = 0;
-            for (int i = 0; i < name.Length; i++)
+            //We iterate
+            int length = Math.Min(name.Length, casePattern.Length);
+
+            int charPtr = 0;
+            int namePtr = 0;
+
+            for (; namePtr < length; namePtr++)
             {
-                if (casePattern[i] == 'U')
+                if (casePattern[namePtr] == 'U')
                 {
-                    chars[ptr++] = char.ToUpperInvariant(name[i]);
+                    chars[charPtr++] = char.ToUpperInvariant(name[namePtr]);
                 }
-                else if (casePattern[i] == 'L')
+                else if (casePattern[namePtr] == 'L')
                 {
-                    chars[ptr++] = char.ToLowerInvariant(name[i]);
+                    chars[charPtr++] = char.ToLowerInvariant(name[namePtr]);
                 }
-                else if (casePattern[i] == '_')
+                else if (casePattern[namePtr] == '_')
                 {
-                    chars[ptr++] = name[i];
+                    chars[charPtr++] = name[namePtr];
                 }
-                else if (casePattern[i] == 'O')
+                else if (casePattern[namePtr] == 'O')
                 {
                     //do nothing
                 }
             }
 
-            return new string(chars, 0, ptr);
+            //If there is anything left of name that we have not copied, copy it now.
+            for (; namePtr < name.Length; namePtr++)
+            {
+                chars[charPtr++] = name[namePtr];
+            }
+
+            return new string(chars, 0, charPtr);
         }
 
         return name;

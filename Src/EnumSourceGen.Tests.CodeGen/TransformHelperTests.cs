@@ -26,6 +26,7 @@ public class TransformHelperTests
     [InlineData("HelloWorld", "helloworld", "LLLLLLLLLL")]
     [InlineData("HelloWorld", "world", "OOOOOLLLLL")]
     [InlineData("HelloWorld", "ello", "O____OOOOO")]
+    [InlineData("HelloWorld", "hloWorld", "LOO")]
     public void TransformHelperTest(string input, string expected, string? casePattern)
     {
         Assert.Equal(expected, TransformHelper.TransformName(input, EnumTransform.None, null, casePattern));
