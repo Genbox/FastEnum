@@ -11,8 +11,6 @@ public class BugTests
     public void TestUlongBug()
     {
         string code = """
-using Genbox.EnumSourceGen;
-
 [EnumSourceGen]
 public enum TestEnum : ulong
 {
@@ -27,8 +25,6 @@ public enum TestEnum : ulong
     public void TestNegativeValueBug()
     {
         string code = """
-using Genbox.EnumSourceGen;
-
 [EnumSourceGen]
 public enum TestEnum : long
 {
