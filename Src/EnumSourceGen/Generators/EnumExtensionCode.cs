@@ -1,6 +1,7 @@
 using System.Text;
 using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Helpers;
+using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
 
 namespace Genbox.EnumSourceGen.Generators;
 
@@ -35,10 +36,7 @@ using System.Diagnostics.CodeAnalysis;
 
     public static bool TryGetUnderlyingValue(this {{sn}} value, out {{ut}} underlyingValue)
     {
-        switch (value)
-        {
-{{TryGetUnderlyingValue()}}
-        }
+        {{PrintSwitch(TryGetUnderlyingValue())}}
         underlyingValue = default;
         return false;
     }
@@ -59,10 +57,7 @@ using System.Diagnostics.CodeAnalysis;
 
     public static bool TryGetDisplayName(this {{sn}} value, [NotNullWhen(true)]out string? displayName)
     {
-        switch (value)
-        {
-{{TryGetDisplayName()}}
-        }
+        {{PrintSwitch(TryGetDisplayName())}}
         displayName = null;
         return false;
     }
@@ -84,10 +79,7 @@ using System.Diagnostics.CodeAnalysis;
 
     public static bool TryGetDescription(this {{sn}} value, [NotNullWhen(true)]out string? description)
     {
-        switch (value)
-        {
-{{TryGetDescription()}}
-        }
+        {{PrintSwitch(TryGetDescription())}}
         description = null;
         return false;
     }
@@ -107,8 +99,7 @@ using System.Diagnostics.CodeAnalysis;
             res += $$"""
 
 
-    public static bool IsFlagSet(this {{sn}} value, {{sn}} flag)
-        => (({{ut}})value & ({{ut}})flag) == ({{ut}})flag;
+    public static bool IsFlagSet(this {{sn}} value, {{sn}} flag) => (({{ut}})value & ({{ut}})flag) == ({{ut}})flag;
 """;
         }
 
@@ -118,7 +109,7 @@ using System.Diagnostics.CodeAnalysis;
 
             foreach (EnumMember em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetString))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == false)
                 {
                     sb.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,\n            ");
                     continue;
@@ -132,80 +123,79 @@ using System.Diagnostics.CodeAnalysis;
             return sb.ToString().TrimEnd();
         }
 
-        string TryGetUnderlyingValue()
+        IEnumerable<string> TryGetUnderlyingValue()
         {
-            sb.Clear();
-
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember em = es.Members[i];
-
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == false)
                     continue;
 
-                sb.Append($$"""
+                yield return $$"""
             case {{sn}}.{{em.Name}}:
                 underlyingValue = {{em.Value}};
                 return true;
-""");
-
-                if (i != es.Members.Count - 1)
-                    sb.AppendLine();
+""";
             }
-
-            return sb.ToString();
         }
 
-        string TryGetDisplayName()
+        IEnumerable<string> TryGetDisplayName()
         {
-            sb.Clear();
-
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember em = es.Members[i];
-
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == false)
                     continue;
 
                 if (em.DisplayData?.Name == null)
                     continue;
 
-                sb.Append($$"""
+                yield return $$"""
             case {{sn}}.{{em.Name}}:
                 displayName = "{{em.DisplayData.Name}}";
                 return true;
-""");
-
-                if (i != es.Members.Count - 1)
-                    sb.AppendLine();
+""";
             }
-
-            return sb.ToString();
         }
 
-        string TryGetDescription()
+        IEnumerable<string> TryGetDescription()
         {
-            sb.Clear();
-
-            for (int i = 0; i < es.Members.Count; i++)
+            foreach (EnumMember em in es.Members)
             {
-                EnumMember em = es.Members[i];
-
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDescription))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == false)
                     continue;
 
                 if (em.DisplayData?.Description == null)
                     continue;
 
-                sb.Append($$"""
+                yield return $$"""
             case {{sn}}.{{em.Name}}:
                 description = "{{em.DisplayData.Description}}";
                 return true;
-""");
+""";
+            }
+        }
 
-                if (i != es.Members.Count - 1)
+        string PrintSwitch(IEnumerable<string> cases)
+        {
+            string[] arr = cases.ToArray();
+
+            if (arr.Length == 0)
+                return string.Empty;
+
+            sb.Clear();
+            sb.AppendLine("switch (value)");
+            sb.Append(Indent(2)).Append('{');
+            sb.AppendLine();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                sb.Append(arr[i]);
+
+                if (i != arr.Length - 1)
                     sb.AppendLine();
             }
+
+            sb.AppendLine();
+            sb.Append(Indent(2)).Append('}');
 
             return sb.ToString();
         }
