@@ -60,7 +60,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packages", "Packages", "{28
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{6A21A9F3-0DB5-48D1-9097-E2A327734844}"
 	ProjectSection(SolutionItems) = preProject
-		Imports\Application.props = Imports\Application.props
 		Imports\Benchmarks.props = Imports\Benchmarks.props
 		Imports\Examples.props = Imports\Examples.props
 		Imports\Library.props = Imports\Library.props
