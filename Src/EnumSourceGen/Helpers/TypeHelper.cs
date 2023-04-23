@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Genbox.EnumSourceGen.Helpers;
 
-public static class TypeHelper
+internal static class TypeHelper
 {
     public static T MapData<T>(ImmutableArray<KeyValuePair<string, TypedConstant>> data) where T : class, new()
     {
