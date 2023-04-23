@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using Genbox.EnumSourceGen.Data;
+using Genbox.EnumSourceGen.Spec;
 
 namespace Genbox.EnumSourceGen.Helpers;
 
 internal static class TransformHelper
 {
-    public static string TransformName(EnumSpec enumSpec, EnumMember enumMember)
+    public static string TransformName(EnumSpec enumSpec, EnumMemberSpec enumMember)
     {
         //First we use the explicitly set override
         EnumTransformValueData? tranVal = enumMember.TransformValueData;
