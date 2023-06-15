@@ -8,10 +8,8 @@ namespace Genbox.EnumSourceGen.Generators;
 
 internal static class EnumExtensionCode
 {
-    public static string Generate(EnumSpec es, StringBuilder sb)
+    public static string Generate(EnumSpec es)
     {
-        sb.Clear();
-
         EnumSourceGenData op = es.SourceGenData;
 
         string? ns = op.ExtensionClassNamespace ?? es.Namespace;
@@ -21,6 +19,7 @@ internal static class EnumExtensionCode
         string vi = es.IsPublic ? "public" : "internal";
         string ut = es.UnderlyingType;
 
+        StringBuilder sb = new StringBuilder();
         string res = $$"""
 using System;
 using System.Diagnostics.CodeAnalysis;

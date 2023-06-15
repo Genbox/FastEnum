@@ -13,7 +13,7 @@ public class CodeGenTests
         TestResource<EnumGenerator>(testName);
     }
 
-    [Theory(Skip = "This is to update all tests with new formatting")]
+    [Theory(Skip = "This is to update all resources with new formatting")]
     // [Theory]
     [MemberData(nameof(GetTests))]
     public void UpdateResources(string testName)

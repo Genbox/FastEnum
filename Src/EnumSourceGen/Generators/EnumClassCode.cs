@@ -8,10 +8,8 @@ namespace Genbox.EnumSourceGen.Generators;
 
 internal static class EnumClassCode
 {
-    internal static string Generate(EnumSpec es, StringBuilder sb)
+    internal static string Generate(EnumSpec es)
     {
-        sb.Clear();
-
         EnumSourceGenData op = es.SourceGenData;
 
         string? ns = op.EnumsClassNamespace ?? es.Namespace;
@@ -25,6 +23,8 @@ internal static class EnumClassCode
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
 
         List<string> fields = new List<string>();
+
+        StringBuilder sb = new StringBuilder();
 
         string res = $$"""
 using System;
