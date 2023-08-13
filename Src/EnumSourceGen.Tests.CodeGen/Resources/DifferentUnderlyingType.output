@@ -59,6 +59,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
@@ -84,10 +85,11 @@ public static partial class Enums
         public static Some.Namespace.Here.MyEnum Parse(ReadOnlySpan<char> value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out Some.Namespace.Here.MyEnum result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static Some.Namespace.Here.MyEnum Parse(string value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
@@ -213,6 +215,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.MyEnum2 result, Some.Namespace.Here.MyEnum2Format format = Some.Namespace.Here.MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(Some.Namespace.Here.MyEnum2Format.Name))
@@ -238,10 +241,11 @@ public static partial class Enums
         public static Some.Namespace.Here.MyEnum2 Parse(ReadOnlySpan<char> value, Some.Namespace.Here.MyEnum2Format format = Some.Namespace.Here.MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out Some.Namespace.Here.MyEnum2 result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static Some.Namespace.Here.MyEnum2 Parse(string value, Some.Namespace.Here.MyEnum2Format format = Some.Namespace.Here.MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {

@@ -55,6 +55,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum1 result, MyEnum1Format format = MyEnum1Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(MyEnum1Format.Name))
@@ -80,10 +81,11 @@ public static partial class Enums
         public static global::MyEnum1 Parse(ReadOnlySpan<char> value, MyEnum1Format format = MyEnum1Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out global::MyEnum1 result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static global::MyEnum1 Parse(string value, MyEnum1Format format = MyEnum1Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
@@ -203,6 +205,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum2 result, MyEnum2Format format = MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(MyEnum2Format.Name))
@@ -228,10 +231,11 @@ public static partial class Enums
         public static global::MyEnum2 Parse(ReadOnlySpan<char> value, MyEnum2Format format = MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out global::MyEnum2 result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static global::MyEnum2 Parse(string value, MyEnum2Format format = MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
@@ -351,6 +355,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum3 result, MyEnum3Format format = MyEnum3Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(MyEnum3Format.Name))
@@ -376,10 +381,11 @@ public static partial class Enums
         public static global::MyEnum3 Parse(ReadOnlySpan<char> value, MyEnum3Format format = MyEnum3Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out global::MyEnum3 result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static global::MyEnum3 Parse(string value, MyEnum3Format format = MyEnum3Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
@@ -499,6 +505,7 @@ public static partial class Enums
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum4 result, MyEnum4Format format = MyEnum4Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(MyEnum4Format.Name))
@@ -524,10 +531,11 @@ public static partial class Enums
         public static global::MyEnum4 Parse(ReadOnlySpan<char> value, MyEnum4Format format = MyEnum4Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out global::MyEnum4 result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static global::MyEnum4 Parse(string value, MyEnum4Format format = MyEnum4Format.Default, StringComparison comparison = StringComparison.Ordinal)
         {

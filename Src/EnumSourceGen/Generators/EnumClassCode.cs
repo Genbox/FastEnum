@@ -48,6 +48,7 @@ using System;
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             {{TryParse()}}
@@ -58,10 +59,11 @@ using System;
         public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out {{sn}} result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
         {

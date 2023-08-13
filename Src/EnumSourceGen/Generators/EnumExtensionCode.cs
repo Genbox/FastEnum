@@ -54,7 +54,11 @@ using System.Diagnostics.CodeAnalysis;
             res += $$"""
 
 
-    public static bool TryGetDisplayName(this {{sn}} value, [NotNullWhen(true)]out string? displayName)
+    public static bool TryGetDisplayName(this {{sn}} value,
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+[NotNullWhen(true)]
+#endif
+out string? displayName)
     {
         {{PrintSwitch(TryGetDisplayName())}}
         displayName = null;
@@ -76,7 +80,11 @@ using System.Diagnostics.CodeAnalysis;
             res += $$"""
 
 
-    public static bool TryGetDescription(this {{sn}} value, [NotNullWhen(true)]out string? description)
+    public static bool TryGetDescription(this {{sn}} value,
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+[NotNullWhen(true)]
+#endif
+out string? description)
     {
         {{PrintSwitch(TryGetDescription())}}
         description = null;

@@ -58,6 +58,7 @@ namespace Enums;
             return false;
         }
 
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum result, Enums.MyEnumFormat format = Enums.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (format.HasFlag(Enums.MyEnumFormat.Name))
@@ -83,10 +84,11 @@ namespace Enums;
         public static global::MyEnum Parse(ReadOnlySpan<char> value, Enums.MyEnumFormat format = Enums.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
             if (!TryParse(value, out global::MyEnum result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
+#endif
 
         public static global::MyEnum Parse(string value, Enums.MyEnumFormat format = Enums.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
