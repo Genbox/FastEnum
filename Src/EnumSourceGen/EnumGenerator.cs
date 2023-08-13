@@ -9,6 +9,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
+#if RELEASE
+using System.Globalization;
+#endif
+
 namespace Genbox.EnumSourceGen;
 
 [Generator(LanguageNames.CSharp)]
