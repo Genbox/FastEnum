@@ -66,11 +66,10 @@ internal static class TestHelper
         CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
         driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> diagnostics);
+        Assert.Empty(diagnostics); //CodeGen diagnostics
 
         IEnumerable<Diagnostic> compilerDiag = outputCompilation.GetDiagnostics().Where(x => !_ignore.Contains(x.Id));
-
         Assert.Empty(compilerDiag); //C# compiler diagnostics
-        Assert.Empty(diagnostics); //CodeGen diagnostics
 
         List<SyntaxTree> trees = outputCompilation.SyntaxTrees.ToList();
         Assert.True(trees.Count > 1);
