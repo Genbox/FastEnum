@@ -4,7 +4,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+
+    <!-- See https://github.com/dotnet/roslyn/issues/63290 -->
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+    <!-- See https://github.com/NuGet/Home/wiki/DevelopmentDependency-support-for-PackageReference -->
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
 
   <ItemGroup>
