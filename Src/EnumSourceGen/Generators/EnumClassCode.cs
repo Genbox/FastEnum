@@ -3,6 +3,7 @@ using System.Text;
 using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Helpers;
 using Genbox.EnumSourceGen.Spec;
+using Microsoft.CodeAnalysis;
 
 namespace Genbox.EnumSourceGen.Generators;
 
@@ -16,10 +17,10 @@ internal static class EnumClassCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.EnumsClassName ?? "Enums";
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
-        string vi = es.IsPublic ? "public" : "internal";
+        string vi = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
         string ut = es.UnderlyingType;
         int oc = es.Members.Count(x => x.OmitValueData != null);
-        int mc = es.Members.Count - oc;
+        int mc = es.Members.Length - oc;
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
 
         List<string> fields = new List<string>();
@@ -350,7 +351,7 @@ if (format.HasFlag({{ef}}.Name))
 
         string IsFlagDefined()
         {
-            if (es.Members.Count == 0)
+            if (es.Members.Length == 0)
                 return "false";
 
             ulong value = 0;

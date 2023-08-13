@@ -23,35 +23,110 @@ public class EnumGenerator : IIncrementalGenerator
 
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<EnumSpec?> sp = context.SyntaxProvider
-                                                         .ForAttributeWithMetadataName(EnumSourceGenAttr, static (node, _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0, Transform)
-                                                         .Where(x => x != null);
+        IncrementalValueProvider<ImmutableArray<EnumSpec>> sp = context.SyntaxProvider
+                                                                       .ForAttributeWithMetadataName(EnumSourceGenAttr, static (node, _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0, Transform)
+                                                                       .Where(x => x != null)
+                                                                       .Collect()!;
 
         AssemblyName name = GetType().Assembly.GetName();
 
-        context.RegisterSourceOutput(sp, (spc, es) =>
+        context.RegisterSourceOutput(sp, (spc, specs) =>
         {
             spc.CancellationToken.ThrowIfCancellationRequested();
 
-            //This is only here to mute nullability analysis. We don't have [NotNullWhen].
-            if (es == null)
-                return;
-
-            try
+            if (!IsSpecsValid(specs, out string? message))
             {
-                string fqn = es.FullyQualifiedName;
-
-                StringBuilder sb = new StringBuilder();
-                spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, es, EnumFormatCode.Generate));
-                spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, es, EnumClassCode.Generate));
-                spc.AddSource(fqn + "_Extensions.g.cs", GetSource(sb, name, es, EnumExtensionCode.Generate));
-            }
-            catch (Exception e)
-            {
-                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", $"An error happened while generating code for {es.FullName}. Error: {e.Message}", "errors", DiagnosticSeverity.Error, true);
+                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "EnumSourceGen", $"Validation failed with message: {message}", "errors", DiagnosticSeverity.Error, true);
                 spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
+                return;
+            }
+
+            foreach (EnumSpec enumSpec in specs)
+            {
+                try
+                {
+                    string fqn = enumSpec.FullyQualifiedName;
+
+                    StringBuilder sb = new StringBuilder();
+                    spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
+                    spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, enumSpec, EnumClassCode.Generate));
+                    spc.AddSource(fqn + "_Extensions.g.cs", GetSource(sb, name, enumSpec, EnumExtensionCode.Generate));
+                }
+                catch (Exception e)
+                {
+                    DiagnosticDescriptor report = new DiagnosticDescriptor("ESG002", "EnumSourceGen", $"An error happened while generating code for {enumSpec.FullName}. Error: {e.Message}", "errors", DiagnosticSeverity.Error, true);
+                    spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
+                }
             }
         });
+    }
+
+    private bool IsSpecsValid(ImmutableArray<EnumSpec> specs, out string? message)
+    {
+        //### Detect name conflicts ###
+        // By default the Enums class is generated as: <enum_namespace>.<enums_class_name>.<enum_name>
+        // <enum_namespace> is the namespace of the user's enum. It can be overriden by EnumsClassNamespace
+        // <enum_class_name> defaults to "Enums". It can be overriden by EnumsClassName
+        // <enum_name> is the name of the user's enum. It can be overriden by EnumNameOverride
+        //
+        // We therefore have to combine all these parts and check if there are duplicates.
+
+        HashSet<string> nameSet = new HashSet<string>(StringComparer.Ordinal); //Case sensitive since C# is too
+
+        foreach (EnumSpec es in specs)
+        {
+            EnumSourceGenData esd = es.SourceGenData;
+
+            string enumNamespace = esd.EnumsClassNamespace ?? (es.Namespace ?? "global::");
+            string enumClassName = esd.EnumsClassName ?? "Enums";
+            string enumName = esd.EnumNameOverride ?? es.Name;
+
+            string fullName = string.Join(".", enumNamespace, enumClassName, enumName);
+
+            if (!nameSet.Add(fullName))
+            {
+                message = $"Two enums collide in name: {fullName}. Use {nameof(EnumSourceGenAttribute.EnumNameOverride)}, {nameof(EnumSourceGenAttribute.EnumsClassName)} or {nameof(EnumSourceGenAttribute.EnumsClassNamespace)} to resolve the conflict";
+                return false;
+            }
+        }
+
+        //### Detect accessibility/visibility issues ###
+        // We don't support private enums. For example:
+        //
+        // public class MyClass
+        // {
+        //     private enum MyEnum { Value }
+        // }
+        //
+        // The reason being that the generated Enums.MyEnum class can't expose the enum due to it being private.
+        // The user can disable the Enums wrapper with DisableEnumsWrapper, but the resulting MyEnum class still can't expose the private enum.
+        // We could stop generating the Enums.MyEnum class altogether, but the generated extension methods wouldn't work either. So then, what is the point?
+        //
+        // We therefore only support internal and public enums. However, we can't have a public enum in an internal class.
+
+        foreach (EnumSpec es in specs)
+        {
+            //The first part of the AccessChain is the enum's own accessibility
+            Accessibility enumAccess = es.AccessChain[0];
+
+            if (enumAccess == Accessibility.Private)
+            {
+                message = $"EnumSourceGen is not supported on private enum: '{es.FullName}'";
+                return false;
+            }
+
+            if (enumAccess != Accessibility.Internal && enumAccess != Accessibility.Public)
+            {
+                message = $"Unsupported visibility '{enumAccess}' on '{es.FullName}'";
+                return false;
+            }
+
+            //Now we need to satisfy C#'s invariant: parents must have equal or less accessibility than it's children
+            //TODO
+        }
+
+        message = null;
+        return true;
     }
 
     private static SourceText GetSource(StringBuilder sb, AssemblyName assemblyName, EnumSpec spec, Func<EnumSpec, string> action)
@@ -137,7 +212,16 @@ public class EnumGenerator : IIncrementalGenerator
         }
 
         string underlyingType = symbol.EnumUnderlyingType?.Name ?? "int";
-        bool isPublic = symbol.DeclaredAccessibility == Accessibility.Public;
+
+        List<Accessibility> accessChain = new List<Accessibility>();
+
+        ISymbol? curSym = symbol;
+
+        while (curSym != null)
+        {
+            accessChain.Add(symbol.DeclaredAccessibility);
+            curSym = curSym.ContainingSymbol;
+        }
 
         ImmutableArray<SymbolDisplayPart> parts = symbol.ToDisplayParts();
 
@@ -174,6 +258,6 @@ public class EnumGenerator : IIncrementalGenerator
         string fqn = fqnSb.ToString();
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
-        return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, isPublic, hasName, hasDescription, hasFlags, underlyingType, enumSourceGenData, members, enumTransformData);
+        return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasName, hasDescription, hasFlags, underlyingType, enumSourceGenData, members.ToArray(), enumTransformData);
     }
 }

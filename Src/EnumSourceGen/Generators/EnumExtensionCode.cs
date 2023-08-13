@@ -2,6 +2,7 @@ using System.Text;
 using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Helpers;
 using Genbox.EnumSourceGen.Spec;
+using Microsoft.CodeAnalysis;
 using static Genbox.EnumSourceGen.Helpers.CodeGenHelper;
 
 namespace Genbox.EnumSourceGen.Generators;
@@ -16,7 +17,7 @@ internal static class EnumExtensionCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.ExtensionClassName ?? cn + "Extensions";
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
-        string vi = es.IsPublic ? "public" : "internal";
+        string vi = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
         string ut = es.UnderlyingType;
 
         StringBuilder sb = new StringBuilder();

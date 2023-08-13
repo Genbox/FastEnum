@@ -1,18 +1,18 @@
 ﻿using Genbox.EnumSourceGen.Data;
 using Genbox.EnumSourceGen.Extensions;
-using Genbox.EnumSourceGen.Helpers;
+using Microsoft.CodeAnalysis;
 
 namespace Genbox.EnumSourceGen.Spec;
 
 internal class EnumSpec : IEquatable<EnumSpec>
 {
-    public EnumSpec(string name, string fullName, string fullyQualifiedName, string? @namespace, bool isPublic, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, EnumSourceGenData sourceGenData, List<EnumMemberSpec> members, EnumTransformData? transformData)
+    public EnumSpec(string name, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, EnumSourceGenData sourceGenData, EnumMemberSpec[] members, EnumTransformData? transformData)
     {
         Name = name;
         FullName = fullName;
         FullyQualifiedName = fullyQualifiedName;
         Namespace = @namespace;
-        IsPublic = isPublic;
+        AccessChain = accessChain;
         HasDisplay = hasDisplay;
         HasDescription = hasDescription;
         HasFlags = hasFlags;
@@ -26,14 +26,14 @@ internal class EnumSpec : IEquatable<EnumSpec>
     public string FullName { get; }
     public string FullyQualifiedName { get; }
     public string? Namespace { get; }
-    public bool IsPublic { get; }
+    public Accessibility[] AccessChain { get; }
     public bool HasDisplay { get; }
     public bool HasDescription { get; }
     public bool HasFlags { get; }
     public string UnderlyingType { get; }
     public EnumSourceGenData SourceGenData { get; }
     public EnumTransformData? TransformData { get; }
-    public List<EnumMemberSpec> Members { get; }
+    public EnumMemberSpec[] Members { get; }
 
     public bool Equals(EnumSpec other)
     {
@@ -41,28 +41,14 @@ internal class EnumSpec : IEquatable<EnumSpec>
                FullName == other.FullName &&
                FullyQualifiedName == other.FullyQualifiedName &&
                Namespace == other.Namespace &&
-               IsPublic == other.IsPublic &&
+               ListEqual(AccessChain, other.AccessChain) &&
                HasDisplay == other.HasDisplay &&
                HasDescription == other.HasDescription &&
                HasFlags == other.HasFlags &&
                UnderlyingType == other.UnderlyingType &&
                SourceGenData.Equals(other.SourceGenData) &&
-               MembersEqual(other.Members) &&
+               ListEqual(Members, other.Members) &&
                Equals(TransformData, other.TransformData);
-    }
-
-    private bool MembersEqual(List<EnumMemberSpec> other)
-    {
-        if (Members.Count != other.Count)
-            return false;
-
-        for (int i = 0; i < other.Count; i++)
-        {
-            if (!Equals(Members[i], other[i]))
-                return false;
-        }
-
-        return true;
     }
 
     public override bool Equals(object? obj)
@@ -81,7 +67,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
             hashCode = (hashCode * 397) ^ FullName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ FullyQualifiedName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ (Namespace != null ? Namespace.GetDeterministicHashCode() : 0);
-            hashCode = (hashCode * 397) ^ IsPublic.GetHashCode();
+            hashCode = (hashCode * 397) ^ AccessChain.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDisplay.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDescription.GetHashCode();
             hashCode = (hashCode * 397) ^ HasFlags.GetHashCode();
@@ -96,5 +82,19 @@ internal class EnumSpec : IEquatable<EnumSpec>
             hashCode = (hashCode * 397) ^ (TransformData != null ? TransformData.GetHashCode() : 0);
             return hashCode;
         }
+    }
+
+    private bool ListEqual<T>(IList<T> first, IList<T> second)
+    {
+        if (first.Count != second.Count)
+            return false;
+
+        for (int i = 0; i < first.Count; i++)
+        {
+            if (!Equals(first[i], second[i]))
+                return false;
+        }
+
+        return true;
     }
 }
