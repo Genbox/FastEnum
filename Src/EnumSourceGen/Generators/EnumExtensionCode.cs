@@ -70,7 +70,7 @@ out string? displayName)
         if (!TryGetDisplayName(value, out string? displayName))
             throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
-        return displayName;
+        return displayName!;
     }
 """;
         }
@@ -96,7 +96,7 @@ out string? description)
         if (!TryGetDescription(value, out string? description))
             throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
-        return description;
+        return description!;
     }
 """;
         }

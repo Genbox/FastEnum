@@ -1,0 +1,16 @@
+//This test checks if users can set a Display attribute with the Name property
+
+namespace Some.Namespace.Here;
+
+[EnumSourceGen]
+public enum MyEnum
+{
+    [Display(Name = "myname1")]
+    Value1,
+
+    [Display(Name = "myname2")]
+    Value2,
+
+    [Display(Name = "myname3")]
+    Value3
+}
