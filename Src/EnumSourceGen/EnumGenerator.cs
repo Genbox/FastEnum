@@ -1,5 +1,4 @@
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Reflection;
 using System.Text;
 using Genbox.EnumSourceGen.Data;
