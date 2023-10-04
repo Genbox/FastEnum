@@ -90,6 +90,61 @@ Underlying values:
 - 2
 ```
 
+### Values via attributes
+
+#### DisplayAttribute
+
+If you add [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0) to an enum, the source generator will generate extra methods. For example, you can add [DisplayAttribute] to an enum value like this:
+
+```csharp
+[EnumSourceGen]
+internal enum MyEnum
+{
+    [Display(Name = "Value1Name", Description = "Value1Description")]
+    Value1 = 1,
+    Value2 = 2
+}
+```
+It will generate `GetDisplayName()` and `GetDescription()` extensions to your enum.
+
+```csharp
+MyEnum e = MyEnum.Value1;
+Console.WriteLine("Display name: " + e.GetDisplayName());
+Console.WriteLine("Description: " + e.GetDescription());
+```
+
+Output:
+```
+Display name: Value1Name
+Description: Value1Description
+```
+
+#### FlagsAttribute
+
+If you have an enum with the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0), EnumSourceGen will add a method called `IsFlagSet()`.
+
+```csharp
+[Flags]
+[EnumSourceGen]
+internal enum MyFlagsEnum
+{
+    None = 0,
+    Value1 = 1,
+    Value2 = 2
+    Value3 = 4
+}
+```
+
+```csharp
+MyFlagsEnum e = MyFlagsEnum.Value1 | MyFlagsEnum.Value3;
+Console.WriteLine("Is Value2 set: " + e.IsFlagSet(MyFlagsEnum.Value2));
+```
+
+Output:
+```
+Is Value2 set: False
+```
+
 ### Options
 
 `[EnumSourceGen]` have several options to control the behavior of the generated code.
@@ -220,11 +275,6 @@ Green
 ```
 
 ### Notes
-
-#### Compile-time error checking
-
-The `GetDisplayName()` and `GetDescription()` extensions are only generated when you annotate your enum with the [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0). This is great for compile-time error checking.
-The same is true for `IsFlagSet()`. it is only generated when you use the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0)
 
 #### Parse/TryParse methods
 
