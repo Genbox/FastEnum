@@ -123,14 +123,13 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnumExtensions
 {
-    public static string GetString(this global::MyEnum value)
-        => value switch
-        {
-            global::MyEnum.Value => "Value",
-            global::MyEnum.Omit => string.Empty,
+    public static string GetString(this global::MyEnum value) => value switch
+    {
+        global::MyEnum.Value => "Value",
+        global::MyEnum.Omit => string.Empty,
             global::MyEnum.OmitWithFilter => "OmitWithFilter",
-            _ => value.ToString()
-        };
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this global::MyEnum value, out Int32 underlyingValue)
     {

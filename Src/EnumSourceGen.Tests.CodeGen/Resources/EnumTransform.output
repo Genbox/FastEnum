@@ -121,12 +121,11 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum1Extensions
 {
-    public static string GetString(this global::MyEnum1 value)
-        => value switch
-        {
-            global::MyEnum1.First => "NotFirst",
-            _ => value.ToString()
-        };
+    public static string GetString(this global::MyEnum1 value) => value switch
+    {
+        global::MyEnum1.First => "NotFirst",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this global::MyEnum1 value, out Int32 underlyingValue)
     {
@@ -271,12 +270,11 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum2Extensions
 {
-    public static string GetString(this global::MyEnum2 value)
-        => value switch
-        {
-            global::MyEnum2.First => "FIRST",
-            _ => value.ToString()
-        };
+    public static string GetString(this global::MyEnum2 value) => value switch
+    {
+        global::MyEnum2.First => "FIRST",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this global::MyEnum2 value, out Int32 underlyingValue)
     {
@@ -421,12 +419,11 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum3Extensions
 {
-    public static string GetString(this global::MyEnum3 value)
-        => value switch
-        {
-            global::MyEnum3.First => "Last",
-            _ => value.ToString()
-        };
+    public static string GetString(this global::MyEnum3 value) => value switch
+    {
+        global::MyEnum3.First => "Last",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this global::MyEnum3 value, out Int32 underlyingValue)
     {
@@ -571,12 +568,11 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum4Extensions
 {
-    public static string GetString(this global::MyEnum4 value)
-        => value switch
-        {
-            global::MyEnum4.First => "fIRST",
-            _ => value.ToString()
-        };
+    public static string GetString(this global::MyEnum4 value) => value switch
+    {
+        global::MyEnum4.First => "fIRST",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this global::MyEnum4 value, out Int32 underlyingValue)
     {

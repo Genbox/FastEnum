@@ -127,12 +127,11 @@ namespace Some.Namespace.Here;
 
 public static partial class MyEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.MyEnum value)
-        => value switch
-        {
-            Some.Namespace.Here.MyEnum.Value => "Value",
-            _ => value.ToString()
-        };
+    public static string GetString(this Some.Namespace.Here.MyEnum value) => value switch
+    {
+        Some.Namespace.Here.MyEnum.Value => "Value",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum value, out Byte underlyingValue)
     {
@@ -283,12 +282,11 @@ namespace Some.Namespace.Here;
 
 public static partial class MyEnum2Extensions
 {
-    public static string GetString(this Some.Namespace.Here.MyEnum2 value)
-        => value switch
-        {
-            Some.Namespace.Here.MyEnum2.Value => "Value",
-            _ => value.ToString()
-        };
+    public static string GetString(this Some.Namespace.Here.MyEnum2 value) => value switch
+    {
+        Some.Namespace.Here.MyEnum2.Value => "Value",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum2 value, out UInt64 underlyingValue)
     {

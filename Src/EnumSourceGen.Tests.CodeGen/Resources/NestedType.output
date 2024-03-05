@@ -181,14 +181,13 @@ namespace Some.Namespace.Here;
 
 internal static partial class MyEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.MyClass.MyEnum value)
-        => value switch
-        {
-            Some.Namespace.Here.MyClass.MyEnum.First => "First",
-            Some.Namespace.Here.MyClass.MyEnum.Second => "Second",
-            Some.Namespace.Here.MyClass.MyEnum.Third => "Third",
-            _ => value.ToString()
-        };
+    public static string GetString(this Some.Namespace.Here.MyClass.MyEnum value) => value switch
+    {
+        Some.Namespace.Here.MyClass.MyEnum.First => "First",
+        Some.Namespace.Here.MyClass.MyEnum.Second => "Second",
+        Some.Namespace.Here.MyClass.MyEnum.Third => "Third",
+        _ => value.ToString()
+    };
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyClass.MyEnum value, out Int32 underlyingValue)
     {
