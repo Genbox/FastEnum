@@ -1,9 +1,0 @@
-//This test checks if ExtensionClassName functions correctly
-
-namespace Some.Namespace.Here;
-
-[EnumSourceGen(ExtensionClassName = "MyExtensions")]
-public enum MyEnum
-{
-    Value
-}

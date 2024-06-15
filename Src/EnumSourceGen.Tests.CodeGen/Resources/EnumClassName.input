@@ -1,9 +1,0 @@
-//This test checks if EnumClassName functions correctly
-
-namespace Some.Namespace.Here;
-
-[EnumSourceGen(EnumsClassName = "Enums2")]
-public enum MyEnum
-{
-    Value
-}

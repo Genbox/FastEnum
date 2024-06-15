@@ -1,7 +1,0 @@
-//This test checks if we support enums in the global namespace
-
-[EnumSourceGen]
-public enum MyEnum
-{
-    First
-}

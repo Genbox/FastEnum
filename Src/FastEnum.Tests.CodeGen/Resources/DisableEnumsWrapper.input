@@ -1,0 +1,7 @@
+//This test checks if we correctly remove the Enums wrapper class
+
+[FastEnum(DisableEnumsWrapper = true, EnumsClassNamespace = "Enums")]
+public enum MyEnum
+{
+    Value
+}

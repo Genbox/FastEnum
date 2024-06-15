@@ -1,0 +1,29 @@
+//This tests if the transforms are being used.
+
+[FastEnum]
+internal enum MyEnum1
+{
+    [EnumTransformValue(ValueOverride = "NotFirst")]
+    First
+}
+
+[FastEnum]
+[EnumTransform(Preset = EnumTransform.UpperCase)]
+internal enum MyEnum2
+{
+    First
+}
+
+[FastEnum]
+[EnumTransform(Regex = "/First/Last/")]
+internal enum MyEnum3
+{
+    First
+}
+
+[FastEnum]
+[EnumTransform(CasePattern = "LUUUU")]
+internal enum MyEnum4
+{
+    First
+}

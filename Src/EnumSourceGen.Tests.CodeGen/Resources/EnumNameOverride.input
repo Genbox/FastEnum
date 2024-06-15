@@ -1,9 +1,0 @@
-//This test checks if EnumNameOverride is respected
-
-namespace Some.Namespace.Here;
-
-[EnumSourceGen(EnumNameOverride = "OtherEnum")]
-public enum MyEnum
-{
-    Value
-}

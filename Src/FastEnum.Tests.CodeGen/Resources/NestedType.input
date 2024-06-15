@@ -1,0 +1,14 @@
+//Enums can exist inside classes, and we want to support those as well. This test ensure that we support it correctly.
+
+namespace Some.Namespace.Here;
+
+internal class MyClass
+{
+    [FastEnum]
+    internal enum MyEnum
+    {
+        First,
+        Second,
+        Third
+    }
+}

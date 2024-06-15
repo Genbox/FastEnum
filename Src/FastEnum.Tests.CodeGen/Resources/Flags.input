@@ -1,0 +1,13 @@
+//This test checks if we support flags correctly.
+
+namespace Some.Namespace.Here;
+
+[FastEnum]
+[Flags]
+public enum MyEnum
+{
+    First = 0,
+    Second = 2,
+    Third = 8,
+    Other = 256,
+}

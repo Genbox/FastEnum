@@ -1,0 +1,7 @@
+//This test checks if we support enums in the global namespace
+
+[FastEnum]
+public enum MyEnum
+{
+    First
+}

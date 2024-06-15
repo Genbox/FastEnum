@@ -1,0 +1,13 @@
+//This tests if the transforms are being used.
+
+[FastEnum]
+internal enum MyEnum
+{
+    Value = 0,
+
+    [EnumOmitValue]
+    Omit,
+
+    [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]
+    OmitWithFilter
+}

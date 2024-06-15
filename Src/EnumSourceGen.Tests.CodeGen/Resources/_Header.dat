@@ -1,3 +1,0 @@
-﻿using System;
-using Genbox.EnumSourceGen;
-using System.ComponentModel.DataAnnotations;

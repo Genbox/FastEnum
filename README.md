@@ -1,7 +1,7 @@
-# EnumSourceGen
+# FastEnum
 
-[![NuGet](https://img.shields.io/nuget/v/Genbox.EnumSourceGen.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Genbox.EnumSourceGen/)
-[![License](https://img.shields.io/github/license/Genbox/EnumSourceGen)](https://github.com/Genbox/EnumSourceGen/blob/master/LICENSE.txt)
+[![NuGet](https://img.shields.io/nuget/v/Genbox.FastEnum.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Genbox.FastEnum/)
+[![License](https://img.shields.io/github/license/Genbox/FastEnum)](https://github.com/Genbox/FastEnum/blob/master/LICENSE.txt)
 
 ### Description
 
@@ -27,10 +27,10 @@ Print values, parse, or get the underlying value of enums without using reflecti
 
 ### Examples
 
-Lets create a very simple enum, and add the `[EnumSourceGen]` attribute to it.
+Lets create a very simple enum, and add the `[FastEnum]` attribute to it.
 
 ```csharp
-[EnumSourceGen]
+[FastEnum]
 public enum Color
 {
     Red,
@@ -97,7 +97,7 @@ Underlying values:
 If you add [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0) to an enum, the source generator will generate extra methods. For example, you can add [DisplayAttribute] to an enum value like this:
 
 ```csharp
-[EnumSourceGen]
+[FastEnum]
 internal enum MyEnum
 {
     [Display(Name = "Value1Name", Description = "Value1Description")]
@@ -121,11 +121,11 @@ Description: Value1Description
 
 #### FlagsAttribute
 
-If you have an enum with the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0), EnumSourceGen will add a method called `IsFlagSet()`.
+If you have an enum with the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0), FastEnum will add a method called `IsFlagSet()`.
 
 ```csharp
 [Flags]
-[EnumSourceGen]
+[FastEnum]
 internal enum MyFlagsEnum
 {
     None = 0,
@@ -147,7 +147,7 @@ Is Value2 set: False
 
 ### Options
 
-`[EnumSourceGen]` have several options to control the behavior of the generated code.
+`[FastEnum]` have several options to control the behavior of the generated code.
 
 #### ExtensionClassName
 
@@ -216,7 +216,7 @@ The language uses the following modifier chars:
 Let's say you want to omit the first character in all values, uppercase the third character and lowercase the rest.
 
 ```csharp
-[EnumSourceGen]
+[FastEnum]
 [EnumTransform(CasePattern = "OOULLLLL")]
 public enum MyEnum
 {
@@ -233,7 +233,7 @@ The pattern is matched as much as possible. A pattern of `U` will simply upperca
 It is possible to omit enum value both fully and partially. This is useful if you, let's say, want to use the enum values directly in a dropdown on a website, but don't want to include a value in the list.
 
 ```csharp
-[EnumSourceGen]
+[FastEnum]
 public enum Color
 {
     [EnumOmitValue] //Completely omitted
@@ -278,7 +278,7 @@ Green
 
 #### Parse/TryParse methods
 
-EnumSourceGen has some additional features compared to dotnet's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
+FastEnum has some additional features compared to dotnet's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
 
 * Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0) (defaults to ordinal comparison)
 * Supports parsing `ValueOverride` when using `[EnumTransformValue]`. Also supports `DisplayName` and `Description` when using [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0)
@@ -294,7 +294,7 @@ and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
 Here are benchmarks for calling different methods in dotnet vs. using CodeGen vs. using [Enums.net](https://github.com/TylerBrinkley/Enums.NET).
 Enums.net is a high-performance library for working with enum values.
 
-The table below shows that Enums.net is between 2-80x faster than dotnet, but EnumSourceGen is 2-14x faster than Enums.net.
+The table below shows that Enums.net is between 2-80x faster than dotnet, but FastEnum is 2-14x faster than Enums.net.
 
 | Method                        |          Mean |      Error |     StdDev |        Median |
 |-------------------------------|--------------:|-----------:|-----------:|--------------:|

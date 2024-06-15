@@ -1,9 +1,0 @@
-//This test is a basic one-value sanity check
-
-namespace Some.Namespace.Here;
-
-[EnumSourceGen]
-public enum MyEnum
-{
-    First
-}
