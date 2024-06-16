@@ -127,13 +127,27 @@ public class EnumGenerator : IIncrementalGenerator
             //Now we need to satisfy C#'s invariant: parents must have equal or more visibility than it's children
             if (es.AccessChain.Length > 1)
             {
-                var parentAccess = es.AccessChain[1];
+                Accessibility parentAccess = es.AccessChain[1];
 
                 if (parentAccess < enumAccess)
                 {
                     message = $"Parent class is less visible ({parentAccess}) than enum '{es.FullName} ({enumAccess}). That is not supported";
                     return false;
                 }
+            }
+
+            FastEnumData data = es.Data;
+
+            if (data.EnumsClassVisibility != Visibility.Inherit && enumAccess <= Accessibility.Internal && data.EnumsClassVisibility == Visibility.Public)
+            {
+                message = $"Your visibility override ({data.EnumsClassVisibility}) on the enums class must be less or equal to the visibility on the enum '{es.FullName} ({enumAccess})";
+                return false;
+            }
+
+            if (data.ExtensionClassVisibility != Visibility.Inherit && enumAccess <= Accessibility.Internal && data.ExtensionClassVisibility == Visibility.Public)
+            {
+                message = $"Your visibility override ({data.ExtensionClassVisibility}) on the extensions class must be less or equal to the visibility on the enum '{es.FullName} ({enumAccess})";
+                return false;
             }
         }
 

@@ -1,0 +1,7 @@
+//Here we check that we can override the visibility of the enums and extensions classes to be less than the enums visibility
+
+[FastEnum(ExtensionClassVisibility = Visibility.Internal, EnumsClassVisibility = Visibility.Internal)]
+public enum MyPublicEnum
+{
+    First
+}

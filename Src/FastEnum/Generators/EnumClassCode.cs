@@ -17,7 +17,7 @@ internal static class EnumClassCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.EnumsClassName ?? "Enums";
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
-        string vi = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
         int oc = es.Members.Count(x => x.OmitValueData != null);
         int mc = es.Members.Length - oc;
@@ -30,7 +30,7 @@ internal static class EnumClassCode
         string res = $$"""
 using System;
 {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-{{(!op.DisableEnumsWrapper ? $"public static partial class {en}\n{{" : "")}}
+{{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
     {{vi}} static partial class {{cn}}
     {
         public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};

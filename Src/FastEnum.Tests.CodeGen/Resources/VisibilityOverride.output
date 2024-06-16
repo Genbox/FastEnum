@@ -3,7 +3,7 @@
 using System;
 
 [Flags]
-public enum MyEnumFormat : byte
+public enum MyPublicEnumFormat : byte
 {
     None = 0,
     Name = 1,
@@ -16,38 +16,38 @@ using System;
 
 internal static partial class Enums
 {
-    internal static partial class MyEnum
+    internal static partial class MyPublicEnum
     {
         public const int MemberCount = 1;
         public const bool IsFlagEnum = false;
 
         public static string[] GetMemberNames() => _names ??= new string[] {
-                "Value"
+                "First"
             };
 
-        public static global::MyEnum[] GetMemberValues() => _values ??= new global::MyEnum[] {
-                global::MyEnum.Value
+        public static global::MyPublicEnum[] GetMemberValues() => _values ??= new global::MyPublicEnum[] {
+                global::MyPublicEnum.First
             };
 
         public static Int32[] GetUnderlyingValues() => _underlyingValues ??= new Int32[] {
                 0
             };
 
-        public static bool TryParse(string value, out global::MyEnum result, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        public static bool TryParse(string value, out global::MyPublicEnum result, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(MyEnumFormat.Name))
+            if (format.HasFlag(MyPublicEnumFormat.Name))
             {
-                if (value.Equals("Value", comparison))
+                if (value.Equals("First", comparison))
                 {
-                    result = global::MyEnum.Value;
+                    result = global::MyPublicEnum.First;
                     return true;
                 }
             }
-            if (format.HasFlag(MyEnumFormat.Value))
+            if (format.HasFlag(MyPublicEnumFormat.Value))
             {
                 if (value.Equals("0", comparison))
                 {
-                    result = global::MyEnum.Value;
+                    result = global::MyPublicEnum.First;
                     return true;
                 }
             }
@@ -56,21 +56,21 @@ internal static partial class Enums
         }
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-        public static bool TryParse(ReadOnlySpan<char> value, out global::MyEnum result, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        public static bool TryParse(ReadOnlySpan<char> value, out global::MyPublicEnum result, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(MyEnumFormat.Name))
+            if (format.HasFlag(MyPublicEnumFormat.Name))
             {
-                if (value.Equals("Value", comparison))
+                if (value.Equals("First", comparison))
                 {
-                    result = global::MyEnum.Value;
+                    result = global::MyPublicEnum.First;
                     return true;
                 }
             }
-            if (format.HasFlag(MyEnumFormat.Value))
+            if (format.HasFlag(MyPublicEnumFormat.Value))
             {
                 if (value.Equals("0", comparison))
                 {
-                    result = global::MyEnum.Value;
+                    result = global::MyPublicEnum.First;
                     return true;
                 }
             }
@@ -78,28 +78,27 @@ internal static partial class Enums
             return false;
         }
 
-        public static global::MyEnum Parse(ReadOnlySpan<char> value, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        public static global::MyPublicEnum Parse(ReadOnlySpan<char> value, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (!TryParse(value, out global::MyEnum result, format, comparison))
+            if (!TryParse(value, out global::MyPublicEnum result, format, comparison))
                 throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
             return result;
         }
 #endif
 
-        public static global::MyEnum Parse(string value, MyEnumFormat format = MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
+        public static global::MyPublicEnum Parse(string value, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (!TryParse(value, out global::MyEnum result, format, comparison))
+            if (!TryParse(value, out global::MyPublicEnum result, format, comparison))
                 throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
             return result;
         }
 
-        public static bool IsDefined(global::MyEnum input)
+        public static bool IsDefined(global::MyPublicEnum input)
         {
-            _isDefinedValues ??= new Int32[] {
-                0
-            };
+            Int32[] _isDefinedValues = GetUnderlyingValues();
+
             for (int i = 0; i < _isDefinedValues.Length; i++)
             {
                 if (_isDefinedValues[i] == (Int32)input)
@@ -110,9 +109,8 @@ internal static partial class Enums
         }
 
         private static string[]? _names;
-        private static global::MyEnum[]? _values;
+        private static global::MyPublicEnum[]? _values;
         private static Int32[]? _underlyingValues;
-        private static Int32[]? _isDefinedValues;
 
     }
 }
@@ -121,21 +119,19 @@ internal static partial class Enums
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-internal static partial class MyEnumExtensions
+internal static partial class MyPublicEnumExtensions
 {
-    public static string GetString(this global::MyEnum value) => value switch
+    public static string GetString(this global::MyPublicEnum value) => value switch
     {
-        global::MyEnum.Value => "Value",
-        global::MyEnum.Omit => string.Empty,
-            global::MyEnum.OmitWithFilter => "OmitWithFilter",
+        global::MyPublicEnum.First => "First",
         _ => value.ToString()
     };
 
-    public static bool TryGetUnderlyingValue(this global::MyEnum value, out Int32 underlyingValue)
+    public static bool TryGetUnderlyingValue(this global::MyPublicEnum value, out Int32 underlyingValue)
     {
         switch (value)
         {
-            case global::MyEnum.Value:
+            case global::MyPublicEnum.First:
                 underlyingValue = 0;
                 return true;
         }
@@ -143,7 +139,7 @@ internal static partial class MyEnumExtensions
         return false;
     }
 
-    public static Int32 GetUnderlyingValue(this global::MyEnum value)
+    public static Int32 GetUnderlyingValue(this global::MyPublicEnum value)
     {
         if (!TryGetUnderlyingValue(value, out Int32 underlyingValue))
             throw new ArgumentOutOfRangeException($"Invalid value: {value}");

@@ -17,7 +17,7 @@ internal static class EnumExtensionCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.ExtensionClassName ?? cn + "Extensions";
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
-        string vi = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string vi = op.ExtensionClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
 
         bool containsDuplicateValue = false;
@@ -43,19 +43,19 @@ internal static class EnumExtensionCode
                        {{vi}} static partial class {{en}}
                        {
                            public static string GetString(this {{sn}} value) => {{(containsDuplicateValue ? "value.ToString();" : $"value switch\n    {{\n        {GetString()}\n        _ => value.ToString()\n    }};")}}
-                       
+
                            public static bool TryGetUnderlyingValue(this {{sn}} value, out {{ut}} underlyingValue)
                            {
                                {{PrintSwitch(TryGetUnderlyingValue(), containsDuplicateValue)}}
                                underlyingValue = default;
                                return false;
                            }
-                       
+
                            public static {{ut}} GetUnderlyingValue(this {{sn}} value)
                            {
                                if (!TryGetUnderlyingValue(value, out {{ut}} underlyingValue))
                                    throw new ArgumentOutOfRangeException($"Invalid value: {value}");
-                       
+
                                return underlyingValue;
                            }
                        """;
@@ -63,8 +63,8 @@ internal static class EnumExtensionCode
         if (es.HasDisplay)
         {
             res += $$"""
-                     
-                     
+
+
                          public static bool TryGetDisplayName(this {{sn}} value,
                      #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                      [NotNullWhen(true)]
@@ -75,12 +75,12 @@ internal static class EnumExtensionCode
                              displayName = null;
                              return false;
                          }
-                     
+
                          public static string GetDisplayName(this {{sn}} value)
                          {
                              if (!TryGetDisplayName(value, out string? displayName))
                                  throw new ArgumentOutOfRangeException($"Invalid value: {value}");
-                     
+
                              return displayName!;
                          }
                      """;
@@ -89,8 +89,8 @@ internal static class EnumExtensionCode
         if (es.HasDescription)
         {
             res += $$"""
-                     
-                     
+
+
                          public static bool TryGetDescription(this {{sn}} value,
                      #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                      [NotNullWhen(true)]
@@ -101,12 +101,12 @@ internal static class EnumExtensionCode
                              description = null;
                              return false;
                          }
-                     
+
                          public static string GetDescription(this {{sn}} value)
                          {
                              if (!TryGetDescription(value, out string? description))
                                  throw new ArgumentOutOfRangeException($"Invalid value: {value}");
-                     
+
                              return description!;
                          }
                      """;
@@ -115,8 +115,8 @@ internal static class EnumExtensionCode
         if (es.HasFlags)
         {
             res += $$"""
-                     
-                     
+
+
                          public static bool IsFlagSet(this {{sn}} value, {{sn}} flag) => (({{ut}})value & ({{ut}})flag) == ({{ut}})flag;
                      """;
         }
@@ -136,7 +136,7 @@ internal static class EnumExtensionCode
                 string transformed = TransformHelper.TransformName(es, em);
 
                 sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(transformed)
-                    .Append("\",\n        ");
+                  .Append("\",\n        ");
             }
 
             return sb.ToString().TrimEnd();

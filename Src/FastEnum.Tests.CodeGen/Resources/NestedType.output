@@ -18,7 +18,7 @@ using System;
 
 namespace Some.Namespace.Here;
 
-public static partial class Enums
+internal static partial class Enums
 {
     internal static partial class MyEnum
     {

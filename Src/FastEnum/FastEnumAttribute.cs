@@ -1,4 +1,5 @@
 // ReSharper disable RedundantNameQualifier
+
 namespace Genbox.FastEnum;
 
 /// <summary>Add to enums to indicate that extension methods should be generated for the type</summary>
@@ -15,11 +16,17 @@ public sealed class FastEnumAttribute : global::System.Attribute
     /// <summary>The namespace used for the extensions class. If not provided the namespace of the enum will be used</summary>
     public string? ExtensionClassNamespace { get; set; }
 
+    /// <summary>Use this to override the visibility of the extension class. If set to inherit, it will default to the same as the enum. It must be set to the same or less visible than the enum. </summary>
+    public Visibility ExtensionClassVisibility { get; set; } = Visibility.Inherit;
+
     /// <summary>Override the name of the Enums class. If not provided, it will be "Enums"</summary>
     public string? EnumsClassName { get; set; }
 
     /// <summary>The namespace use for Enums class. If not provided the namespace of the enum will be used</summary>
     public string? EnumsClassNamespace { get; set; }
+
+    /// <summary>Use this to override the visibility of the extension class. If set to inherit, it will default to the same as the enum. It must be set to the same or less visible than the enum. </summary>
+    public Visibility EnumsClassVisibility { get; set; } = Visibility.Inherit;
 
     /// <summary>Use this to override the name of your enum. This is useful in cases where you have overridden the namespace for the generated code, but now have two enums named the same</summary>
     public string? EnumNameOverride { get; set; }

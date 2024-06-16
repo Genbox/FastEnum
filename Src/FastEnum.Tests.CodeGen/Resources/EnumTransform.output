@@ -14,7 +14,7 @@ public enum MyEnum1Format : byte
 #nullable enable
 using System;
 
-public static partial class Enums
+internal static partial class Enums
 {
     internal static partial class MyEnum1
     {
@@ -163,7 +163,7 @@ public enum MyEnum2Format : byte
 #nullable enable
 using System;
 
-public static partial class Enums
+internal static partial class Enums
 {
     internal static partial class MyEnum2
     {
@@ -312,7 +312,7 @@ public enum MyEnum3Format : byte
 #nullable enable
 using System;
 
-public static partial class Enums
+internal static partial class Enums
 {
     internal static partial class MyEnum3
     {
@@ -461,7 +461,7 @@ public enum MyEnum4Format : byte
 #nullable enable
 using System;
 
-public static partial class Enums
+internal static partial class Enums
 {
     internal static partial class MyEnum4
     {
