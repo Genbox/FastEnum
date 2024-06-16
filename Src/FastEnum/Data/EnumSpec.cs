@@ -1,11 +1,13 @@
-﻿using Genbox.FastEnum.Data;
-using Genbox.FastEnum.Extensions;
+﻿using Genbox.FastEnum.Extensions;
 using Microsoft.CodeAnalysis;
 
-namespace Genbox.FastEnum.Spec;
+namespace Genbox.FastEnum.Data;
 
 internal class EnumSpec : IEquatable<EnumSpec>
 {
+    //This class overrides equality to provide caching to the source generator framework. It cannot just be a record
+    //as it contains lists that has to be compared, so we need to override equality anyway.
+
     public EnumSpec(string name, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, FastEnumData data, EnumMemberSpec[] members, EnumTransformData? transformData)
     {
         Name = name;

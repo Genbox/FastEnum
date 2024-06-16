@@ -4,7 +4,6 @@ using System.Text;
 using Genbox.FastEnum.Data;
 using Genbox.FastEnum.Generators;
 using Genbox.FastEnum.Helpers;
-using Genbox.FastEnum.Spec;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;

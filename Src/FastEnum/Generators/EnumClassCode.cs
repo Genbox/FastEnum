@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Text;
 using Genbox.FastEnum.Data;
 using Genbox.FastEnum.Helpers;
-using Genbox.FastEnum.Spec;
 using Microsoft.CodeAnalysis;
 
 namespace Genbox.FastEnum.Generators;

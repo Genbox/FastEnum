@@ -1,4 +1,4 @@
-﻿using Genbox.FastEnum.Spec;
+﻿using Genbox.FastEnum.Data;
 
 namespace Genbox.FastEnum.Generators;
 

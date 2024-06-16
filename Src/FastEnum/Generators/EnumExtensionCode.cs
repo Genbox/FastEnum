@@ -1,7 +1,6 @@
 using System.Text;
 using Genbox.FastEnum.Data;
 using Genbox.FastEnum.Helpers;
-using Genbox.FastEnum.Spec;
 using Microsoft.CodeAnalysis;
 using static Genbox.FastEnum.Helpers.CodeGenHelper;
 
