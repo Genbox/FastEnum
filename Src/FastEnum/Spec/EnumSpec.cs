@@ -51,13 +51,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
                Equals(TransformData, other.TransformData);
     }
 
-    public override bool Equals(object? obj)
-    {
-        if (obj == null)
-            return false;
-
-        return Equals((EnumSpec)obj);
-    }
+    public override bool Equals(object? obj) => obj != null && Equals((EnumSpec)obj);
 
     public override int GetHashCode()
     {
@@ -67,7 +61,6 @@ internal class EnumSpec : IEquatable<EnumSpec>
             hashCode = (hashCode * 397) ^ FullName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ FullyQualifiedName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ (Namespace != null ? Namespace.GetDeterministicHashCode() : 0);
-            hashCode = (hashCode * 397) ^ AccessChain.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDisplay.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDescription.GetHashCode();
             hashCode = (hashCode * 397) ^ HasFlags.GetHashCode();
@@ -79,12 +72,17 @@ internal class EnumSpec : IEquatable<EnumSpec>
                 hashCode = (hashCode * 397) ^ member.GetHashCode();
             }
 
+            foreach (Accessibility ac in AccessChain)
+            {
+                hashCode = (hashCode * 397) ^ ac.GetHashCode();
+            }
+
             hashCode = (hashCode * 397) ^ (TransformData != null ? TransformData.GetHashCode() : 0);
             return hashCode;
         }
     }
 
-    private bool ListEqual<T>(IList<T> first, IList<T> second)
+    private static bool ListEqual<T>(IList<T> first, IList<T> second)
     {
         if (first.Count != second.Count)
             return false;
