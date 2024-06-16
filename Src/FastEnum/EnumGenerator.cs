@@ -39,7 +39,7 @@ public class EnumGenerator : IIncrementalGenerator
 
             if (!IsSpecsValid(specs, out string? message))
             {
-                DiagnosticDescriptor report = new DiagnosticDescriptor("ESG001", "FastEnum", $"Validation failed with message: {message}", "errors", DiagnosticSeverity.Error, true);
+                DiagnosticDescriptor report = new DiagnosticDescriptor("FE001", "FastEnum", $"Validation failed with message: {message}", "errors", DiagnosticSeverity.Error, true);
                 spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
                 return;
             }
@@ -124,8 +124,17 @@ public class EnumGenerator : IIncrementalGenerator
                 return false;
             }
 
-            //Now we need to satisfy C#'s invariant: parents must have equal or less accessibility than it's children
-            //TODO
+            //Now we need to satisfy C#'s invariant: parents must have equal or more visibility than it's children
+            if (es.AccessChain.Length > 1)
+            {
+                var parentAccess = es.AccessChain[1];
+
+                if (parentAccess < enumAccess)
+                {
+                    message = $"Parent class is less visible ({parentAccess}) than enum '{es.FullName} ({enumAccess}). That is not supported";
+                    return false;
+                }
+            }
         }
 
         message = null;
@@ -222,7 +231,7 @@ public class EnumGenerator : IIncrementalGenerator
 
         while (curSym != null)
         {
-            accessChain.Add(symbol.DeclaredAccessibility);
+            accessChain.Add(curSym.DeclaredAccessibility);
             curSym = curSym.ContainingSymbol;
         }
 

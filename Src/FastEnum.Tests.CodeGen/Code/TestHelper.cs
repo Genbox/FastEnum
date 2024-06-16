@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -39,7 +40,20 @@ internal static class TestHelper
         return reader.ReadToEnd();
     }
 
-    public static string GetGeneratedOutput<T>(string source) where T : IIncrementalGenerator, new()
+    public static string GetGeneratedOutput<T>(string source, bool checkForErrors = true) where T : IIncrementalGenerator, new()
+    {
+        string res = GetGeneratedOutput<T>(source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+
+        if (checkForErrors)
+            Assert.Empty(codeGenDiag);
+
+        if (checkForErrors)
+            Assert.Empty(compilerDiag);
+
+        return res;
+    }
+
+    public static string GetGeneratedOutput<T>(string source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag) where T : IIncrementalGenerator, new()
     {
         //Add a few headers by default
         source = GetHeader() + "\n" + source;
@@ -65,14 +79,10 @@ internal static class TestHelper
 
         CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
 
-        driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> diagnostics);
-        Assert.Empty(diagnostics); //CodeGen diagnostics
-
-        IEnumerable<Diagnostic> compilerDiag = outputCompilation.GetDiagnostics().Where(x => !_ignore.Contains(x.Id));
-        Assert.Empty(compilerDiag); //C# compiler diagnostics
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out codeGenDiag);
+        compilerDiag = outputCompilation.GetDiagnostics().Where(x => !_ignore.Contains(x.Id));
 
         List<SyntaxTree> trees = outputCompilation.SyntaxTrees.ToList();
-        Assert.True(trees.Count > 1);
 
         StringBuilder sb = new StringBuilder();
 
