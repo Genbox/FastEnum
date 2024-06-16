@@ -1,5 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
-using EnumsNET;
+﻿using EnumsNET;
 using Genbox.FastEnum.Benchmarks.Code;
 
 namespace Genbox.FastEnum.Benchmarks.Benchmarks;
