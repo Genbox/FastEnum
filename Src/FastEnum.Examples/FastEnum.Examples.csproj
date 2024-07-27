@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Remove="..\FastEnum\FastEnum.csproj" />
-<!--    <PackageReference Include="Genbox.FastEnum" ExcludeAssets="runtime" />-->
-    <ProjectReference Include="..\FastEnum\FastEnum.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+    <PackageReference Include="Genbox.FastEnum" ExcludeAssets="runtime" />
+<!--    <ProjectReference Include="..\FastEnum\FastEnum.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />-->
   </ItemGroup>
 
 </Project>
