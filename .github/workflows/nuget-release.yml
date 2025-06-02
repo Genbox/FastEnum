@@ -17,12 +17,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4.1.1
-      - name: Setup .NET Core 8.0
-        uses: actions/setup-dotnet@v4.0.0
+      - name: Checkout repo
+        uses: actions/checkout@v4.2.2
+      - name: Setup .NET Core 9.0
+        uses: actions/setup-dotnet@v4.3.1
         with:
-          dotnet-version: '8.0.x'
-      - name: Pack release
-        run: dotnet pack -c Release -o tmp FastEnum.sln
-      - name: Upload to nuget
-        run: dotnet nuget push --skip-duplicate -k ${{secrets.NUGET_KEY}} -s https://api.nuget.org/v3/index.json tmp/*
+          dotnet-version: '9.0.x'
+      - name: Publish
+        shell: pwsh
+        env:
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
+          PWSHG_KEY: ${{secrets.PWSHG_KEY}}
+        run: |
+          ./Scripts/Publish.ps1

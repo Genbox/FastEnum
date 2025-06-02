@@ -69,6 +69,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{6A21
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastEnum.Tests.Functionality", "Src\FastEnum.Tests.Functionality\FastEnum.Tests.Functionality.csproj", "{0AC60E27-303B-4777-8FF5-7B0C86B94E00}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Scripts", "_Scripts", "{71F6AEEB-6ABA-4A87-A427-7BBCC0067011}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\Build.ps1 = Scripts\Build.ps1
+		Scripts\Publish.ps1 = Scripts\Publish.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
