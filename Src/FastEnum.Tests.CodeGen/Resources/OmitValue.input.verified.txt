@@ -3,7 +3,7 @@
 using System;
 
 [Flags]
-public enum MyEnumFormat : byte
+internal enum MyEnumFormat : byte
 {
     None = 0,
     Name = 1,

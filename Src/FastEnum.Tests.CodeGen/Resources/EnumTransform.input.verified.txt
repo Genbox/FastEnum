@@ -3,7 +3,7 @@
 using System;
 
 [Flags]
-public enum MyEnum1Format : byte
+internal enum MyEnum1Format : byte
 {
     None = 0,
     Name = 1,
@@ -152,7 +152,7 @@ internal static partial class MyEnum1Extensions
 using System;
 
 [Flags]
-public enum MyEnum2Format : byte
+internal enum MyEnum2Format : byte
 {
     None = 0,
     Name = 1,
@@ -301,7 +301,7 @@ internal static partial class MyEnum2Extensions
 using System;
 
 [Flags]
-public enum MyEnum3Format : byte
+internal enum MyEnum3Format : byte
 {
     None = 0,
     Name = 1,
@@ -450,7 +450,7 @@ internal static partial class MyEnum3Extensions
 using System;
 
 [Flags]
-public enum MyEnum4Format : byte
+internal enum MyEnum4Format : byte
 {
     None = 0,
     Name = 1,
