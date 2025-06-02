@@ -38,16 +38,15 @@ internal static class TestHelper
         IEnumerable<PortableExecutableReference> refs = AppDomain.CurrentDomain.GetAssemblies()
                                                                  .Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location))
                                                                  .Select(x => MetadataReference.CreateFromFile(x.Location))
-                                                                 .Concat(new[]
-                                                                 {
+                                                                 .Concat([
                                                                      MetadataReference.CreateFromFile(typeof(T).Assembly.Location),
                                                                      MetadataReference.CreateFromFile(typeof(DisplayAttribute).Assembly.Location),
                                                                      MetadataReference.CreateFromFile(typeof(FlagsAttribute).Assembly.Location)
-                                                                 });
+                                                                 ]);
 
         CSharpCompilation compilation = CSharpCompilation.Create(
             "generator",
-            new[] { syntaxTree },
+            [syntaxTree],
             refs,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

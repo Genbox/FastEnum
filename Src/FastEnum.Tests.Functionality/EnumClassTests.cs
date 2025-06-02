@@ -65,13 +65,13 @@ public class EnumClassTests
     public void GetMemberNamesTest()
     {
         string[] names =
-        {
+        [
             nameof(TestEnum.First),
             nameof(TestEnum.Second),
             nameof(TestEnum.Third),
             nameof(TestEnum.Other),
             nameof(TestEnum.Min)
-        };
+        ];
 
         Assert.Equal(names, Enums.TestEnum.GetMemberNames());
     }
@@ -80,13 +80,13 @@ public class EnumClassTests
     public void GetMemberValuesTest()
     {
         TestEnum[] values =
-        {
+        [
             TestEnum.First,
             TestEnum.Second,
             TestEnum.Third,
             TestEnum.Other,
             TestEnum.Min
-        };
+        ];
 
         Assert.Equal(values, Enums.TestEnum.GetMemberValues());
     }
@@ -95,13 +95,13 @@ public class EnumClassTests
     public void GetUnderlyingValuesTest()
     {
         long[] underlyingValues =
-        {
+        [
             8,
             1,
             2,
             256,
             long.MinValue
-        };
+        ];
 
         Assert.Equal(underlyingValues, Enums.TestEnum.GetUnderlyingValues());
     }
@@ -110,9 +110,9 @@ public class EnumClassTests
     public void GetDisplayNamesTest()
     {
         (TestEnum, string)[] displayNames =
-        {
+        [
             (TestEnum.First, "FirstDisplayName")
-        };
+        ];
 
         Assert.Equal(displayNames, Enums.TestEnum.GetDisplayNames());
     }
@@ -121,9 +121,9 @@ public class EnumClassTests
     public void GetDescriptionsTest()
     {
         (TestEnum, string)[] descriptions =
-        {
+        [
             (TestEnum.First, "FirstDescription")
-        };
+        ];
 
         Assert.Equal(descriptions, Enums.TestEnum.GetDescriptions());
     }

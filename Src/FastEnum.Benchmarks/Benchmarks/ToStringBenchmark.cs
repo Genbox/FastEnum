@@ -18,7 +18,7 @@ public class ToStringBenchmark
     public string EnumsNetToString() => _enum.AsString();
 
     [Benchmark]
-    public string? CodeGenGetDisplayName() => _enum.GetDisplayName();
+    public string CodeGenGetDisplayName() => _enum.GetDisplayName();
 
     [Benchmark]
     public string? EnumsNetGetDisplayName() => _enum.AsString(EnumFormat.DisplayName);
