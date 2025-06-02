@@ -8,15 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Verify.DiffPlex" PrivateAssets="All" />
+    <PackageReference Include="Verify.Xunit" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Remove="..\FastEnum\FastEnum.csproj" />
     <ProjectReference Include="..\FastEnum\FastEnum.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\**" />
   </ItemGroup>
 
 </Project>

@@ -104,3 +104,13 @@ resharper_parentheses_non_obvious_operations = none, multiplicative, additive, a
 
 # Microsoft .NET properties
 csharp_style_var_for_built_in_types = false:suggestion
+
+# Verify
+[*.{received,verified}.{txt}]
+charset = "utf-8-bom"
+end_of_line = lf
+indent_size = unset
+indent_style = unset
+insert_final_newline = false
+tab_width = unset
+trim_trailing_whitespace = false

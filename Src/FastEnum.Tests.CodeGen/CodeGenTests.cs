@@ -8,34 +8,35 @@ namespace Genbox.FastEnum.Tests.CodeGen;
 
 public class CodeGenTests
 {
+    private static readonly string _resourcesDir = AppContext.BaseDirectory + "../../../Resources";
+
+    [Fact]
+    public Task VerifyChecksTest() => VerifyChecks.Run();
+
     [Theory]
     [MemberData(nameof(GetTests))]
-    public void RunResources(string testName)
+    public async Task RunResources(string testName)
     {
-        TestResource<EnumGenerator>(testName);
+        string inputSource = await File.ReadAllTextAsync(Path.Combine(_resourcesDir, testName));
+        string actual = GetGeneratedOutput<EnumGenerator>(inputSource);
+
+        await Verify(actual)
+              .UseFileName(testName)
+              .UseDirectory("Resources")
+              .DisableDiff();
     }
 
-    [Theory(Skip = "This is to update all resources with new formatting")]
-    // [Theory]
-    [MemberData(nameof(GetTests))]
-    public void UpdateResources(string testName)
+    public static TheoryData<string> GetTests()
     {
-        string inputSource = ReadResource(testName);
-        string actual = GetGeneratedOutput<EnumGenerator>(inputSource).ReplaceLineEndings("\n");
+        TheoryData<string> data = new TheoryData<string>();
 
-        File.WriteAllText(@"..\..\..\Resources\" + Path.ChangeExtension(testName.Substring(40), ".output"), actual);
-    }
-
-    public static IEnumerable<object[]> GetTests()
-    {
-        Assembly assembly = typeof(TestHelper).Assembly;
-        string[] resources = assembly.GetManifestResourceNames();
-
-        foreach (string resource in resources)
+        foreach (string resource in Directory.GetFiles(_resourcesDir))
         {
-            if (resource.Contains(".input", StringComparison.OrdinalIgnoreCase))
-                yield return new object[] { resource };
+            if (resource.EndsWith(".input", StringComparison.OrdinalIgnoreCase))
+                data.Add(Path.GetFileName(resource));
         }
+
+        return data;
     }
 }
 #endif

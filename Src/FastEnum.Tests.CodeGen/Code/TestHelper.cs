@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,34 +9,12 @@ namespace Genbox.FastEnum.Tests.CodeGen.Code;
 internal static class TestHelper
 {
     private static string? _headerCache;
+    private static readonly string _resourcesDir = AppContext.BaseDirectory + "../../../Resources";
 
-    private static readonly HashSet<string> _ignore = new HashSet<string>
-    {
-        "CS8019",
-    };
-
-    public static void TestResource<T>(string testName) where T : IIncrementalGenerator, new()
-    {
-        string inputSource = ReadResource(testName);
-
-        string actual = GetGeneratedOutput<T>(inputSource).ReplaceLineEndings("\n");
-        string expected = ReadResource(Path.ChangeExtension(testName, "output"));
-
-        Assert.Equal(expected, actual);
-    }
-
-    public static string ReadResource(string name)
-    {
-        Assembly assembly = typeof(TestHelper).Assembly;
-
-        using Stream? stream = assembly.GetManifestResourceStream(name);
-
-        if (stream == null)
-            throw new InvalidOperationException("Unable to find the resource " + name);
-
-        using StreamReader reader = new StreamReader(stream);
-        return reader.ReadToEnd();
-    }
+    private static readonly HashSet<string> _ignore =
+    [
+        "CS8019"
+    ];
 
     public static string GetGeneratedOutput<T>(string source, bool checkForErrors = true) where T : IIncrementalGenerator, new()
     {
@@ -93,6 +70,6 @@ internal static class TestHelper
 
     private static string GetHeader()
     {
-        return _headerCache ??= ReadResource("Genbox.FastEnum.Tests.CodeGen.Resources._Header.dat");
+        return _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.dat"));
     }
 }
