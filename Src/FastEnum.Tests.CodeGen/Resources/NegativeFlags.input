@@ -1,0 +1,11 @@
+// Ensure flags with negative values are handled in IsDefined and parsing.
+
+[Flags]
+[FastEnum]
+internal enum SignedFlags : long
+{
+    None = 0,
+    One = 1,
+    Negative = -2,
+    Combo = One | Negative
+}
