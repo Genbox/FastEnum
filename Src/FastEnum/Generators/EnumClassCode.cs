@@ -22,7 +22,7 @@ internal static class EnumClassCode
 
         List<string> fields = new List<string>();
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = StringBuilderPool.Rent(4096);
 
         string res = $$"""
                        using System;
@@ -108,7 +108,7 @@ internal static class EnumClassCode
                 sb.Append(Indent(2)).AppendLine(field);
             }
 
-            res += sb.ToString();
+            res += StringBuilderPool.ReturnGetString(sb);
         }
 
         res += "\n    }";
@@ -418,7 +418,7 @@ internal static class EnumClassCode
         if (arr.Length == 0)
             return $"Array.Empty<{type}>();";
 
-        StringBuilder sb = new StringBuilder(100);
+        StringBuilder sb = StringBuilderPool.Rent(100);
 
         if (cacheDisabled)
             sb.Append("new ").Append(type).AppendLine("[] {");
@@ -440,6 +440,6 @@ internal static class EnumClassCode
 
         sb.Append(Indent(3)).Append("};");
 
-        return sb.ToString();
+        return StringBuilderPool.ReturnGetString(sb);
     }
 }

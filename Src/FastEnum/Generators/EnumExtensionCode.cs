@@ -28,7 +28,7 @@ internal static class EnumExtensionCode
             }
         }
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(4096);
         string res = $$"""
                        using System;
                        using System.Diagnostics.CodeAnalysis;

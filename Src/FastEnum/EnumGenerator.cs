@@ -46,7 +46,7 @@ public class EnumGenerator : IIncrementalGenerator
                 {
                     string fqn = enumSpec.FullyQualifiedName;
 
-                    StringBuilder sb = new StringBuilder();
+                    StringBuilder sb = new StringBuilder(4096);
                     spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
                     spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, enumSpec, EnumClassCode.Generate));
                     spc.AddSource(fqn + "_Extensions.g.cs", GetSource(sb, name, enumSpec, EnumExtensionCode.Generate));
