@@ -40,22 +40,12 @@ public static partial class Enums
         {
             if ((format & CasePatternEnumFormat.Name) == CasePatternEnumFormat.Name)
             {
-                if (value.Equals("One", comparison))
-                {
-                    result = global::CasePatternEnum.One;
-                    return true;
-                }
                 if (value.Equals("NE", comparison))
                 {
                     result = global::CasePatternEnum.One;
                     return true;
                 }
 
-                if (value.Equals("Two", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
-                    return true;
-                }
                 if (value.Equals("WO", comparison))
                 {
                     result = global::CasePatternEnum.Two;
@@ -85,22 +75,12 @@ public static partial class Enums
         {
             if ((format & CasePatternEnumFormat.Name) == CasePatternEnumFormat.Name)
             {
-                if (value.Equals("One", comparison))
-                {
-                    result = global::CasePatternEnum.One;
-                    return true;
-                }
                 if (value.Equals("NE", comparison))
                 {
                     result = global::CasePatternEnum.One;
                     return true;
                 }
 
-                if (value.Equals("Two", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
-                    return true;
-                }
                 if (value.Equals("WO", comparison))
                 {
                     result = global::CasePatternEnum.Two;

@@ -37,11 +37,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum1Format.Name) == MyEnum1Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum1.First;
-                    return true;
-                }
                 if (value.Equals("NotFirst", comparison))
                 {
                     result = global::MyEnum1.First;
@@ -65,11 +60,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum1Format.Name) == MyEnum1Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum1.First;
-                    return true;
-                }
                 if (value.Equals("NotFirst", comparison))
                 {
                     result = global::MyEnum1.First;
@@ -196,11 +186,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum2Format.Name) == MyEnum2Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum2.First;
-                    return true;
-                }
                 if (value.Equals("FIRST", comparison))
                 {
                     result = global::MyEnum2.First;
@@ -224,11 +209,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum2Format.Name) == MyEnum2Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum2.First;
-                    return true;
-                }
                 if (value.Equals("FIRST", comparison))
                 {
                     result = global::MyEnum2.First;
@@ -355,11 +335,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum3Format.Name) == MyEnum3Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum3.First;
-                    return true;
-                }
                 if (value.Equals("Last", comparison))
                 {
                     result = global::MyEnum3.First;
@@ -383,11 +358,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum3Format.Name) == MyEnum3Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum3.First;
-                    return true;
-                }
                 if (value.Equals("Last", comparison))
                 {
                     result = global::MyEnum3.First;
@@ -514,11 +484,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum4Format.Name) == MyEnum4Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum4.First;
-                    return true;
-                }
                 if (value.Equals("fIRST", comparison))
                 {
                     result = global::MyEnum4.First;
@@ -542,11 +507,6 @@ internal static partial class Enums
         {
             if ((format & MyEnum4Format.Name) == MyEnum4Format.Name)
             {
-                if (value.Equals("First", comparison))
-                {
-                    result = global::MyEnum4.First;
-                    return true;
-                }
                 if (value.Equals("fIRST", comparison))
                 {
                     result = global::MyEnum4.First;

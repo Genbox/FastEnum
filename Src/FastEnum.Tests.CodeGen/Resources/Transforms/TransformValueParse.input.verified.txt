@@ -40,11 +40,6 @@ public static partial class Enums
         {
             if ((format & StatusFormat.Name) == StatusFormat.Name)
             {
-                if (value.Equals("Ok", comparison))
-                {
-                    result = global::Status.Ok;
-                    return true;
-                }
                 if (value.Equals("good", comparison))
                 {
                     result = global::Status.Ok;
@@ -80,11 +75,6 @@ public static partial class Enums
         {
             if ((format & StatusFormat.Name) == StatusFormat.Name)
             {
-                if (value.Equals("Ok", comparison))
-                {
-                    result = global::Status.Ok;
-                    return true;
-                }
                 if (value.Equals("good", comparison))
                 {
                     result = global::Status.Ok;

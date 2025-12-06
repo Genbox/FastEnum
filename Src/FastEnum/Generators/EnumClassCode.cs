@@ -14,8 +14,9 @@ internal static class EnumClassCode
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
-        int oc = es.Members.Count(x => x.OmitValueData != null);
-        int mc = es.Members.Length - oc;
+        int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
+        bool omitUnderlyingValues = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
+        bool omitIsDefined = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
         EnumTransformData? transform = es.TransformData;
 
@@ -207,7 +208,7 @@ internal static class EnumClassCode
 
                 sb.Append($$"""
 
-                                            if (value.Equals("{{em.Name}}", comparison))
+                                            if (value.Equals("{{TransformHelper.TransformName(es, em)}}", comparison))
                                             {
                                                 result = {{sn}}.{{em.Name}};
                                                 return true;
@@ -326,8 +327,8 @@ internal static class EnumClassCode
 
             bool hasMembers = true;
 
-            //If we have no omitted enum values, then we can reuse GetUnderlyingValues()
-            if (oc == 0)
+            //If we have no omissions impacting IsDefined, then we can reuse GetUnderlyingValues()
+            if (!omitUnderlyingValues && !omitIsDefined)
                 sb.Append(ut).AppendLine("[] _isDefinedValues = GetUnderlyingValues();");
             else
             {
