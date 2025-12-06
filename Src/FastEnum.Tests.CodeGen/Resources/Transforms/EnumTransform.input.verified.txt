@@ -127,6 +127,21 @@ internal static partial class MyEnum1Extensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::MyEnum1 value, MyEnum1Format format = MyEnum1Format.Default)
+    {
+        if ((format & MyEnum1Format.Name) == MyEnum1Format.Name)
+        {
+            if (value == global::MyEnum1.First) return "NotFirst";
+        }
+
+        if ((format & MyEnum1Format.Value) == MyEnum1Format.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::MyEnum1 value, out Int32 underlyingValue)
     {
         switch (value)
@@ -275,6 +290,21 @@ internal static partial class MyEnum2Extensions
         global::MyEnum2.First => "FIRST",
         _ => value.ToString()
     };
+
+    public static string GetString(this global::MyEnum2 value, MyEnum2Format format = MyEnum2Format.Default)
+    {
+        if ((format & MyEnum2Format.Name) == MyEnum2Format.Name)
+        {
+            if (value == global::MyEnum2.First) return "FIRST";
+        }
+
+        if ((format & MyEnum2Format.Value) == MyEnum2Format.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this global::MyEnum2 value, out Int32 underlyingValue)
     {
@@ -425,6 +455,21 @@ internal static partial class MyEnum3Extensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::MyEnum3 value, MyEnum3Format format = MyEnum3Format.Default)
+    {
+        if ((format & MyEnum3Format.Name) == MyEnum3Format.Name)
+        {
+            if (value == global::MyEnum3.First) return "Last";
+        }
+
+        if ((format & MyEnum3Format.Value) == MyEnum3Format.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::MyEnum3 value, out Int32 underlyingValue)
     {
         switch (value)
@@ -573,6 +618,21 @@ internal static partial class MyEnum4Extensions
         global::MyEnum4.First => "fIRST",
         _ => value.ToString()
     };
+
+    public static string GetString(this global::MyEnum4 value, MyEnum4Format format = MyEnum4Format.Default)
+    {
+        if ((format & MyEnum4Format.Name) == MyEnum4Format.Name)
+        {
+            if (value == global::MyEnum4.First) return "fIRST";
+        }
+
+        if ((format & MyEnum4Format.Value) == MyEnum4Format.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this global::MyEnum4 value, out Int32 underlyingValue)
     {
@@ -750,6 +810,22 @@ internal static partial class MyEnum5Extensions
         global::MyEnum5.Alpha => "Alpha",
         _ => value.ToString()
     };
+
+    public static string GetString(this global::MyEnum5 value, MyEnum5Format format = MyEnum5Format.Default)
+    {
+        if ((format & MyEnum5Format.Name) == MyEnum5Format.Name)
+        {
+            if (value == global::MyEnum5.Beta) return "Beta";
+            if (value == global::MyEnum5.Alpha) return "Alpha";
+        }
+
+        if ((format & MyEnum5Format.Value) == MyEnum5Format.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this global::MyEnum5 value, out Int32 underlyingValue)
     {

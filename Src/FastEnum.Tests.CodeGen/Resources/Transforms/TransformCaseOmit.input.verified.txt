@@ -155,6 +155,22 @@ public static partial class CasePatternEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::CasePatternEnum value, CasePatternEnumFormat format = CasePatternEnumFormat.Default)
+    {
+        if ((format & CasePatternEnumFormat.Name) == CasePatternEnumFormat.Name)
+        {
+            if (value == global::CasePatternEnum.One) return "NE";
+            if (value == global::CasePatternEnum.Two) return "WO";
+        }
+
+        if ((format & CasePatternEnumFormat.Value) == CasePatternEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::CasePatternEnum value, out Int32 underlyingValue)
     {
         switch (value)

@@ -133,6 +133,21 @@ public static partial class MyEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.MyEnum value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.MyEnumFormat.Name) == Some.Namespace.Here.MyEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value) return "Value";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnumFormat.Value) == Some.Namespace.Here.MyEnumFormat.Value)
+        {
+            return ((Byte)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum value, out Byte underlyingValue)
     {
         switch (value)
@@ -287,6 +302,21 @@ public static partial class MyEnum2Extensions
         Some.Namespace.Here.MyEnum2.Value => "Value",
         _ => value.ToString()
     };
+
+    public static string GetString(this Some.Namespace.Here.MyEnum2 value, Some.Namespace.Here.MyEnum2Format format = Some.Namespace.Here.MyEnum2Format.Default)
+    {
+        if ((format & Some.Namespace.Here.MyEnum2Format.Name) == Some.Namespace.Here.MyEnum2Format.Name)
+        {
+            if (value == Some.Namespace.Here.MyEnum2.Value) return "Value";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnum2Format.Value) == Some.Namespace.Here.MyEnum2Format.Value)
+        {
+            return ((UInt64)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum2 value, out UInt64 underlyingValue)
     {

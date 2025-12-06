@@ -12,6 +12,7 @@ internal static class EnumExtensionCode
         string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
         string vi = op.ExtensionClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
+        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"{op.EnumsClassNamespace ?? es.Namespace}.{cn}Format" : $"{cn}Format";
 
         bool containsDuplicateValue = false;
         HashSet<object> values = new HashSet<object>();
@@ -36,6 +37,11 @@ internal static class EnumExtensionCode
                        {{vi}} static partial class {{en}}
                        {
                            public static string GetString(this {{sn}} value) => {{(containsDuplicateValue ? "value.ToString();" : $"value switch\n    {{\n        {GetString()}\n        _ => value.ToString()\n    }};")}}
+
+                           public static string GetString(this {{sn}} value, {{ef}} format = {{ef}}.Default)
+                           {
+                               {{GetStringWithFormat()}}
+                           }
 
                            public static bool TryGetUnderlyingValue(this {{sn}} value, out {{ut}} underlyingValue)
                            {
@@ -116,6 +122,81 @@ internal static class EnumExtensionCode
 
         return res + "\n}";
 
+        string GetStringWithFormat()
+        {
+            sb.Clear();
+
+            bool hasDisplayNames = es.HasDisplay && es.Members.Any(x => x.DisplayData?.Name != null);
+            bool hasDescriptions = es.HasDescription && es.Members.Any(x => x.DisplayData?.Description != null);
+            bool hasOmit = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true);
+
+            if (hasDisplayNames)
+            {
+                sb.Append($"if ((format & {ef}.DisplayName) == {ef}.DisplayName)\n        {{\n");
+
+                foreach (EnumMemberSpec em in es.Members)
+                {
+                    if (em.DisplayData?.Name == null)
+                        continue;
+
+                    string display = EscapeString(em.DisplayData.Name);
+                    sb.Append($"            if (value == {sn}.{em.Name}) return \"{display}\";\n");
+                }
+
+                sb.Append("        }\n\n        ");
+            }
+
+            if (hasDescriptions)
+            {
+                sb.Append($"if ((format & {ef}.Description) == {ef}.Description)\n        {{\n");
+
+                foreach (EnumMemberSpec em in es.Members)
+                {
+                    if (em.DisplayData?.Description == null)
+                        continue;
+
+                    string description = EscapeString(em.DisplayData.Description);
+                    sb.Append($"            if (value == {sn}.{em.Name}) return \"{description}\";\n");
+                }
+
+                sb.Append("        }\n\n        ");
+            }
+
+            sb.Append($"if ((format & {ef}.Name) == {ef}.Name)\n        {{\n");
+
+            foreach (EnumMemberSpec em in es.Members)
+            {
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                {
+                    sb.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                    continue;
+                }
+
+                string transformed = TransformHelper.TransformName(es, em);
+                sb.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(transformed)}\";\n");
+            }
+
+            sb.Append("        }\n\n        ");
+
+            sb.Append($"if ((format & {ef}.Value) == {ef}.Value)\n        {{\n");
+
+            if (hasOmit)
+            {
+                foreach (EnumMemberSpec em in es.Members)
+                {
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                        sb.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                }
+            }
+
+            sb.Append($"            return (({ut})value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);\n");
+            sb.Append("        }\n\n        ");
+
+            sb.Append("return value.ToString();");
+
+            return sb.ToString();
+        }
+
         string GetString()
         {
             sb.Clear();
@@ -129,7 +210,6 @@ internal static class EnumExtensionCode
                 }
 
                 string transformed = TransformHelper.TransformName(es, em);
-
                 sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(EscapeString(transformed)).Append("\",\n        ");
             }
 

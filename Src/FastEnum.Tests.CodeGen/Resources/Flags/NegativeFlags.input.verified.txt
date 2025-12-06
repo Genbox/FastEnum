@@ -203,6 +203,24 @@ internal static partial class SignedFlagsExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::SignedFlags value, SignedFlagsFormat format = SignedFlagsFormat.Default)
+    {
+        if ((format & SignedFlagsFormat.Name) == SignedFlagsFormat.Name)
+        {
+            if (value == global::SignedFlags.None) return "None";
+            if (value == global::SignedFlags.One) return "One";
+            if (value == global::SignedFlags.Negative) return "Negative";
+            if (value == global::SignedFlags.Combo) return "Combo";
+        }
+
+        if ((format & SignedFlagsFormat.Value) == SignedFlagsFormat.Value)
+        {
+            return ((Int64)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::SignedFlags value, out Int64 underlyingValue)
     {
         switch (value)

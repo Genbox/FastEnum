@@ -302,6 +302,39 @@ internal static partial class MyEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::MyEnum value, MyEnumFormat format = MyEnumFormat.Default)
+    {
+        if ((format & MyEnumFormat.DisplayName) == MyEnumFormat.DisplayName)
+        {
+            if (value == global::MyEnum.OmitDisplay) return "Disp";
+        }
+
+        if ((format & MyEnumFormat.Description) == MyEnumFormat.Description)
+        {
+            if (value == global::MyEnum.OmitDisplay) return "Desc";
+        }
+
+        if ((format & MyEnumFormat.Name) == MyEnumFormat.Name)
+        {
+            if (value == global::MyEnum.Keep) return "Keep";
+            if (value == global::MyEnum.OmitAll) return string.Empty;
+            if (value == global::MyEnum.OmitNameParse) return "OmitNameParse";
+            if (value == global::MyEnum.OmitUnderlying) return "OmitUnderlying";
+            if (value == global::MyEnum.OmitDisplay) return "OmitDisplay";
+            if (value == global::MyEnum.OmitIsDefined) return "OmitIsDefined";
+            if (value == global::MyEnum.OmitString) return string.Empty;
+        }
+
+        if ((format & MyEnumFormat.Value) == MyEnumFormat.Value)
+        {
+            if (value == global::MyEnum.OmitAll) return string.Empty;
+            if (value == global::MyEnum.OmitString) return string.Empty;
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::MyEnum value, out Int32 underlyingValue)
     {
         switch (value)

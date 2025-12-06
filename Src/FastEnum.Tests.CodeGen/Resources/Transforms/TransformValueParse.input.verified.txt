@@ -155,6 +155,22 @@ public static partial class StatusExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::Status value, StatusFormat format = StatusFormat.Default)
+    {
+        if ((format & StatusFormat.Name) == StatusFormat.Name)
+        {
+            if (value == global::Status.Ok) return "good";
+            if (value == global::Status.Error) return "Error";
+        }
+
+        if ((format & StatusFormat.Value) == StatusFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::Status value, out Int32 underlyingValue)
     {
         switch (value)

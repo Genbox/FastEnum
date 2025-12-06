@@ -128,6 +128,21 @@ public static partial class MyEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.MyEnum value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.MyEnumFormat.Name) == Some.Namespace.Here.MyEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value1) return "Value1";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnumFormat.Value) == Some.Namespace.Here.MyEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum value, out Int32 underlyingValue)
     {
         switch (value)

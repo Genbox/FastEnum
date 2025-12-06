@@ -127,6 +127,21 @@ public static partial class MyEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::MyEnum value, MyEnumFormat format = MyEnumFormat.Default)
+    {
+        if ((format & MyEnumFormat.Name) == MyEnumFormat.Name)
+        {
+            if (value == global::MyEnum.First) return "First";
+        }
+
+        if ((format & MyEnumFormat.Value) == MyEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::MyEnum value, out Int32 underlyingValue)
     {
         switch (value)

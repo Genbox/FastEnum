@@ -371,6 +371,41 @@ public static partial class MyEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.MyEnum value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.MyEnumFormat.DisplayName) == Some.Namespace.Here.MyEnumFormat.DisplayName)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value1) return "myname1";
+            if (value == Some.Namespace.Here.MyEnum.Value2) return "myname2\0<-nullbyte";
+            if (value == Some.Namespace.Here.MyEnum.Value3) return "myname3\t<-tab";
+            if (value == Some.Namespace.Here.MyEnum.Value4) return "myname4\"<-qoute";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnumFormat.Description) == Some.Namespace.Here.MyEnumFormat.Description)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value2) return "mydescription2\0<-nullbyte";
+            if (value == Some.Namespace.Here.MyEnum.Value3) return "mydescription3\t<-tab";
+            if (value == Some.Namespace.Here.MyEnum.Value4) return "mydescription4\"<-qoute";
+            if (value == Some.Namespace.Here.MyEnum.Value5) return "mydescription5";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnumFormat.Name) == Some.Namespace.Here.MyEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value1) return "Value1";
+            if (value == Some.Namespace.Here.MyEnum.Value2) return "Value2";
+            if (value == Some.Namespace.Here.MyEnum.Value3) return "Value3";
+            if (value == Some.Namespace.Here.MyEnum.Value4) return "Value4";
+            if (value == Some.Namespace.Here.MyEnum.Value5) return "Value5";
+        }
+
+        if ((format & Some.Namespace.Here.MyEnumFormat.Value) == Some.Namespace.Here.MyEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum value, out Int32 underlyingValue)
     {
         switch (value)

@@ -161,6 +161,22 @@ internal static partial class ClassEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.NestedClass.ClassEnum value, Some.Namespace.Here.ClassEnumFormat format = Some.Namespace.Here.ClassEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.ClassEnumFormat.Name) == Some.Namespace.Here.ClassEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.NestedClass.ClassEnum.First) return "First";
+            if (value == Some.Namespace.Here.NestedClass.ClassEnum.Second) return "Second";
+        }
+
+        if ((format & Some.Namespace.Here.ClassEnumFormat.Value) == Some.Namespace.Here.ClassEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.NestedClass.ClassEnum value, out Int32 underlyingValue)
     {
         switch (value)
@@ -346,6 +362,22 @@ internal static partial class StructEnumExtensions
         Some.Namespace.Here.NestedStruct.StructEnum.Second => "Second",
         _ => value.ToString()
     };
+
+    public static string GetString(this Some.Namespace.Here.NestedStruct.StructEnum value, Some.Namespace.Here.StructEnumFormat format = Some.Namespace.Here.StructEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.StructEnumFormat.Name) == Some.Namespace.Here.StructEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.NestedStruct.StructEnum.First) return "First";
+            if (value == Some.Namespace.Here.NestedStruct.StructEnum.Second) return "Second";
+        }
+
+        if ((format & Some.Namespace.Here.StructEnumFormat.Value) == Some.Namespace.Here.StructEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.NestedStruct.StructEnum value, out Int32 underlyingValue)
     {
@@ -533,6 +565,22 @@ internal static partial class RecordEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.NestedRecord.RecordEnum value, Some.Namespace.Here.RecordEnumFormat format = Some.Namespace.Here.RecordEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.RecordEnumFormat.Name) == Some.Namespace.Here.RecordEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.NestedRecord.RecordEnum.First) return "First";
+            if (value == Some.Namespace.Here.NestedRecord.RecordEnum.Second) return "Second";
+        }
+
+        if ((format & Some.Namespace.Here.RecordEnumFormat.Value) == Some.Namespace.Here.RecordEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.NestedRecord.RecordEnum value, out Int32 underlyingValue)
     {
         switch (value)
@@ -719,6 +767,22 @@ internal static partial class RecordStructEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.NestedRecordStruct.RecordStructEnum value, Some.Namespace.Here.RecordStructEnumFormat format = Some.Namespace.Here.RecordStructEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.RecordStructEnumFormat.Name) == Some.Namespace.Here.RecordStructEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First) return "First";
+            if (value == Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second) return "Second";
+        }
+
+        if ((format & Some.Namespace.Here.RecordStructEnumFormat.Value) == Some.Namespace.Here.RecordStructEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.NestedRecordStruct.RecordStructEnum value, out Int32 underlyingValue)
     {
         switch (value)
@@ -904,6 +968,22 @@ internal static partial class InterfaceEnumExtensions
         Some.Namespace.Here.INestedInterface.InterfaceEnum.Second => "Second",
         _ => value.ToString()
     };
+
+    public static string GetString(this Some.Namespace.Here.INestedInterface.InterfaceEnum value, Some.Namespace.Here.InterfaceEnumFormat format = Some.Namespace.Here.InterfaceEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.InterfaceEnumFormat.Name) == Some.Namespace.Here.InterfaceEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.INestedInterface.InterfaceEnum.First) return "First";
+            if (value == Some.Namespace.Here.INestedInterface.InterfaceEnum.Second) return "Second";
+        }
+
+        if ((format & Some.Namespace.Here.InterfaceEnumFormat.Value) == Some.Namespace.Here.InterfaceEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
 
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.INestedInterface.InterfaceEnum value, out Int32 underlyingValue)
     {

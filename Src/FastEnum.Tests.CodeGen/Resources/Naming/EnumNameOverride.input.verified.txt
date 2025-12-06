@@ -133,6 +133,21 @@ public static partial class OtherEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this Some.Namespace.Here.MyEnum value, Some.Namespace.Here.OtherEnumFormat format = Some.Namespace.Here.OtherEnumFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.OtherEnumFormat.Name) == Some.Namespace.Here.OtherEnumFormat.Name)
+        {
+            if (value == Some.Namespace.Here.MyEnum.Value) return "Value";
+        }
+
+        if ((format & Some.Namespace.Here.OtherEnumFormat.Value) == Some.Namespace.Here.OtherEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.MyEnum value, out Int32 underlyingValue)
     {
         switch (value)

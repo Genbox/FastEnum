@@ -90,4 +90,17 @@ public class EnumExtensionsTest
         Assert.True(value.TryGetDescription(out string? description));
         Assert.Equal("Line1\\Line2", description);
     }
+
+    [Fact]
+    public void GetStringHonorsFormat()
+    {
+        Assert.Equal("FirstDisplayName", TestEnum.First.GetString(TestEnumFormat.DisplayName));
+        Assert.Equal("FirstDescription", TestEnum.First.GetString(TestEnumFormat.Description));
+        Assert.Equal("First", TestEnum.First.GetString(TestEnumFormat.Name));
+        Assert.Equal("8", TestEnum.First.GetString(TestEnumFormat.Value));
+
+        // Omitted value should stay omitted regardless of format selection
+        Assert.Equal(string.Empty, TestOmitEnum.Omitted.GetString(TestOmitEnumFormat.Name));
+        Assert.Equal(string.Empty, TestOmitEnum.Omitted.GetString(TestOmitEnumFormat.Value));
+    }
 }

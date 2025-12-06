@@ -202,6 +202,24 @@ public static partial class ProfileExtensions
 {
     public static string GetString(this Some.Namespace.Here.Profile value) => value.ToString();
 
+    public static string GetString(this Some.Namespace.Here.Profile value, Some.Namespace.Here.ProfileFormat format = Some.Namespace.Here.ProfileFormat.Default)
+    {
+        if ((format & Some.Namespace.Here.ProfileFormat.Name) == Some.Namespace.Here.ProfileFormat.Name)
+        {
+            if (value == Some.Namespace.Here.Profile.Unknown) return "Unknown";
+            if (value == Some.Namespace.Here.Profile.WindowsLegacy) return "WindowsLegacy";
+            if (value == Some.Namespace.Here.Profile.WindowsServer2022) return "WindowsServer2022";
+            if (value == Some.Namespace.Here.Profile.NewestServer) return "NewestServer";
+        }
+
+        if ((format & Some.Namespace.Here.ProfileFormat.Value) == Some.Namespace.Here.ProfileFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this Some.Namespace.Here.Profile value, out Int32 underlyingValue)
     {
         switch (value.ToString())

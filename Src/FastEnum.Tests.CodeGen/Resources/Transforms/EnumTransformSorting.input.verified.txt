@@ -279,6 +279,37 @@ public static partial class SortedEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::SortedEnum value, SortedEnumFormat format = SortedEnumFormat.Default)
+    {
+        if ((format & SortedEnumFormat.DisplayName) == SortedEnumFormat.DisplayName)
+        {
+            if (value == global::SortedEnum.One) return "Bravo";
+            if (value == global::SortedEnum.Two) return "Alpha";
+            if (value == global::SortedEnum.Three) return "Charlie";
+        }
+
+        if ((format & SortedEnumFormat.Description) == SortedEnumFormat.Description)
+        {
+            if (value == global::SortedEnum.One) return "Second";
+            if (value == global::SortedEnum.Two) return "First";
+            if (value == global::SortedEnum.Three) return "Third";
+        }
+
+        if ((format & SortedEnumFormat.Name) == SortedEnumFormat.Name)
+        {
+            if (value == global::SortedEnum.One) return "One";
+            if (value == global::SortedEnum.Two) return "Two";
+            if (value == global::SortedEnum.Three) return "Three";
+        }
+
+        if ((format & SortedEnumFormat.Value) == SortedEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::SortedEnum value, out Int32 underlyingValue)
     {
         switch (value)

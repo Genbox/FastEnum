@@ -155,6 +155,22 @@ internal static partial class TestEnumExtensions
         _ => value.ToString()
     };
 
+    public static string GetString(this global::TestEnum value, TestEnumFormat format = TestEnumFormat.Default)
+    {
+        if ((format & TestEnumFormat.Name) == TestEnumFormat.Name)
+        {
+            if (value == global::TestEnum.None) return "None";
+            if (value == global::TestEnum.Value) return "Value";
+        }
+
+        if ((format & TestEnumFormat.Value) == TestEnumFormat.Value)
+        {
+            return ((Int32)value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);
+        }
+
+        return value.ToString();
+    }
+
     public static bool TryGetUnderlyingValue(this global::TestEnum value, out Int32 underlyingValue)
     {
         switch (value)
