@@ -156,7 +156,7 @@ internal static class EnumClassCode
                 if (em.DisplayData?.Description == null)
                     continue;
 
-                yield return $"({sn}.{em.Name}, \"{em.DisplayData.Description}\")";
+                yield return $"({sn}.{em.Name}, \"{CodeGenHelper.EscapeString(em.DisplayData.Description)}\")";
             }
         }
 
@@ -224,9 +224,11 @@ internal static class EnumClassCode
             {
                 EnumMemberSpec em = members[i];
 
+                string escapedValue = CodeGenHelper.EscapeString(em.Value.ToString());
+
                 sb.Append($$"""
 
-                                            if (value.Equals("{{em.Value}}", comparison))
+                                            if (value.Equals("{{escapedValue}}", comparison))
                                             {
                                                 result = {{sn}}.{{em.Name}};
                                                 return true;
@@ -253,9 +255,11 @@ internal static class EnumClassCode
 
                     if (em.DisplayData?.Name != null)
                     {
+                        string escapedDisplayName = CodeGenHelper.EscapeString(em.DisplayData.Name);
+
                         sb.Append($$"""
 
-                                                    if (value.Equals("{{em.DisplayData.Name}}", comparison))
+                                                    if (value.Equals("{{escapedDisplayName}}", comparison))
                                                     {
                                                         result = {{sn}}.{{em.Name}};
                                                         return true;
@@ -286,9 +290,10 @@ internal static class EnumClassCode
 
                     if (em.DisplayData?.Description != null)
                     {
+                        string escapedDisplayDesc = CodeGenHelper.EscapeString(em.DisplayData.Description);
                         sb.Append($$"""
 
-                                                    if (value.Equals("{{em.DisplayData.Description}}", comparison))
+                                                    if (value.Equals("{{escapedDisplayDesc}}", comparison))
                                                     {
                                                         result = {{sn}}.{{em.Name}};
                                                         return true;

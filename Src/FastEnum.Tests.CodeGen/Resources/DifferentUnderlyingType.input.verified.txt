@@ -293,7 +293,7 @@ public static partial class MyEnum2Extensions
         switch (value)
         {
             case Some.Namespace.Here.MyEnum2.Value:
-                underlyingValue = 0;
+                underlyingValue = 0UL;
                 return true;
         }
         underlyingValue = default;

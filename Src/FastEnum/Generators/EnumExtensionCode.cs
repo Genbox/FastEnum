@@ -134,8 +134,7 @@ internal static class EnumExtensionCode
 
                 string transformed = TransformHelper.TransformName(es, em);
 
-                sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(transformed)
-                  .Append("\",\n        ");
+                sb.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(EscapeString(transformed)).Append("\",\n        ");
             }
 
             return sb.ToString().TrimEnd();
@@ -154,7 +153,7 @@ internal static class EnumExtensionCode
                 {
                     yield return $"""
                                               case "{em.Name}":
-                                                  underlyingValue = {em.Value};
+                                                  underlyingValue = {FormatPrimitive(em.Value)};
                                                   return true;
                                   """;
                 }
@@ -162,7 +161,7 @@ internal static class EnumExtensionCode
                 {
                     yield return $"""
                                               case {sn}.{em.Name}:
-                                                  underlyingValue = {em.Value};
+                                                  underlyingValue = {FormatPrimitive(em.Value)};
                                                   return true;
                                   """;
                 }
@@ -181,7 +180,7 @@ internal static class EnumExtensionCode
 
                 yield return $"""
                                           case {sn}.{em.Name}:
-                                              displayName = "{em.DisplayData.Name}";
+                                              displayName = "{EscapeString(em.DisplayData.Name)}";
                                               return true;
                               """;
             }
@@ -199,7 +198,7 @@ internal static class EnumExtensionCode
 
                 yield return $"""
                                           case {sn}.{em.Name}:
-                                              description = "{em.DisplayData.Description}";
+                                              description = "{EscapeString(em.DisplayData.Description)}";
                                               return true;
                               """;
             }
