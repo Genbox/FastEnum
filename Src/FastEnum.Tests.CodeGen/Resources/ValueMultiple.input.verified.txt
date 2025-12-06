@@ -42,7 +42,7 @@ public static partial class Enums
 
         public static bool TryParse(string value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
+            if ((format & Some.Namespace.Here.MyEnumFormat.Name) == Some.Namespace.Here.MyEnumFormat.Name)
             {
                 if (value.Equals("First", comparison))
                 {
@@ -56,7 +56,7 @@ public static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Value))
+            if ((format & Some.Namespace.Here.MyEnumFormat.Value) == Some.Namespace.Here.MyEnumFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {
@@ -77,7 +77,7 @@ public static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.MyEnum result, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Name))
+            if ((format & Some.Namespace.Here.MyEnumFormat.Name) == Some.Namespace.Here.MyEnumFormat.Name)
             {
                 if (value.Equals("First", comparison))
                 {
@@ -91,7 +91,7 @@ public static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(Some.Namespace.Here.MyEnumFormat.Value))
+            if ((format & Some.Namespace.Here.MyEnumFormat.Value) == Some.Namespace.Here.MyEnumFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {

@@ -208,7 +208,7 @@ internal static class EnumClassCode
 
             sb.Clear();
             sb.Append($$"""
-                        if (format.HasFlag({{ef}}.Name))
+                        if ((format & {{ef}}.Name) == {{ef}}.Name)
                                     {
                         """);
 
@@ -233,7 +233,7 @@ internal static class EnumClassCode
 
             sb.Append($$"""
 
-                                    if (format.HasFlag({{ef}}.Value))
+                                    if ((format & {{ef}}.Value) == {{ef}}.Value)
                                     {
                         """);
 
@@ -262,7 +262,7 @@ internal static class EnumClassCode
             {
                 sb.Append($$"""
 
-                                        if (format.HasFlag({{ef}}.DisplayName))
+                                        if ((format & {{ef}}.DisplayName) == {{ef}}.DisplayName)
                                         {
                             """);
 
@@ -294,7 +294,7 @@ internal static class EnumClassCode
             {
                 sb.Append($$"""
 
-                                        if (format.HasFlag({{ef}}.Description))
+                                        if ((format & {{ef}}.Description) == {{ef}}.Description)
                                         {
                             """);
 

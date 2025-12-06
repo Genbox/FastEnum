@@ -48,7 +48,7 @@ public static partial class Enums
 
         public static bool TryParse(string value, out Some.Namespace.Here.Profile result, Some.Namespace.Here.ProfileFormat format = Some.Namespace.Here.ProfileFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(Some.Namespace.Here.ProfileFormat.Name))
+            if ((format & Some.Namespace.Here.ProfileFormat.Name) == Some.Namespace.Here.ProfileFormat.Name)
             {
                 if (value.Equals("Unknown", comparison))
                 {
@@ -74,7 +74,7 @@ public static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(Some.Namespace.Here.ProfileFormat.Value))
+            if ((format & Some.Namespace.Here.ProfileFormat.Value) == Some.Namespace.Here.ProfileFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {
@@ -107,7 +107,7 @@ public static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out Some.Namespace.Here.Profile result, Some.Namespace.Here.ProfileFormat format = Some.Namespace.Here.ProfileFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(Some.Namespace.Here.ProfileFormat.Name))
+            if ((format & Some.Namespace.Here.ProfileFormat.Name) == Some.Namespace.Here.ProfileFormat.Name)
             {
                 if (value.Equals("Unknown", comparison))
                 {
@@ -133,7 +133,7 @@ public static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(Some.Namespace.Here.ProfileFormat.Value))
+            if ((format & Some.Namespace.Here.ProfileFormat.Value) == Some.Namespace.Here.ProfileFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {

@@ -35,7 +35,7 @@ internal static partial class Enums
 
         public static bool TryParse(string value, out global::MyPublicEnum result, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(MyPublicEnumFormat.Name))
+            if ((format & MyPublicEnumFormat.Name) == MyPublicEnumFormat.Name)
             {
                 if (value.Equals("First", comparison))
                 {
@@ -43,7 +43,7 @@ internal static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(MyPublicEnumFormat.Value))
+            if ((format & MyPublicEnumFormat.Value) == MyPublicEnumFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {
@@ -58,7 +58,7 @@ internal static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         public static bool TryParse(ReadOnlySpan<char> value, out global::MyPublicEnum result, MyPublicEnumFormat format = MyPublicEnumFormat.Default, StringComparison comparison = StringComparison.Ordinal)
         {
-            if (format.HasFlag(MyPublicEnumFormat.Name))
+            if ((format & MyPublicEnumFormat.Name) == MyPublicEnumFormat.Name)
             {
                 if (value.Equals("First", comparison))
                 {
@@ -66,7 +66,7 @@ internal static partial class Enums
                     return true;
                 }
             }
-            if (format.HasFlag(MyPublicEnumFormat.Value))
+            if ((format & MyPublicEnumFormat.Value) == MyPublicEnumFormat.Value)
             {
                 if (value.Equals("0", comparison))
                 {
