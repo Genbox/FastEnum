@@ -382,12 +382,7 @@ internal static class EnumClassCode
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
                     continue;
 
-                string strVal = em.Value.ToString();
-
-                if (strVal.StartsWith("-", StringComparison.Ordinal))
-                    value |= unchecked((ulong)long.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo));
-                else
-                    value |= ulong.Parse(strVal, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+                value |= ToUInt64(em.Value);
             }
 
             if (value == 0)
@@ -396,6 +391,19 @@ internal static class EnumClassCode
             return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
         }
     }
+
+    private static ulong ToUInt64(object value) => value switch
+    {
+        byte b => b,
+        sbyte sb => unchecked((ulong)sb),
+        short s => unchecked((ulong)s),
+        ushort us => us,
+        int i => unchecked((ulong)i),
+        uint ui => ui,
+        long l => unchecked((ulong)l),
+        ulong ul => ul,
+        _ => throw new InvalidOperationException("Unsupported enum underlying type")
+    };
 
     private static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)
     {
