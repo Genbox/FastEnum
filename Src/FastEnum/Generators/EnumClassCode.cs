@@ -407,7 +407,7 @@ internal static class EnumClassCode
         StringBuilder sb = new StringBuilder(100);
 
         if (cacheDisabled)
-            sb.Append(type).Append("[] ").Append(name).AppendLine(" = {");
+            sb.Append("new ").Append(type).AppendLine("[] {");
         else
         {
             fields.Add($"private static {type}[]? {name};");
