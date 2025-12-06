@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <!--These packages include a different version of Microsoft.CodeAnalysis as runtime deps. Can't use them-->
-    <PackageReference Remove="Puma.Security.Rules.2022" PrivateAssets="all" />
     <PackageReference Remove="NetFabric.Hyperlinq.Analyzer" PrivateAssets="all" />
   </ItemGroup>
 
