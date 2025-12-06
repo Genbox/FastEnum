@@ -189,7 +189,7 @@ public static partial class Enums
             };
 
         public static UInt64[] GetUnderlyingValues() => _underlyingValues ??= new UInt64[] {
-                0
+                0UL
             };
 
         public static bool TryParse(string value, out Some.Namespace.Here.MyEnum2 result, Some.Namespace.Here.MyEnum2Format format = Some.Namespace.Here.MyEnum2Format.Default, StringComparison comparison = StringComparison.Ordinal)

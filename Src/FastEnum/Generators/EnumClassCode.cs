@@ -145,7 +145,7 @@ internal static class EnumClassCode
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true)
                     continue;
 
-                yield return em.Value.ToString();
+                yield return FormatPrimitive(em.Value);
             }
         }
 
@@ -195,7 +195,7 @@ internal static class EnumClassCode
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
                     continue;
 
-                yield return em.Value.ToString();
+                yield return FormatPrimitive(em.Value);
             }
         }
 
