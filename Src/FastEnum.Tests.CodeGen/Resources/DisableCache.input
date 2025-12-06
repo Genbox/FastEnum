@@ -1,9 +1,0 @@
-//This tests the DisableCache feature
-
-namespace Some.Namespace.Here;
-
-[FastEnum(DisableCache = true)]
-public enum MyEnum
-{
-    Value1,
-}

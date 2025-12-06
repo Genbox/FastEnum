@@ -15,12 +15,16 @@ public class CodeGenTests
     [MemberData(nameof(GetTests))]
     public async Task RunResources(string testName)
     {
-        string inputSource = await File.ReadAllTextAsync(Path.Combine(_resourcesDir, testName));
+        string inputPath = Path.Combine(_resourcesDir, testName);
+        string inputSource = await File.ReadAllTextAsync(inputPath);
         string actual = GetGeneratedOutput<EnumGenerator>(inputSource);
 
+        string fileName = Path.GetFileName(testName);
+        string? category = Path.GetDirectoryName(testName);
+
         await Verify(actual)
-              .UseFileName(testName)
-              .UseDirectory("Resources")
+              .UseFileName(fileName)
+              .UseDirectory(string.IsNullOrEmpty(category) ? "Resources" : Path.Combine("Resources", category))
               .DisableDiff();
     }
 
@@ -28,10 +32,10 @@ public class CodeGenTests
     {
         TheoryData<string> data = new TheoryData<string>();
 
-        foreach (string resource in Directory.GetFiles(_resourcesDir))
+        foreach (string resource in Directory.GetFiles(_resourcesDir, "*.input", SearchOption.AllDirectories))
         {
-            if (resource.EndsWith(".input", StringComparison.OrdinalIgnoreCase))
-                data.Add(Path.GetFileName(resource));
+            string relativePath = Path.GetRelativePath(_resourcesDir, resource);
+            data.Add(relativePath);
         }
 
         return data;
