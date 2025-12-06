@@ -159,7 +159,7 @@ internal static class EnumClassCode
                 if (em.DisplayData?.Name == null)
                     continue;
 
-                yield return $"({sn}.{em.Name}, \"{em.DisplayData.Name}\")";
+                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Name)}\")";
             }
         }
 

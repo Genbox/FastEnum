@@ -221,8 +221,8 @@ public class EnumGenerator : IIncrementalGenerator
                 {
                     displayData = TypeHelper.MapData<DisplayData>(ad.NamedArguments);
 
-                    hasName = displayData.Name != null;
-                    hasDescription = displayData.Description != null;
+                    hasName |= displayData.Name != null;
+                    hasDescription |= displayData.Description != null;
                 }
                 else if (name.Equals(EnumTransformValueAttr, StringComparison.Ordinal))
                     transformValueData = TypeHelper.MapData<EnumTransformValueData>(ad.NamedArguments);
