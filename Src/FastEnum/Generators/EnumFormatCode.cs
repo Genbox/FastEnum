@@ -14,37 +14,37 @@ internal static class EnumFormatCode
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
 
         string res = $$"""
-using System;
-{{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-[Flags]
-{{vi}} enum {{cn}}Format : byte
-{
-    None = 0,
-    Name = 1,
-    Value = 2,
-""";
+                       using System;
+                       {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
+                       [Flags]
+                       {{vi}} enum {{cn}}Format : byte
+                       {
+                           None = 0,
+                           Name = 1,
+                           Value = 2,
+                       """;
 
         if (es.HasDisplay)
         {
             res += """
 
-    DisplayName = 4,
-""";
+                       DisplayName = 4,
+                   """;
         }
 
         if (es.HasDescription)
         {
             res += """
 
-    Description = 8,
-""";
+                       Description = 8,
+                   """;
         }
 
         res += """
 
-    Default = Name | Value
-}
-""";
+                   Default = Name | Value
+               }
+               """;
         return res;
     }
 }

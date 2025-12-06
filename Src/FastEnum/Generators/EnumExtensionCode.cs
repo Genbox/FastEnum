@@ -22,7 +22,7 @@ internal static class EnumExtensionCode
         bool containsDuplicateValue = false;
         HashSet<object> values = new HashSet<object>();
 
-        foreach (var em in es.Members)
+        foreach (EnumMemberSpec em in es.Members)
         {
             if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 continue;
@@ -113,11 +113,11 @@ internal static class EnumExtensionCode
 
         if (es.HasFlags)
         {
-            res += $$"""
+            res += $"""
 
 
-                         public static bool IsFlagSet(this {{sn}} value, {{sn}} flag) => (({{ut}})value & ({{ut}})flag) == ({{ut}})flag;
-                     """;
+                        public static bool IsFlagSet(this {sn} value, {sn} flag) => (({ut})value & ({ut})flag) == ({ut})flag;
+                    """;
         }
 
         string GetString()
@@ -152,19 +152,19 @@ internal static class EnumExtensionCode
                 //we must fall back to using string comparisons, otherwise there will be duplicate branches in the switch.
                 if (containsDuplicateValue)
                 {
-                    yield return $$"""
-                                               case "{{em.Name}}":
-                                                   underlyingValue = {{em.Value}};
-                                                   return true;
-                                   """;
+                    yield return $"""
+                                              case "{em.Name}":
+                                                  underlyingValue = {em.Value};
+                                                  return true;
+                                  """;
                 }
                 else
                 {
-                    yield return $$"""
-                                               case {{sn}}.{{em.Name}}:
-                                                   underlyingValue = {{em.Value}};
-                                                   return true;
-                                   """;
+                    yield return $"""
+                                              case {sn}.{em.Name}:
+                                                  underlyingValue = {em.Value};
+                                                  return true;
+                                  """;
                 }
             }
         }
@@ -179,11 +179,11 @@ internal static class EnumExtensionCode
                 if (em.DisplayData?.Name == null)
                     continue;
 
-                yield return $$"""
-                                           case {{sn}}.{{em.Name}}:
-                                               displayName = "{{em.DisplayData.Name}}";
-                                               return true;
-                               """;
+                yield return $"""
+                                          case {sn}.{em.Name}:
+                                              displayName = "{em.DisplayData.Name}";
+                                              return true;
+                              """;
             }
         }
 
@@ -197,11 +197,11 @@ internal static class EnumExtensionCode
                 if (em.DisplayData?.Description == null)
                     continue;
 
-                yield return $$"""
-                                           case {{sn}}.{{em.Name}}:
-                                               description = "{{em.DisplayData.Description}}";
-                                               return true;
-                               """;
+                yield return $"""
+                                          case {sn}.{em.Name}:
+                                              description = "{em.DisplayData.Description}";
+                                              return true;
+                              """;
             }
         }
 
@@ -213,12 +213,7 @@ internal static class EnumExtensionCode
                 return string.Empty;
 
             sb.Clear();
-
-            if (stringComparison)
-                sb.AppendLine("switch (value.ToString())");
-            else
-                sb.AppendLine("switch (value)");
-
+            sb.AppendLine(stringComparison ? "switch (value.ToString())" : "switch (value)");
             sb.Append(Indent(2)).Append('{');
             sb.AppendLine();
 

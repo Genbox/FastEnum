@@ -27,76 +27,76 @@ internal static class EnumClassCode
         StringBuilder sb = new StringBuilder();
 
         string res = $$"""
-using System;
-{{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-{{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
-    {{vi}} static partial class {{cn}}
-    {
-        public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
-        public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
+                       using System;
+                       {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
+                       {{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
+                           {{vi}} static partial class {{cn}}
+                           {
+                               public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
+                               public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
 
-        public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
+                               public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
 
-        public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
+                               public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
 
-        public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
+                               public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
 
-        public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-        {
-            {{TryParse()}}
-            result = default;
-            return false;
-        }
+                               public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                               {
+                                   {{TryParse()}}
+                                   result = default;
+                                   return false;
+                               }
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-        public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-        {
-            {{TryParse()}}
-            result = default;
-            return false;
-        }
+                       #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                               public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                               {
+                                   {{TryParse()}}
+                                   result = default;
+                                   return false;
+                               }
 
-        public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-        {
-            if (!TryParse(value, out {{sn}} result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
+                               public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                               {
+                                   if (!TryParse(value, out {{sn}} result, format, comparison))
+                                       throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
-            return result;
-        }
-#endif
+                                   return result;
+                               }
+                       #endif
 
-        public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-        {
-            if (!TryParse(value, out {{sn}} result, format, comparison))
-                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                               public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                               {
+                                   if (!TryParse(value, out {{sn}} result, format, comparison))
+                                       throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
-            return result;
-        }
+                                   return result;
+                               }
 
-        public static bool IsDefined({{sn}} input)
-        {
-            {{IsDefined()}}
-        }
-""";
+                               public static bool IsDefined({{sn}} input)
+                               {
+                                   {{IsDefined()}}
+                               }
+                       """;
 
         if (es.HasDisplay)
         {
             res +=
-                $$"""
+                $"""
 
 
-        public static ({{sn}}, string)[] GetDisplayNames() => {{Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}}
-""";
+                         public static ({sn}, string)[] GetDisplayNames() => {Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}
+                 """;
         }
 
         if (es.HasDescription)
         {
             res +=
-                $$"""
+                $"""
 
 
-        public static ({{sn}}, string)[] GetDescriptions() => {{Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}}
-""";
+                         public static ({sn}, string)[] GetDescriptions() => {Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}
+                 """;
         }
 
         IEnumerable<string> GetMemberNames()
@@ -191,9 +191,9 @@ using System;
 
             sb.Clear();
             sb.Append($$"""
-if (format.HasFlag({{ef}}.Name))
-            {
-""");
+                        if (format.HasFlag({{ef}}.Name))
+                                    {
+                        """);
 
             for (int i = 0; i < members.Length; i++)
             {
@@ -201,12 +201,12 @@ if (format.HasFlag({{ef}}.Name))
 
                 sb.Append($$"""
 
-                if (value.Equals("{{em.Name}}", comparison))
-                {
-                    result = {{sn}}.{{em.Name}};
-                    return true;
-                }
-""");
+                                            if (value.Equals("{{em.Name}}", comparison))
+                                            {
+                                                result = {{sn}}.{{em.Name}};
+                                                return true;
+                                            }
+                            """);
 
                 if (i != members.Length - 1)
                     sb.AppendLine();
@@ -216,9 +216,9 @@ if (format.HasFlag({{ef}}.Name))
 
             sb.Append($$"""
 
-            if (format.HasFlag({{ef}}.Value))
-            {
-""");
+                                    if (format.HasFlag({{ef}}.Value))
+                                    {
+                        """);
 
             for (int i = 0; i < members.Length; i++)
             {
@@ -226,12 +226,12 @@ if (format.HasFlag({{ef}}.Name))
 
                 sb.Append($$"""
 
-                if (value.Equals("{{em.Value}}", comparison))
-                {
-                    result = {{sn}}.{{em.Name}};
-                    return true;
-                }
-""");
+                                            if (value.Equals("{{em.Value}}", comparison))
+                                            {
+                                                result = {{sn}}.{{em.Name}};
+                                                return true;
+                                            }
+                            """);
 
                 if (i != members.Length - 1)
                     sb.AppendLine();
@@ -243,9 +243,9 @@ if (format.HasFlag({{ef}}.Name))
             {
                 sb.Append($$"""
 
-            if (format.HasFlag({{ef}}.DisplayName))
-            {
-""");
+                                        if (format.HasFlag({{ef}}.DisplayName))
+                                        {
+                            """);
 
                 for (int i = 0; i < members.Length; i++)
                 {
@@ -255,12 +255,12 @@ if (format.HasFlag({{ef}}.Name))
                     {
                         sb.Append($$"""
 
-                if (value.Equals("{{em.DisplayData.Name}}", comparison))
-                {
-                    result = {{sn}}.{{em.Name}};
-                    return true;
-                }
-""");
+                                                    if (value.Equals("{{em.DisplayData.Name}}", comparison))
+                                                    {
+                                                        result = {{sn}}.{{em.Name}};
+                                                        return true;
+                                                    }
+                                    """);
                     }
                     if (i != members.Length - 1)
                         sb.AppendLine();
@@ -273,9 +273,9 @@ if (format.HasFlag({{ef}}.Name))
             {
                 sb.Append($$"""
 
-            if (format.HasFlag({{ef}}.Description))
-            {
-""");
+                                        if (format.HasFlag({{ef}}.Description))
+                                        {
+                            """);
 
                 for (int i = 0; i < members.Length; i++)
                 {
@@ -288,12 +288,12 @@ if (format.HasFlag({{ef}}.Name))
                     {
                         sb.Append($$"""
 
-                if (value.Equals("{{em.DisplayData.Description}}", comparison))
-                {
-                    result = {{sn}}.{{em.Name}};
-                    return true;
-                }
-""");
+                                                    if (value.Equals("{{em.DisplayData.Description}}", comparison))
+                                                    {
+                                                        result = {{sn}}.{{em.Name}};
+                                                        return true;
+                                                    }
+                                    """);
                     }
 
                     if (i != members.Length - 1)
@@ -335,14 +335,14 @@ if (format.HasFlag({{ef}}.Name))
             {
                 sb.Append($$"""
 
-            for (int i = 0; i < _isDefinedValues.Length; i++)
-            {
-                if (_isDefinedValues[i] == ({{ut}})input)
-                    return true;
-            }
+                                        for (int i = 0; i < _isDefinedValues.Length; i++)
+                                        {
+                                            if (_isDefinedValues[i] == ({{ut}})input)
+                                                return true;
+                                        }
 
-            return false;
-""");
+                                        return false;
+                            """);
             }
 
             return sb.ToString();
