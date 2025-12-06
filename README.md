@@ -251,7 +251,7 @@ The pattern is matched as much as possible. A pattern of `U` will simply upperca
 * `Preset` uppercases or lowercases all member names.
 * `Regex` allows replacing a pattern.
 * `CasePattern` applies a simple U/L/O/_ mask.
-* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues`, `SortDisplayNames`, `SortDescriptions` control ordering of the corresponding generated arrays. Defaults to `EnumOrder.Ascending`; set to `Descending` or `None` to change.
+* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues`, `SortDisplayNames`, `SortDescriptions` control ordering of the corresponding generated arrays. Defaults to `EnumOrder.None`; set to `Ascending` or `Descending` to change.
 ```csharp
 [FastEnum]
 [EnumTransform(Preset = EnumTransform.UpperCase)]
@@ -296,7 +296,7 @@ public enum Status
 
 * `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues` affect the ordering of `GetMemberNames()`, `GetMemberValues()` and `GetUnderlyingValues()`.
 * `SortDisplayNames`, `SortDescriptions` affect the ordering of `GetDisplayNames()` and `GetDescriptions()`.
-* Values can be `EnumOrder.Ascending` (default), `EnumOrder.Descending`, or `EnumOrder.None` (retain declared order).
+* Values can be `EnumOrder.None` (default; retain declared order), `EnumOrder.Ascending`, or `EnumOrder.Descending`.
 
 ### Omitting values
 

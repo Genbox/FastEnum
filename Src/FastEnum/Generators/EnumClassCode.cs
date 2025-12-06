@@ -119,7 +119,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetMemberNames()
         {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberNames ?? EnumOrder.Ascending, m => TransformHelper.TransformName(es, m)))
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberNames ?? EnumOrder.None, m => TransformHelper.TransformName(es, m)))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberNames) == true)
                     continue;
@@ -130,7 +130,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetMemberValues()
         {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberValues ?? EnumOrder.Ascending, ValueKey))
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberValues ?? EnumOrder.None, ValueKey))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberValues) == true)
                     continue;
@@ -141,7 +141,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetUnderlyingValues()
         {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortUnderlyingValues ?? EnumOrder.Ascending, ValueKey))
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortUnderlyingValues ?? EnumOrder.None, ValueKey))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true)
                     continue;
@@ -154,7 +154,7 @@ internal static class EnumClassCode
         {
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Name != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) != true);
 
-            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.Ascending, DisplayNameKey))
+            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.None, DisplayNameKey))
                 yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Name)}\")";
         }
 
@@ -162,7 +162,7 @@ internal static class EnumClassCode
         {
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Description != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) != true);
 
-            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.Ascending, DescriptionKey))
+            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.None, DescriptionKey))
                 yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Description)}\")";
         }
 

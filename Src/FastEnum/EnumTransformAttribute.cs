@@ -24,17 +24,17 @@ public sealed class EnumTransformAttribute : global::System.Attribute
     public string? CasePattern { get; set; }
 
     /// <summary>Order applied to GetMemberNames() output.</summary>
-    public EnumOrder SortMemberNames { get; set; } = EnumOrder.Ascending;
+    public EnumOrder SortMemberNames { get; set; }
 
     /// <summary>Order applied to GetMemberValues() output.</summary>
-    public EnumOrder SortMemberValues { get; set; } = EnumOrder.Ascending;
+    public EnumOrder SortMemberValues { get; set; }
 
     /// <summary>Order applied to GetUnderlyingValues() output.</summary>
-    public EnumOrder SortUnderlyingValues { get; set; } = EnumOrder.Ascending;
+    public EnumOrder SortUnderlyingValues { get; set; }
 
     /// <summary>Order applied to GetDisplayNames() output.</summary>
-    public EnumOrder SortDisplayNames { get; set; } = EnumOrder.Ascending;
+    public EnumOrder SortDisplayNames { get; set; }
 
     /// <summary>Order applied to GetDescriptions() output.</summary>
-    public EnumOrder SortDescriptions { get; set; } = EnumOrder.Ascending;
+    public EnumOrder SortDescriptions { get; set; }
 }

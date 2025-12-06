@@ -22,24 +22,24 @@ internal static partial class Enums
         public const bool IsFlagEnum = true;
 
         public static string[] GetMemberNames() => _names ??= new string[] {
-                "Combo",
-                "Negative",
                 "None",
-                "One"
+                "One",
+                "Negative",
+                "Combo"
             };
 
         public static global::SignedFlags[] GetMemberValues() => _values ??= new global::SignedFlags[] {
-                global::SignedFlags.Negative,
-                global::SignedFlags.Combo,
                 global::SignedFlags.None,
-                global::SignedFlags.One
+                global::SignedFlags.One,
+                global::SignedFlags.Negative,
+                global::SignedFlags.Combo
             };
 
         public static Int64[] GetUnderlyingValues() => _underlyingValues ??= new Int64[] {
-                -2L,
-                -1L,
                 0L,
-                1L
+                1L,
+                -2L,
+                -1L
             };
 
         public static bool TryParse(string value, out global::SignedFlags result, SignedFlagsFormat format = SignedFlagsFormat.Default, StringComparison comparison = StringComparison.Ordinal)
