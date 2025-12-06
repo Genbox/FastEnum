@@ -76,4 +76,18 @@ public class EnumExtensionsTest
             }
         }
     }
+
+    [Fact]
+    public void EscapedStringsAreReturnedAndParsed()
+    {
+        const EscapedEnum value = EscapedEnum.Value1;
+
+        Assert.Equal("Val\"With\\Slash", value.GetString());
+
+        Assert.True(value.TryGetDisplayName(out string? displayName));
+        Assert.Equal("C:\\Path\\File\"Name", displayName);
+
+        Assert.True(value.TryGetDescription(out string? description));
+        Assert.Equal("Line1\\Line2", description);
+    }
 }

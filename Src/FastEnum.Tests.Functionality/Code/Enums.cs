@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace Genbox.FastEnum.Tests.Functionality.Code
 {
@@ -38,6 +38,14 @@ namespace Genbox.FastEnum.Tests.Functionality.Code
         Omitted,
         [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]
         OmittedWithFilter
+    }
+
+    [FastEnum]
+    public enum EscapedEnum
+    {
+        [Display(Name = "C:\\Path\\File\"Name", Description = "Line1\\Line2")]
+        [EnumTransformValue(ValueOverride = "Val\"With\\Slash")]
+        Value1 = 42
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 
 namespace Genbox.FastEnum.Helpers;
 
@@ -16,6 +16,7 @@ internal static class CodeGenHelper
             string? str = c switch
             {
                 '"' => @"\""",
+                '\\' => @"\\",
                 '\0' => @"\0",
                 '\n' => @"\n",
                 '\r' => @"\r",

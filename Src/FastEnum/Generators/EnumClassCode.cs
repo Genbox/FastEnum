@@ -125,7 +125,7 @@ internal static class EnumClassCode
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberNames) == true)
                     continue;
 
-                yield return $"\"{TransformHelper.TransformName(es, em)}\"";
+                yield return $"\"{EscapeString(TransformHelper.TransformName(es, em))}\"";
             }
         }
 
@@ -208,7 +208,7 @@ internal static class EnumClassCode
 
                 sb.Append($$"""
 
-                                            if (value.Equals("{{TransformHelper.TransformName(es, em)}}", comparison))
+                                            if (value.Equals("{{EscapeString(TransformHelper.TransformName(es, em))}}", comparison))
                                             {
                                                 result = {{sn}}.{{em.Name}};
                                                 return true;

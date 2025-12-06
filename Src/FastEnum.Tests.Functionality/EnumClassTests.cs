@@ -127,4 +127,15 @@ public class EnumClassTests
 
         Assert.Equal(descriptions, Enums.TestEnum.GetDescriptions());
     }
+
+    [Fact]
+    public void EscapedStringsAreHandled()
+    {
+        Assert.True(Enums.EscapedEnum.TryParse("Val\"With\\Slash", out EscapedEnum parsed));
+        Assert.Equal(EscapedEnum.Value1, parsed);
+
+        Assert.Equal(new[] { "Val\"With\\Slash" }, Enums.EscapedEnum.GetMemberNames());
+        Assert.Equal([(EscapedEnum.Value1, "C:\\Path\\File\"Name")], Enums.EscapedEnum.GetDisplayNames());
+        Assert.Equal([(EscapedEnum.Value1, "Line1\\Line2")], Enums.EscapedEnum.GetDescriptions());
+    }
 }
