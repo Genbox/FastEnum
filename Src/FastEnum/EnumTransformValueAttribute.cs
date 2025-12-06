@@ -6,6 +6,6 @@ namespace Genbox.FastEnum;
 [global::System.AttributeUsage(AttributeTargets.Field)]
 public sealed class EnumTransformValueAttribute : global::System.Attribute
 {
-    /// <summary>You cna set a completely different name with this property</summary>
+    /// <summary>Override the generated string for this enum member. Affects GetString(), GetMemberNames(), and parsing.</summary>
     public string? ValueOverride { get; set; }
 }

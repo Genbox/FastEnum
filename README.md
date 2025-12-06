@@ -113,6 +113,8 @@ Console.WriteLine("Display name: " + e.GetDisplayName());
 Console.WriteLine("Description: " + e.GetDescription());
 ```
 
+Prefer the `TryGetDisplayName()`, `TryGetDescription()` and `TryGetUnderlyingValue()` helpers when you want a boolean + `out` pattern instead of exceptions.
+
 Output:
 ```
 Display name: Value1Name
@@ -158,6 +160,14 @@ the same as your extensions class. Defaults to &lt;EnumName&gt;Extensions.
 
 Use this to control which namespace the extensions class belongs to. Defaults to the namespace of the enum.
 
+#### ExtensionClassVisibility
+
+Use this to override the visibility of the generated extensions class. Defaults to the enum's own visibility (`Visibility.Inherit`).
+```csharp
+[FastEnum(ExtensionClassVisibility = Visibility.Internal)] // Generates an internal StatusExtensions class instead of public.
+public enum Status { Ok, Error }
+```
+
 #### EnumsClassName
 
 Use this to set the name of the `Enums` class to something else.
@@ -165,6 +175,14 @@ Use this to set the name of the `Enums` class to something else.
 #### EnumsClassNamespace
 
 Used this to specify the namespace for the Enums class. Defaults to the namespace of the enum.
+
+#### EnumsClassVisibility
+
+Use this to override the visibility of the generated `Enums` wrapper class. Defaults to the enum's own visibility (`Visibility.Inherit`).
+```csharp
+[FastEnum(EnumsClassVisibility = Visibility.Internal)] // Enums.Status will be internal.
+public enum Status { Ok, Error }
+```
 
 #### EnumNameOverride
 
@@ -228,7 +246,51 @@ public enum MyEnum
 
 The pattern is matched as much as possible. A pattern of `U` will simply uppercase the first character, and a pattern of `UUUUUUUUUUUU` will uppercase the first 12 characters, even if the enum value is only 6 characters long.
 
+`[EnumTransform]` options:
+
+* `Preset` uppercases or lowercases all member names.
+* `Regex` allows replacing a pattern.
+* `CasePattern` applies a simple U/L/O/_ mask.
+* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues`, `SortDisplayNames`, `SortDescriptions` control ordering of the corresponding generated arrays. Defaults to `EnumOrder.Ascending`; set to `Descending` or `None` to change.
+```csharp
+[FastEnum]
+[EnumTransform(Preset = EnumTransform.UpperCase)]
+public enum Color { Red, Green }
+// GetString(Color.Red) => "RED"
+
+[FastEnum]
+[EnumTransform(Regex = "/^Clr//")]
+public enum Color { ClrRed, ClrGreen }
+// GetString(Color.ClrRed) => "Red"
+
+[FastEnum]
+[EnumTransform(CasePattern = "UOlll")]
+public enum Color { apple, pears }
+// GetString(Color.apple) => "Apple"
+// GetString(Color.pears) => "Pears"
+
+[FastEnum]
+[EnumTransform(SortMemberNames = EnumOrder.Descending)]
+public enum Nato { Alpha, Bravo, Charlie }
+// GetMemberNames() => ["Charlie", "Bravo", "Alpha"]
+```
+
 You can override the string for specific members with `[EnumTransformValue(ValueOverride = "...")]`. This is useful when most values follow a pattern but a few need custom text.
+
+`[EnumTransformValue]` options:
+
+* `ValueOverride` changes the generated string for that member and what `TryParse` will accept for it.
+```csharp
+[FastEnum]
+public enum Status
+{
+    [EnumTransformValue(ValueOverride = "all good")]
+    Ok,
+    Error
+}
+// GetString(Status.Ok) => "all good"
+// Enums.Status.TryParse("all good", out var s) => true
+```
 
 `[EnumTransform]` also accepts ordering hints so generated lists come out sorted without extra runtime work:
 
@@ -268,6 +330,26 @@ Red
 Green
 ```
 
+`[EnumOmitValue]` options:
+
+* `Exclude` is a flag enum controlling which generated APIs omit the member. Defaults to `EnumOmitExclude.All` when not specified.
+```csharp
+[FastEnum]
+public enum Color
+{
+    [EnumOmitValue] //omitted everywhere
+    Unknown,
+
+    [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames | EnumOmitExclude.TryParse)]
+    Red, //shown in values but hidden from names/parse
+    Green
+}
+
+// Enums.Color.GetMemberNames() => ["Green"]
+// Enums.Color.TryParse("Red", out _) => false
+// Enums.Color.GetMemberValues() => [Color.Red, Color.Green]
+```
+
 Since we excluded `GetMemberNames()` for the Red color, it showed up in the list above, but it won't show up when calling `GetMemberValues()`.
 
 ```csharp
@@ -291,6 +373,7 @@ FastEnum has some additional features compared to dotnet's `Enum.Parse<T>()` and
 * Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0) (defaults to ordinal comparison)
 * Supports parsing `ValueOverride` when using `[EnumTransformValue]`. Also supports `DisplayName` and `Description` when using [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0)
 * You can enable/disable Name, Value, DisplayName or Description parsing via an enum: `Enums.MyEnum.TryParse("val", out MyEnum v, MyEnumFormat.Name | MyEnumFormat.DisplayName)`
+* Overloads accept both `string` and `ReadOnlySpan<char>` to avoid unnecessary allocations when parsing substrings.
 
 #### IsDefined method
 
