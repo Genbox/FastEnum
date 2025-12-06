@@ -27,3 +27,11 @@ internal enum MyEnum4
 {
     First
 }
+
+[FastEnum]
+[EnumTransform(SortMemberValues = EnumOrder.Descending)]
+internal enum MyEnum5
+{
+    Beta,
+    Alpha,
+}

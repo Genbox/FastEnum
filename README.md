@@ -228,6 +228,14 @@ public enum MyEnum
 
 The pattern is matched as much as possible. A pattern of `U` will simply uppercase the first character, and a pattern of `UUUUUUUUUUUU` will uppercase the first 12 characters, even if the enum value is only 6 characters long.
 
+You can override the string for specific members with `[EnumTransformValue(ValueOverride = "...")]`. This is useful when most values follow a pattern but a few need custom text.
+
+`[EnumTransform]` also accepts ordering hints so generated lists come out sorted without extra runtime work:
+
+* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues` affect the ordering of `GetMemberNames()`, `GetMemberValues()` and `GetUnderlyingValues()`.
+* `SortDisplayNames`, `SortDescriptions` affect the ordering of `GetDisplayNames()` and `GetDescriptions()`.
+* Values can be `EnumOrder.Ascending` (default), `EnumOrder.Descending`, or `EnumOrder.None` (retain declared order).
+
 ### Omitting values
 
 It is possible to omit enum value both fully and partially. This is useful if you, let's say, want to use the enum values directly in a dropdown on a website, but don't want to include a value in the list.

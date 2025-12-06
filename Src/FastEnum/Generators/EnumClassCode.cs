@@ -17,6 +17,7 @@ internal static class EnumClassCode
         int oc = es.Members.Count(x => x.OmitValueData != null);
         int mc = es.Members.Length - oc;
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
+        EnumTransformData? transform = es.TransformData;
 
         List<string> fields = new List<string>();
 
@@ -118,7 +119,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetMemberNames()
         {
-            foreach (EnumMemberSpec em in es.Members)
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberNames ?? EnumOrder.Ascending, m => TransformHelper.TransformName(es, m)))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberNames) == true)
                     continue;
@@ -129,7 +130,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetMemberValues()
         {
-            foreach (EnumMemberSpec em in es.Members)
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberValues ?? EnumOrder.Ascending, ValueKey))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberValues) == true)
                     continue;
@@ -140,7 +141,7 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetUnderlyingValues()
         {
-            foreach (EnumMemberSpec em in es.Members)
+            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortUnderlyingValues ?? EnumOrder.Ascending, ValueKey))
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true)
                     continue;
@@ -151,30 +152,18 @@ internal static class EnumClassCode
 
         IEnumerable<string> GetDisplayNames()
         {
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == true)
-                    continue;
+            IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Name != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) != true);
 
-                if (em.DisplayData?.Name == null)
-                    continue;
-
+            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.Ascending, DisplayNameKey))
                 yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Name)}\")";
-            }
         }
 
         IEnumerable<string> GetDescriptions()
         {
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == true)
-                    continue;
+            IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Description != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) != true);
 
-                if (em.DisplayData?.Description == null)
-                    continue;
-
+            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.Ascending, DescriptionKey))
                 yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Description)}\")";
-            }
         }
 
         IEnumerable<EnumMemberSpec> GetTryParseMembers()
@@ -404,6 +393,22 @@ internal static class EnumClassCode
         ulong ul => ul,
         _ => throw new InvalidOperationException("Unsupported enum underlying type")
     };
+
+    private static IEnumerable<EnumMemberSpec> ApplySort(IEnumerable<EnumMemberSpec> members, EnumOrder order, Func<EnumMemberSpec, IComparable> selector)
+    {
+        return order switch
+        {
+            EnumOrder.Ascending => members.OrderBy(selector),
+            EnumOrder.Descending => members.OrderByDescending(selector),
+            _ => members
+        };
+    }
+
+    private static IComparable ValueKey(EnumMemberSpec em) => (IComparable)em.Value;
+
+    private static IComparable DisplayNameKey(EnumMemberSpec em) => em.DisplayData!.Name!;
+
+    private static IComparable DescriptionKey(EnumMemberSpec em) => em.DisplayData!.Description!;
 
     private static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)
     {

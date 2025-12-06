@@ -70,7 +70,7 @@ public class EnumGenerator : IIncrementalGenerator
         //
         // We therefore have to combine all these parts and check if there are duplicates.
 
-        HashSet<string> nameSet = new HashSet<string>(StringComparer.Ordinal); //Case sensitive since C# is too
+        HashSet<string> nameSet = new HashSet<string>(StringComparer.Ordinal); //Case-sensitive since C# is too
 
         foreach (EnumSpec es in specs)
         {
@@ -284,7 +284,7 @@ public class EnumGenerator : IIncrementalGenerator
         }
 
         string enumName = symbol.Name;
-        string enumFullName = enumFullSb.ToString(); //This include the nested type name (if any)
+        string enumFullName = enumFullSb.ToString(); //This includes the nested type name (if any)
         string fqn = fqnSb.ToString();
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
