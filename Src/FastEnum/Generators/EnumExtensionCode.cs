@@ -24,7 +24,7 @@ internal static class EnumExtensionCode
 
         foreach (EnumMemberSpec em in es.Members)
         {
-            if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+            if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
                 continue;
 
             if (!values.Add(em.Value))
@@ -128,7 +128,7 @@ internal static class EnumExtensionCode
 
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == false)
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 {
                     sb.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,\n            ");
                     continue;
@@ -146,7 +146,7 @@ internal static class EnumExtensionCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == false)
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
                     continue;
 
                 //We default to doing a fast comparison using enum values (which is basically just integers), but in the case we have a flags enum with a duplicate value
@@ -174,7 +174,7 @@ internal static class EnumExtensionCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == false)
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == true)
                     continue;
 
                 if (em.DisplayData?.Name == null)
@@ -192,7 +192,7 @@ internal static class EnumExtensionCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == false)
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == true)
                     continue;
 
                 if (em.DisplayData?.Description == null)

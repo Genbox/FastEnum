@@ -124,7 +124,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetMemberNames))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberNames) == true)
                     continue;
 
                 yield return $"\"{TransformHelper.TransformName(es, em)}\"";
@@ -135,7 +135,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetMemberValues))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberValues) == true)
                     continue;
 
                 yield return $"{sn}.{em.Name}";
@@ -146,7 +146,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true)
                     continue;
 
                 yield return em.Value.ToString();
@@ -157,7 +157,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == true)
                     continue;
 
                 if (em.DisplayData?.Name == null)
@@ -171,7 +171,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryGetDescription))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == true)
                     continue;
 
                 if (em.DisplayData?.Description == null)
@@ -185,7 +185,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryParse) == true)
                     continue;
 
                 yield return em;
@@ -196,7 +196,7 @@ internal static class EnumClassCode
         {
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.IsDefined))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
                     continue;
 
                 yield return em.Value.ToString();
@@ -306,7 +306,7 @@ internal static class EnumClassCode
                 {
                     EnumMemberSpec em = members[i];
 
-                    if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.TryParse))
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryParse) == true)
                         continue;
 
                     if (em.DisplayData?.Description != null)
@@ -383,7 +383,7 @@ internal static class EnumClassCode
 
             foreach (EnumMemberSpec em in es.Members)
             {
-                if (em.OmitValueData != null && !em.OmitValueData.Exclude.HasFlag(EnumOmitExclude.IsDefined))
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
                     continue;
 
                 string strVal = em.Value.ToString();

@@ -231,7 +231,13 @@ public class EnumGenerator : IIncrementalGenerator
                 else if (name.Equals(EnumTransformValueAttr, StringComparison.Ordinal))
                     transformValueData = TypeHelper.MapData<EnumTransformValueData>(ad.NamedArguments);
                 else if (name.Equals(EnumOmitValueAttr, StringComparison.Ordinal))
-                    omitValueData = TypeHelper.MapData<EnumOmitValueData>(ad.NamedArguments);
+                {
+                    // If no arguments are given, we default to exclude all
+                    if (ad.NamedArguments.Length == 0)
+                        omitValueData = new EnumOmitValueData { Exclude = EnumOmitExclude.All };
+                    else
+                        omitValueData = TypeHelper.MapData<EnumOmitValueData>(ad.NamedArguments);
+                }
             }
 
             members.Add(new EnumMemberSpec(member.Name, field.ConstantValue, displayData, omitValueData, transformValueData));

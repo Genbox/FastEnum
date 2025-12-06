@@ -10,6 +10,9 @@ internal static class TypeHelper
     {
         T instance = new T();
 
+        if (data.Length == 0)
+            return instance;
+
         PropertyInfo[] props = typeof(T).GetProperties();
 
         Dictionary<string, PropertyInfo> indexed = new Dictionary<string, PropertyInfo>(props.Length, StringComparer.Ordinal);

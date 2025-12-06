@@ -6,5 +6,5 @@ namespace Genbox.FastEnum;
 [global::System.AttributeUsage(AttributeTargets.Field)]
 public sealed class EnumOmitValueAttribute : global::System.Attribute
 {
-    public EnumOmitExclude Exclude { get; set; }
+    public EnumOmitExclude Exclude { get; set; } = EnumOmitExclude.All;
 }
