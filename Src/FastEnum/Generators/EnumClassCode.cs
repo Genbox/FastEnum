@@ -99,6 +99,27 @@ internal static class EnumClassCode
                  """;
         }
 
+        if (fields.Count > 0)
+        {
+            sb.Clear();
+            sb.AppendLine();
+            sb.AppendLine();
+
+            foreach (string field in fields)
+            {
+                sb.Append(CodeGenHelper.Indent(2)).AppendLine(field);
+            }
+
+            res += sb.ToString();
+        }
+
+        res += "\n    }";
+
+        if (!op.DisableEnumsWrapper)
+            res += "\n}";
+
+        return res;
+
         IEnumerable<string> GetMemberNames()
         {
             foreach (EnumMemberSpec em in es.Members)
@@ -378,27 +399,6 @@ internal static class EnumClassCode
 
             return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
         }
-
-        if (fields.Count > 0)
-        {
-            sb.Clear();
-            sb.AppendLine();
-            sb.AppendLine();
-
-            foreach (string field in fields)
-            {
-                sb.Append(CodeGenHelper.Indent(2)).AppendLine(field);
-            }
-
-            res += sb.ToString();
-        }
-
-        res += "\n    }";
-
-        if (!op.DisableEnumsWrapper)
-            res += "\n}";
-
-        return res;
     }
 
     private static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)

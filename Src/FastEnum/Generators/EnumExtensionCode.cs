@@ -38,7 +38,7 @@ internal static class EnumExtensionCode
         string res = $$"""
                        using System;
                        using System.Diagnostics.CodeAnalysis;
-                       {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
+                       {{(ns != null ? $"\nnamespace {ns};\n" : null)}}
                        {{vi}} static partial class {{en}}
                        {
                            public static string GetString(this {{sn}} value) => {{(containsDuplicateValue ? "value.ToString();" : $"value switch\n    {{\n        {GetString()}\n        _ => value.ToString()\n    }};")}}
@@ -119,6 +119,8 @@ internal static class EnumExtensionCode
                         public static bool IsFlagSet(this {sn} value, {sn} flag) => (({ut})value & ({ut})flag) == ({ut})flag;
                     """;
         }
+
+        return res + "\n}";
 
         string GetString()
         {
@@ -229,7 +231,5 @@ internal static class EnumExtensionCode
 
             return sb.ToString();
         }
-
-        return res + "\n}";
     }
 }
