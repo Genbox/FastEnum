@@ -1,7 +1,5 @@
 #if DEBUG
 
-using System.Reflection;
-using Genbox.FastEnum.Tests.CodeGen.Code;
 using static Genbox.FastEnum.Tests.CodeGen.Code.TestHelper;
 
 namespace Genbox.FastEnum.Tests.CodeGen;

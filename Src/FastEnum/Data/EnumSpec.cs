@@ -1,5 +1,4 @@
 ﻿using Genbox.FastEnum.Extensions;
-using Microsoft.CodeAnalysis;
 
 namespace Genbox.FastEnum.Data;
 

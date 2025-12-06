@@ -1,10 +1,6 @@
 using System.Collections.Immutable;
 using System.Reflection;
-using System.Text;
-using Genbox.FastEnum.Data;
 using Genbox.FastEnum.Generators;
-using Genbox.FastEnum.Helpers;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 #if RELEASE

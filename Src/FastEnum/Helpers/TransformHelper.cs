@@ -1,5 +1,4 @@
 ﻿using System.Text.RegularExpressions;
-using Genbox.FastEnum.Data;
 
 namespace Genbox.FastEnum.Helpers;
 

@@ -1,7 +1,4 @@
-﻿using Genbox.FastEnum.Data;
-using Microsoft.CodeAnalysis;
-
-namespace Genbox.FastEnum.Generators;
+﻿namespace Genbox.FastEnum.Generators;
 
 internal static class EnumFormatCode
 {

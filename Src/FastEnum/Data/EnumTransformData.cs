@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-
-namespace Genbox.FastEnum.Data;
+﻿namespace Genbox.FastEnum.Data;
 
 internal record EnumTransformData
 {

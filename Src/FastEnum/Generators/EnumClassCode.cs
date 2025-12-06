@@ -1,8 +1,4 @@
 using System.Globalization;
-using System.Text;
-using Genbox.FastEnum.Data;
-using Genbox.FastEnum.Helpers;
-using Microsoft.CodeAnalysis;
 
 namespace Genbox.FastEnum.Generators;
 
@@ -107,7 +103,7 @@ internal static class EnumClassCode
 
             foreach (string field in fields)
             {
-                sb.Append(CodeGenHelper.Indent(2)).AppendLine(field);
+                sb.Append(Indent(2)).AppendLine(field);
             }
 
             res += sb.ToString();
@@ -177,7 +173,7 @@ internal static class EnumClassCode
                 if (em.DisplayData?.Description == null)
                     continue;
 
-                yield return $"({sn}.{em.Name}, \"{CodeGenHelper.EscapeString(em.DisplayData.Description)}\")";
+                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Description)}\")";
             }
         }
 
@@ -245,7 +241,7 @@ internal static class EnumClassCode
             {
                 EnumMemberSpec em = members[i];
 
-                string escapedValue = CodeGenHelper.EscapeString(em.Value.ToString());
+                string escapedValue = EscapeString(em.Value.ToString());
 
                 sb.Append($$"""
 
@@ -276,7 +272,7 @@ internal static class EnumClassCode
 
                     if (em.DisplayData?.Name != null)
                     {
-                        string escapedDisplayName = CodeGenHelper.EscapeString(em.DisplayData.Name);
+                        string escapedDisplayName = EscapeString(em.DisplayData.Name);
 
                         sb.Append($$"""
 
@@ -311,7 +307,7 @@ internal static class EnumClassCode
 
                     if (em.DisplayData?.Description != null)
                     {
-                        string escapedDisplayDesc = CodeGenHelper.EscapeString(em.DisplayData.Description);
+                        string escapedDisplayDesc = EscapeString(em.DisplayData.Description);
                         sb.Append($$"""
 
                                                     if (value.Equals("{{escapedDisplayDesc}}", comparison))
@@ -420,7 +416,7 @@ internal static class EnumClassCode
 
         for (int i = 0; i < arr.Length; i++)
         {
-            sb.Append(CodeGenHelper.Indent(4)).Append(arr[i]);
+            sb.Append(Indent(4)).Append(arr[i]);
 
             if (i != arr.Length - 1)
                 sb.Append(',');
@@ -428,7 +424,7 @@ internal static class EnumClassCode
             sb.Append('\n');
         }
 
-        sb.Append(CodeGenHelper.Indent(3)).Append("};");
+        sb.Append(Indent(3)).Append("};");
 
         return sb.ToString();
     }

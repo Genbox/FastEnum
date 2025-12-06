@@ -1,9 +1,3 @@
-using System.Text;
-using Genbox.FastEnum.Data;
-using Genbox.FastEnum.Helpers;
-using Microsoft.CodeAnalysis;
-using static Genbox.FastEnum.Helpers.CodeGenHelper;
-
 namespace Genbox.FastEnum.Generators;
 
 internal static class EnumExtensionCode
