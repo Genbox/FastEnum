@@ -1,0 +1,13 @@
+// Ensure enums nested inside structs are supported.
+
+namespace Some.Namespace.Here;
+
+internal struct MyStruct
+{
+    [FastEnum]
+    internal enum MyEnum
+    {
+        First,
+        Second
+    }
+}

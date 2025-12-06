@@ -1,0 +1,13 @@
+// Ensure enums nested inside record structs are supported.
+
+namespace Some.Namespace.Here;
+
+internal record struct MyRecordStruct
+{
+    [FastEnum]
+    internal enum MyEnum
+    {
+        First,
+        Second
+    }
+}

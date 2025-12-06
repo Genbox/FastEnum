@@ -267,6 +267,10 @@ public class EnumGenerator : IIncrementalGenerator
                     break;
                 case SymbolDisplayPartKind.ClassName:
                 case SymbolDisplayPartKind.EnumName:
+                case SymbolDisplayPartKind.StructName:
+                case SymbolDisplayPartKind.RecordClassName:
+                case SymbolDisplayPartKind.RecordStructName:
+                case SymbolDisplayPartKind.InterfaceName:
                     inNamespace = false;
                     break;
                 case SymbolDisplayPartKind.Punctuation:

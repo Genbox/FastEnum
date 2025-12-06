@@ -1,0 +1,13 @@
+// Ensure enums nested inside interfaces are supported.
+
+namespace Some.Namespace.Here;
+
+public interface IMyInterface
+{
+    [FastEnum]
+    public enum MyEnum
+    {
+        First,
+        Second
+    }
+}
