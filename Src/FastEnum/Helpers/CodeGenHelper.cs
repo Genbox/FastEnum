@@ -33,16 +33,16 @@ internal static class CodeGenHelper
         return sb.ToString();
     }
 
-    internal static string FormatPrimitive(object value) => value switch
+    internal static string FormatPrimitive(object value, bool outputTypeLabel = true) => value switch
     {
         sbyte sb => sb.ToString(CultureInfo.InvariantCulture),
         byte b => b.ToString(CultureInfo.InvariantCulture),
         short s => s.ToString(CultureInfo.InvariantCulture),
         ushort us => us.ToString(CultureInfo.InvariantCulture),
         int i => i.ToString(CultureInfo.InvariantCulture),
-        uint ui => ui.ToString(CultureInfo.InvariantCulture) + "U",
-        long l => l.ToString(CultureInfo.InvariantCulture) + "L",
-        ulong ul => ul.ToString(CultureInfo.InvariantCulture) + "UL",
+        uint ui => ui.ToString(CultureInfo.InvariantCulture) + (outputTypeLabel ? "U" : ""),
+        long l => l.ToString(CultureInfo.InvariantCulture) + (outputTypeLabel ? "L" : ""),
+        ulong ul => ul.ToString(CultureInfo.InvariantCulture) + (outputTypeLabel ? "UL" : ""),
         _ => throw new InvalidOperationException("Unsupported literal type")
     };
 }

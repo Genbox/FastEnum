@@ -231,7 +231,7 @@ internal static class EnumClassCode
             {
                 EnumMemberSpec em = members[i];
 
-                string escapedValue = EscapeString(em.Value.ToString());
+                string escapedValue = EscapeString(FormatPrimitive(em.Value, false));
 
                 sb.Append($$"""
 
