@@ -148,12 +148,15 @@ using System.Diagnostics.CodeAnalysis;
 
 public static partial class CasePatternEnumExtensions
 {
-    public static string GetString(this global::CasePatternEnum value) => value switch
+    public static string GetString(this global::CasePatternEnum value)
     {
-        global::CasePatternEnum.One => "NE",
-        global::CasePatternEnum.Two => "WO",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::CasePatternEnum.One => "NE",
+            global::CasePatternEnum.Two => "WO",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::CasePatternEnum value, CasePatternEnumFormat format = CasePatternEnumFormat.Default)
     {

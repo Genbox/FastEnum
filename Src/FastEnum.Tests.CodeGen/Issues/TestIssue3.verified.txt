@@ -148,12 +148,15 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class TestEnumExtensions
 {
-    public static string GetString(this global::TestEnum value) => value switch
+    public static string GetString(this global::TestEnum value)
     {
-        global::TestEnum.None => "None",
-        global::TestEnum.Value => "Value",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::TestEnum.None => "None",
+            global::TestEnum.Value => "Value",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::TestEnum value, TestEnumFormat format = TestEnumFormat.Default)
     {

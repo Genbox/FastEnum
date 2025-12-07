@@ -121,11 +121,14 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum1Extensions
 {
-    public static string GetString(this global::MyEnum1 value) => value switch
+    public static string GetString(this global::MyEnum1 value)
     {
-        global::MyEnum1.First => "NotFirst",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum1.First => "NotFirst",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum1 value, MyEnum1Format format = MyEnum1Format.Default)
     {
@@ -285,11 +288,14 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum2Extensions
 {
-    public static string GetString(this global::MyEnum2 value) => value switch
+    public static string GetString(this global::MyEnum2 value)
     {
-        global::MyEnum2.First => "FIRST",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum2.First => "FIRST",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum2 value, MyEnum2Format format = MyEnum2Format.Default)
     {
@@ -449,11 +455,14 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum3Extensions
 {
-    public static string GetString(this global::MyEnum3 value) => value switch
+    public static string GetString(this global::MyEnum3 value)
     {
-        global::MyEnum3.First => "Last",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum3.First => "Last",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum3 value, MyEnum3Format format = MyEnum3Format.Default)
     {
@@ -613,11 +622,14 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum4Extensions
 {
-    public static string GetString(this global::MyEnum4 value) => value switch
+    public static string GetString(this global::MyEnum4 value)
     {
-        global::MyEnum4.First => "fIRST",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum4.First => "fIRST",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum4 value, MyEnum4Format format = MyEnum4Format.Default)
     {
@@ -804,12 +816,15 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnum5Extensions
 {
-    public static string GetString(this global::MyEnum5 value) => value switch
+    public static string GetString(this global::MyEnum5 value)
     {
-        global::MyEnum5.Beta => "Beta",
-        global::MyEnum5.Alpha => "Alpha",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum5.Beta => "Beta",
+            global::MyEnum5.Alpha => "Alpha",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum5 value, MyEnum5Format format = MyEnum5Format.Default)
     {

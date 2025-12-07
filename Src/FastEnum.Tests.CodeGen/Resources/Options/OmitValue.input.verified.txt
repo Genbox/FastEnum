@@ -290,17 +290,20 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyEnumExtensions
 {
-    public static string GetString(this global::MyEnum value) => value switch
+    public static string GetString(this global::MyEnum value)
     {
-        global::MyEnum.Keep => "Keep",
-        global::MyEnum.OmitAll => string.Empty,
-        global::MyEnum.OmitNameParse => "OmitNameParse",
-        global::MyEnum.OmitUnderlying => "OmitUnderlying",
-        global::MyEnum.OmitDisplay => "OmitDisplay",
-        global::MyEnum.OmitIsDefined => "OmitIsDefined",
-        global::MyEnum.OmitString => string.Empty,
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyEnum.Keep => "Keep",
+            global::MyEnum.OmitAll => string.Empty,
+            global::MyEnum.OmitNameParse => "OmitNameParse",
+            global::MyEnum.OmitUnderlying => "OmitUnderlying",
+            global::MyEnum.OmitDisplay => "OmitDisplay",
+            global::MyEnum.OmitIsDefined => "OmitIsDefined",
+            global::MyEnum.OmitString => string.Empty,
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyEnum value, MyEnumFormat format = MyEnumFormat.Default)
     {

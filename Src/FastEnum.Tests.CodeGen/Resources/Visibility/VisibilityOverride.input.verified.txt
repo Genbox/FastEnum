@@ -121,11 +121,14 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class MyPublicEnumExtensions
 {
-    public static string GetString(this global::MyPublicEnum value) => value switch
+    public static string GetString(this global::MyPublicEnum value)
     {
-        global::MyPublicEnum.First => "First",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::MyPublicEnum.First => "First",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::MyPublicEnum value, MyPublicEnumFormat format = MyPublicEnumFormat.Default)
     {

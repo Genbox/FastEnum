@@ -154,12 +154,15 @@ namespace Some.Namespace.Here;
 
 internal static partial class ClassEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.NestedClass.ClassEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.NestedClass.ClassEnum value)
     {
-        Some.Namespace.Here.NestedClass.ClassEnum.First => "First",
-        Some.Namespace.Here.NestedClass.ClassEnum.Second => "Second",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.NestedClass.ClassEnum.First => "First",
+            Some.Namespace.Here.NestedClass.ClassEnum.Second => "Second",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.NestedClass.ClassEnum value, Some.Namespace.Here.ClassEnumFormat format = Some.Namespace.Here.ClassEnumFormat.Default)
     {
@@ -356,12 +359,15 @@ namespace Some.Namespace.Here;
 
 internal static partial class StructEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.NestedStruct.StructEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.NestedStruct.StructEnum value)
     {
-        Some.Namespace.Here.NestedStruct.StructEnum.First => "First",
-        Some.Namespace.Here.NestedStruct.StructEnum.Second => "Second",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.NestedStruct.StructEnum.First => "First",
+            Some.Namespace.Here.NestedStruct.StructEnum.Second => "Second",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.NestedStruct.StructEnum value, Some.Namespace.Here.StructEnumFormat format = Some.Namespace.Here.StructEnumFormat.Default)
     {
@@ -558,12 +564,15 @@ namespace Some.Namespace.Here;
 
 internal static partial class RecordEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.NestedRecord.RecordEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.NestedRecord.RecordEnum value)
     {
-        Some.Namespace.Here.NestedRecord.RecordEnum.First => "First",
-        Some.Namespace.Here.NestedRecord.RecordEnum.Second => "Second",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.NestedRecord.RecordEnum.First => "First",
+            Some.Namespace.Here.NestedRecord.RecordEnum.Second => "Second",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.NestedRecord.RecordEnum value, Some.Namespace.Here.RecordEnumFormat format = Some.Namespace.Here.RecordEnumFormat.Default)
     {
@@ -760,12 +769,15 @@ namespace Some.Namespace.Here;
 
 internal static partial class RecordStructEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.NestedRecordStruct.RecordStructEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.NestedRecordStruct.RecordStructEnum value)
     {
-        Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First => "First",
-        Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second => "Second",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First => "First",
+            Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second => "Second",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.NestedRecordStruct.RecordStructEnum value, Some.Namespace.Here.RecordStructEnumFormat format = Some.Namespace.Here.RecordStructEnumFormat.Default)
     {
@@ -962,12 +974,15 @@ namespace Some.Namespace.Here;
 
 internal static partial class InterfaceEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.INestedInterface.InterfaceEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.INestedInterface.InterfaceEnum value)
     {
-        Some.Namespace.Here.INestedInterface.InterfaceEnum.First => "First",
-        Some.Namespace.Here.INestedInterface.InterfaceEnum.Second => "Second",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.INestedInterface.InterfaceEnum.First => "First",
+            Some.Namespace.Here.INestedInterface.InterfaceEnum.Second => "Second",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.INestedInterface.InterfaceEnum value, Some.Namespace.Here.InterfaceEnumFormat format = Some.Namespace.Here.InterfaceEnumFormat.Default)
     {

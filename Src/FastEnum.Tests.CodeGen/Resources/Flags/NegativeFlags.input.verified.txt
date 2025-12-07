@@ -194,14 +194,17 @@ using System.Diagnostics.CodeAnalysis;
 
 internal static partial class SignedFlagsExtensions
 {
-    public static string GetString(this global::SignedFlags value) => value switch
+    public static string GetString(this global::SignedFlags value)
     {
-        global::SignedFlags.None => "None",
-        global::SignedFlags.One => "One",
-        global::SignedFlags.Negative => "Negative",
-        global::SignedFlags.Combo => "Combo",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::SignedFlags.None => "None",
+            global::SignedFlags.One => "One",
+            global::SignedFlags.Negative => "Negative",
+            global::SignedFlags.Combo => "Combo",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::SignedFlags value, SignedFlagsFormat format = SignedFlagsFormat.Default)
     {

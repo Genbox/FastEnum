@@ -36,13 +36,10 @@ internal static class EnumExtensionCode
                     {{(ns != null ? $"\nnamespace {ns};\n" : null)}}
                     {{vi}} static partial class {{en}}
                     {
-                        public static string GetString(this {{sn}} value) => {{(containsDuplicateValue ? "value.ToString();" : $$"""
-                                                                                                                                 value switch
-                                                                                                                                     {
-                                                                                                                                         {{GetString()}}
-                                                                                                                                         _ => value.ToString()
-                                                                                                                                     };
-                                                                                                                                 """)}}
+                        public static string GetString(this {{sn}} value)
+                        {
+                            {{GetString()}}
+                        }
 
                         public static string GetString(this {{sn}} value, {{ef}} format = {{ef}}.Default)
                         {
@@ -146,8 +143,7 @@ internal static class EnumExtensionCode
                     if (em.DisplayData?.Name == null)
                         continue;
 
-                    string display = EscapeString(em.DisplayData.Name);
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{display}\";\n");
+                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(em.DisplayData.Name)}\";\n");
                 }
 
                 sb2.Append("        }\n\n        ");
@@ -162,8 +158,7 @@ internal static class EnumExtensionCode
                     if (em.DisplayData?.Description == null)
                         continue;
 
-                    string description = EscapeString(em.DisplayData.Description);
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{description}\";\n");
+                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(em.DisplayData.Description)}\";\n");
                 }
 
                 sb2.Append("        }\n\n        ");
@@ -179,8 +174,7 @@ internal static class EnumExtensionCode
                     continue;
                 }
 
-                string transformed = TransformHelper.TransformName(es, em);
-                sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(transformed)}\";\n");
+                sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
             }
 
             sb2.Append("        }\n\n        ");
@@ -206,29 +200,45 @@ internal static class EnumExtensionCode
 
         string GetString()
         {
-            StringBuilder sb2 = StringBuilderPool.Rent(8192);
-
-            for (int i = 0; i < es.Members.Length; i++)
+            if (containsDuplicateValue)
             {
-                EnumMemberSpec em = es.Members[i];
+                // If there are no omissions or transforms, we can just return the value.
+                if (es.Members.All(x => x.OmitValueData == null && x.TransformValueData == null))
+                    return "return value.ToString();";
+
+                StringBuilder sb2 = StringBuilderPool.Rent();
+
+                foreach (EnumMemberSpec em in es.Members)
+                {
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                    {
+                        sb2.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                        continue;
+                    }
+
+                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
+                }
+
+                sb2.Append("            return value.ToString();");
+                return StringBuilderPool.ReturnGetString(sb2);
+            }
+
+            StringBuilder sb3 = StringBuilderPool.Rent();
+            sb3.Append("return value switch\n        {\n            ");
+
+            foreach (EnumMemberSpec em in es.Members)
+            {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 {
-                    sb2.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,");
-
-                    if (i < es.Members.Length - 1)
-                        sb2.Append("\n        ");
-
+                    sb3.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,\n            ");
                     continue;
                 }
 
-                string transformed = TransformHelper.TransformName(es, em);
-                sb2.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(EscapeString(transformed)).Append("\",");
-
-                if (i < es.Members.Length - 1)
-                    sb2.Append("\n        ");
+                sb3.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(EscapeString(TransformHelper.TransformName(es, em))).Append("\",\n            ");
             }
 
-            return StringBuilderPool.ReturnGetString(sb2);
+            sb3.Append("_ => value.ToString()\n        };");
+            return StringBuilderPool.ReturnGetString(sb3);
         }
 
         IEnumerable<string> TryGetUnderlyingValue()

@@ -148,12 +148,15 @@ using System.Diagnostics.CodeAnalysis;
 
 public static partial class StatusExtensions
 {
-    public static string GetString(this global::Status value) => value switch
+    public static string GetString(this global::Status value)
     {
-        global::Status.Ok => "good",
-        global::Status.Error => "Error",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            global::Status.Ok => "good",
+            global::Status.Error => "Error",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this global::Status value, StatusFormat format = StatusFormat.Default)
     {

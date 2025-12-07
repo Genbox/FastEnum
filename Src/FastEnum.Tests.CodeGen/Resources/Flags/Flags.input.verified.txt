@@ -200,14 +200,17 @@ namespace Some.Namespace.Here;
 
 public static partial class MyEnumExtensions
 {
-    public static string GetString(this Some.Namespace.Here.MyEnum value) => value switch
+    public static string GetString(this Some.Namespace.Here.MyEnum value)
     {
-        Some.Namespace.Here.MyEnum.First => "First",
-        Some.Namespace.Here.MyEnum.Second => "Second",
-        Some.Namespace.Here.MyEnum.Third => "Third",
-        Some.Namespace.Here.MyEnum.Other => "Other",
-        _ => value.ToString()
-    };
+        return value switch
+        {
+            Some.Namespace.Here.MyEnum.First => "First",
+            Some.Namespace.Here.MyEnum.Second => "Second",
+            Some.Namespace.Here.MyEnum.Third => "Third",
+            Some.Namespace.Here.MyEnum.Other => "Other",
+            _ => value.ToString()
+        };
+    }
 
     public static string GetString(this Some.Namespace.Here.MyEnum value, Some.Namespace.Here.MyEnumFormat format = Some.Namespace.Here.MyEnumFormat.Default)
     {

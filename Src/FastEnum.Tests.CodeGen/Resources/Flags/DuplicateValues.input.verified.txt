@@ -200,7 +200,10 @@ namespace Some.Namespace.Here;
 
 public static partial class ProfileExtensions
 {
-    public static string GetString(this Some.Namespace.Here.Profile value) => value.ToString();
+    public static string GetString(this Some.Namespace.Here.Profile value)
+    {
+        return value.ToString();
+    }
 
     public static string GetString(this Some.Namespace.Here.Profile value, Some.Namespace.Here.ProfileFormat format = Some.Namespace.Here.ProfileFormat.Default)
     {
