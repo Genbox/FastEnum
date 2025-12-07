@@ -22,84 +22,81 @@ internal static class EnumClassCode
 
         List<string> fields = new List<string>();
 
-        StringBuilder sb = StringBuilderPool.Rent(4096);
+        StringBuilder sb = StringBuilderPool.Rent(16384);
 
-        string res = $$"""
-                       using System;
-                       {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                       {{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
-                           {{vi}} static partial class {{cn}}
-                           {
-                               public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
-                               public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
+        sb.Append($$"""
+                    using System;
+                    {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
+                    {{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
+                        {{vi}} static partial class {{cn}}
+                        {
+                            public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
+                            public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
 
-                               public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
+                            public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
 
-                               public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
+                            public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
 
-                               public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
+                            public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
 
-                               public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-                               {
-                                   {{TryParse()}}
-                                   result = default;
-                                   return false;
-                               }
+                            public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            {
+                                {{TryParse()}}
+                                result = default;
+                                return false;
+                            }
 
-                       #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                               public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-                               {
-                                   {{TryParse()}}
-                                   result = default;
-                                   return false;
-                               }
+                    #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                            public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            {
+                                {{TryParse()}}
+                                result = default;
+                                return false;
+                            }
 
-                               public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-                               {
-                                   if (!TryParse(value, out {{sn}} result, format, comparison))
-                                       throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
+                            public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            {
+                                if (!TryParse(value, out {{sn}} result, format, comparison))
+                                    throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
-                                   return result;
-                               }
-                       #endif
+                                return result;
+                            }
+                    #endif
 
-                               public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
-                               {
-                                   if (!TryParse(value, out {{sn}} result, format, comparison))
-                                       throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                            public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            {
+                                if (!TryParse(value, out {{sn}} result, format, comparison))
+                                    throw new ArgumentOutOfRangeException($"Invalid value: {value}");
 
-                                   return result;
-                               }
+                                return result;
+                            }
 
-                               public static bool IsDefined({{sn}} input)
-                               {
-                                   {{IsDefined()}}
-                               }
-                       """;
+                            public static bool IsDefined({{sn}} input)
+                            {
+                                {{IsDefined()}}
+                            }
+                    """);
 
         if (es.HasDisplay)
         {
-            res +=
-                $"""
+            sb.Append($"""
 
 
-                         public static ({sn}, string)[] GetDisplayNames() => {Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}
-                 """;
+                               public static ({sn}, string)[] GetDisplayNames() => {Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}
+                       """);
         }
 
         if (es.HasDescription)
         {
-            res +=
-                $"""
+            sb.Append($"""
 
 
-                         public static ({sn}, string)[] GetDescriptions() => {Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}
-                 """;
+                               public static ({sn}, string)[] GetDescriptions() => {Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}
+                       """);
         }
 
         if (fields.Count > 0)
         {
-            sb.Clear();
             sb.AppendLine();
             sb.AppendLine();
 
@@ -107,16 +104,14 @@ internal static class EnumClassCode
             {
                 sb.Append(Indent(2)).AppendLine(field);
             }
-
-            res += StringBuilderPool.ReturnGetString(sb);
         }
 
-        res += "\n    }";
+        sb.Append("\n    }");
 
         if (!op.DisableEnumsWrapper)
-            res += "\n}";
+            sb.Append("\n}");
 
-        return res;
+        return StringBuilderPool.ReturnGetString(sb);
 
         IEnumerable<string> GetMemberNames()
         {
@@ -196,36 +191,36 @@ internal static class EnumClassCode
             if (members.Length == 0)
                 return string.Empty;
 
-            sb.Clear();
-            sb.Append($$"""
-                        if ((format & {{ef}}.Name) == {{ef}}.Name)
-                                    {
-                        """);
+            StringBuilder sb2 = StringBuilderPool.Rent(8192);
+            sb2.Append($$"""
+                         if ((format & {{ef}}.Name) == {{ef}}.Name)
+                                     {
+                         """);
 
             for (int i = 0; i < members.Length; i++)
             {
                 EnumMemberSpec em = members[i];
 
-                sb.Append($$"""
+                sb2.Append($$"""
 
-                                            if (value.Equals("{{EscapeString(TransformHelper.TransformName(es, em))}}", comparison))
-                                            {
-                                                result = {{sn}}.{{em.Name}};
-                                                return true;
-                                            }
-                            """);
+                                             if (value.Equals("{{EscapeString(TransformHelper.TransformName(es, em))}}", comparison))
+                                             {
+                                                 result = {{sn}}.{{em.Name}};
+                                                 return true;
+                                             }
+                             """);
 
                 if (i != members.Length - 1)
-                    sb.AppendLine();
+                    sb2.AppendLine();
             }
 
-            sb.Append("\n            }");
+            sb2.Append("\n            }");
 
-            sb.Append($$"""
+            sb2.Append($$"""
 
-                                    if ((format & {{ef}}.Value) == {{ef}}.Value)
-                                    {
-                        """);
+                                     if ((format & {{ef}}.Value) == {{ef}}.Value)
+                                     {
+                         """);
 
             for (int i = 0; i < members.Length; i++)
             {
@@ -233,28 +228,28 @@ internal static class EnumClassCode
 
                 string escapedValue = EscapeString(FormatPrimitive(em.Value, false));
 
-                sb.Append($$"""
+                sb2.Append($$"""
 
-                                            if (value.Equals("{{escapedValue}}", comparison))
-                                            {
-                                                result = {{sn}}.{{em.Name}};
-                                                return true;
-                                            }
-                            """);
+                                             if (value.Equals("{{escapedValue}}", comparison))
+                                             {
+                                                 result = {{sn}}.{{em.Name}};
+                                                 return true;
+                                             }
+                             """);
 
                 if (i != members.Length - 1)
-                    sb.AppendLine();
+                    sb2.AppendLine();
             }
 
-            sb.Append("\n            }");
+            sb2.Append("\n            }");
 
             if (es.HasDisplay)
             {
-                sb.Append($$"""
+                sb2.Append($$"""
 
-                                        if ((format & {{ef}}.DisplayName) == {{ef}}.DisplayName)
-                                        {
-                            """);
+                                         if ((format & {{ef}}.DisplayName) == {{ef}}.DisplayName)
+                                         {
+                             """);
 
                 for (int i = 0; i < members.Length; i++)
                 {
@@ -264,29 +259,29 @@ internal static class EnumClassCode
                     {
                         string escapedDisplayName = EscapeString(em.DisplayData.Name);
 
-                        sb.Append($$"""
+                        sb2.Append($$"""
 
-                                                    if (value.Equals("{{escapedDisplayName}}", comparison))
-                                                    {
-                                                        result = {{sn}}.{{em.Name}};
-                                                        return true;
-                                                    }
-                                    """);
+                                                     if (value.Equals("{{escapedDisplayName}}", comparison))
+                                                     {
+                                                         result = {{sn}}.{{em.Name}};
+                                                         return true;
+                                                     }
+                                     """);
                     }
                     if (i != members.Length - 1)
-                        sb.AppendLine();
+                        sb2.AppendLine();
                 }
 
-                sb.Append("\n            }");
+                sb2.Append("\n            }");
             }
 
             if (es.HasDescription)
             {
-                sb.Append($$"""
+                sb2.Append($$"""
 
-                                        if ((format & {{ef}}.Description) == {{ef}}.Description)
-                                        {
-                            """);
+                                         if ((format & {{ef}}.Description) == {{ef}}.Description)
+                                         {
+                             """);
 
                 for (int i = 0; i < members.Length; i++)
                 {
@@ -298,24 +293,24 @@ internal static class EnumClassCode
                     if (em.DisplayData?.Description != null)
                     {
                         string escapedDisplayDesc = EscapeString(em.DisplayData.Description);
-                        sb.Append($$"""
+                        sb2.Append($$"""
 
-                                                    if (value.Equals("{{escapedDisplayDesc}}", comparison))
-                                                    {
-                                                        result = {{sn}}.{{em.Name}};
-                                                        return true;
-                                                    }
-                                    """);
+                                                     if (value.Equals("{{escapedDisplayDesc}}", comparison))
+                                                     {
+                                                         result = {{sn}}.{{em.Name}};
+                                                         return true;
+                                                     }
+                                     """);
                     }
 
                     if (i != members.Length - 1)
-                        sb.AppendLine();
+                        sb2.AppendLine();
                 }
 
-                sb.Append("\n            }");
+                sb2.Append("\n            }");
             }
 
-            return sb.ToString();
+            return StringBuilderPool.ReturnGetString(sb2);
         }
 
         string IsDefined()
@@ -323,13 +318,13 @@ internal static class EnumClassCode
             if (es.HasFlags)
                 return $"return {IsFlagDefined()};";
 
-            sb.Clear();
+            StringBuilder sb2 = StringBuilderPool.Rent(8192);
 
             bool hasMembers = true;
 
             //If we have no omissions impacting IsDefined, then we can reuse GetUnderlyingValues()
             if (!omitUnderlyingValues && !omitIsDefined)
-                sb.Append(ut).AppendLine("[] _isDefinedValues = GetUnderlyingValues();");
+                sb2.Append(ut).AppendLine("[] _isDefinedValues = GetUnderlyingValues();");
             else
             {
                 string[] arr = IsDefinedMembers().ToArray();
@@ -338,26 +333,26 @@ internal static class EnumClassCode
                 hasMembers = arr.Length > 0;
 
                 if (!hasMembers)
-                    sb.Append("return false;");
+                    sb2.Append("return false;");
                 else
-                    sb.Append(assignment);
+                    sb2.Append(assignment);
             }
 
             if (hasMembers)
             {
-                sb.Append($$"""
+                sb2.Append($$"""
 
-                                        for (int i = 0; i < _isDefinedValues.Length; i++)
-                                        {
-                                            if (_isDefinedValues[i] == ({{ut}})input)
-                                                return true;
-                                        }
+                                         for (int i = 0; i < _isDefinedValues.Length; i++)
+                                         {
+                                             if (_isDefinedValues[i] == ({{ut}})input)
+                                                 return true;
+                                         }
 
-                                        return false;
-                            """);
+                                         return false;
+                             """);
             }
 
-            return sb.ToString();
+            return StringBuilderPool.ReturnGetString(sb2);
         }
 
         string IsFlagDefined()
@@ -380,66 +375,63 @@ internal static class EnumClassCode
 
             return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
         }
-    }
 
-    private static ulong ToUInt64(object value) => value switch
-    {
-        byte b => b,
-        sbyte sb => unchecked((ulong)sb),
-        short s => unchecked((ulong)s),
-        ushort us => us,
-        int i => unchecked((ulong)i),
-        uint ui => ui,
-        long l => unchecked((ulong)l),
-        ulong ul => ul,
-        _ => throw new InvalidOperationException("Unsupported enum underlying type")
-    };
+        static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)
+        {
+            string[] arr = elements.ToArray();
 
-    private static IEnumerable<EnumMemberSpec> ApplySort(IEnumerable<EnumMemberSpec> members, EnumOrder order, Func<EnumMemberSpec, IComparable> selector)
-    {
-        return order switch
+            if (arr.Length == 0)
+                return $"Array.Empty<{type}>();";
+
+            StringBuilder sb = StringBuilderPool.Rent();
+
+            if (cacheDisabled)
+                sb.Append("new ").Append(type).AppendLine("[] {");
+            else
+            {
+                fields.Add($"private static {type}[]? {name};");
+                sb.Append(name).Append(" ??= new ").Append(type).Append("[] {\n");
+            }
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                sb.Append(Indent(4)).Append(arr[i]);
+
+                if (i != arr.Length - 1)
+                    sb.Append(',');
+
+                sb.Append('\n');
+            }
+
+            sb.Append(Indent(3)).Append("};");
+
+            return StringBuilderPool.ReturnGetString(sb);
+        }
+
+        static ulong ToUInt64(object value) => value switch
+        {
+            byte b => b,
+            sbyte sb => unchecked((ulong)sb),
+            short s => unchecked((ulong)s),
+            ushort us => us,
+            int i => unchecked((ulong)i),
+            uint ui => ui,
+            long l => unchecked((ulong)l),
+            ulong ul => ul,
+            _ => throw new InvalidOperationException("Unsupported enum underlying type")
+        };
+
+        static IEnumerable<EnumMemberSpec> ApplySort(IEnumerable<EnumMemberSpec> members, EnumOrder order, Func<EnumMemberSpec, IComparable> selector) => order switch
         {
             EnumOrder.Ascending => members.OrderBy(selector),
             EnumOrder.Descending => members.OrderByDescending(selector),
             _ => members
         };
-    }
 
-    private static IComparable ValueKey(EnumMemberSpec em) => (IComparable)em.Value;
+        static IComparable ValueKey(EnumMemberSpec em) => (IComparable)em.Value;
 
-    private static IComparable DisplayNameKey(EnumMemberSpec em) => em.DisplayData!.Name!;
+        static IComparable DisplayNameKey(EnumMemberSpec em) => em.DisplayData!.Name!;
 
-    private static IComparable DescriptionKey(EnumMemberSpec em) => em.DisplayData!.Description!;
-
-    private static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)
-    {
-        string[] arr = elements.ToArray();
-
-        if (arr.Length == 0)
-            return $"Array.Empty<{type}>();";
-
-        StringBuilder sb = StringBuilderPool.Rent(100);
-
-        if (cacheDisabled)
-            sb.Append("new ").Append(type).AppendLine("[] {");
-        else
-        {
-            fields.Add($"private static {type}[]? {name};");
-            sb.Append(name).Append(" ??= new ").Append(type).Append("[] {\n");
-        }
-
-        for (int i = 0; i < arr.Length; i++)
-        {
-            sb.Append(Indent(4)).Append(arr[i]);
-
-            if (i != arr.Length - 1)
-                sb.Append(',');
-
-            sb.Append('\n');
-        }
-
-        sb.Append(Indent(3)).Append("};");
-
-        return StringBuilderPool.ReturnGetString(sb);
+        static IComparable DescriptionKey(EnumMemberSpec em) => em.DisplayData!.Description!;
     }
 }

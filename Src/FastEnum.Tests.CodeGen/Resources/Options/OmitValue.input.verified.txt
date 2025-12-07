@@ -294,7 +294,7 @@ internal static partial class MyEnumExtensions
     {
         global::MyEnum.Keep => "Keep",
         global::MyEnum.OmitAll => string.Empty,
-            global::MyEnum.OmitNameParse => "OmitNameParse",
+        global::MyEnum.OmitNameParse => "OmitNameParse",
         global::MyEnum.OmitUnderlying => "OmitUnderlying",
         global::MyEnum.OmitDisplay => "OmitDisplay",
         global::MyEnum.OmitIsDefined => "OmitIsDefined",

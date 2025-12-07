@@ -5,12 +5,12 @@ namespace Genbox.FastEnum.Helpers;
 /// <summary>Simple pooled StringBuilder helper to reduce allocations in codegen.</summary>
 internal static class StringBuilderPool
 {
-    private const int MaxRetainedCapacity = 4096;
-    private const int MaxRetainedInstances = 8;
+    private const int MaxRetainedCapacity = 16384;
+    private const int MaxRetainedInstances = 64;
 
     private static readonly ConcurrentBag<StringBuilder> _pool = new ConcurrentBag<StringBuilder>();
 
-    internal static StringBuilder Rent(int capacity = 16)
+    internal static StringBuilder Rent(int capacity = 4096)
     {
         if (!_pool.TryTake(out StringBuilder? sb))
             return new StringBuilder(capacity);
@@ -27,13 +27,11 @@ internal static class StringBuilderPool
     {
         string value = sb.ToString();
 
-        if (sb.Capacity > MaxRetainedCapacity)
-            sb.Capacity = MaxRetainedCapacity;
-
-        sb.Clear();
-
-        if (_pool.Count < MaxRetainedInstances)
+        if (_pool.Count < MaxRetainedInstances && sb.Capacity < MaxRetainedCapacity)
+        {
+            sb.Clear();
             _pool.Add(sb);
+        }
 
         return value;
     }
