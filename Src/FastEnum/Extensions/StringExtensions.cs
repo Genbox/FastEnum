@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastEnum.Extensions;
+namespace Genbox.FastEnum.Extensions;
 
 internal static class StringExtensions
 {

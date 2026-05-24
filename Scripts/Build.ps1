@@ -1,4 +1,4 @@
 $Config = "Release"
 $Root = "$PSScriptRoot/.."
 
-dotnet build $Root/FastEnum.sln -c $Config
+dotnet build $Root/FastEnum.slnx -c $Config

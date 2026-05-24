@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "Genbox.FastEnum": {
+        "type": "Direct",
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "73ZuQokdGATqwRdplf6E+6H0yXTlmFAln3PSlRMWQiFl7S6iIKXitEcOnIBPy6g3mO/Bk3u+8+sAm+cIAw4/jA=="
+      }
+    }
+  }
+}

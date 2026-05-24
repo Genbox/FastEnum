@@ -6,7 +6,7 @@ $PublishDir = "$Root/Publish"
 Remove-Item -Path $PublishDir/* -Recurse -Force -ErrorAction Ignore | Out-Null
 
 # Pack the NuGet files
-dotnet pack $Root/FastEnum.sln -p:ContinuousIntegrationBuild=true -c $Config -o $PublishDir
+dotnet pack $Root/FastEnum.slnx -p:ContinuousIntegrationBuild=true -c $Config -o $PublishDir
 
 # Push to NuGet
 Get-ChildItem -Path "$PublishDir/*.nupkg" | ForEach-Object {

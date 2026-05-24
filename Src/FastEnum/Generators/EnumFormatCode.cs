@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastEnum.Generators;
+namespace Genbox.FastEnum.Generators;
 
 internal static class EnumFormatCode
 {

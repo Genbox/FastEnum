@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastEnum.Examples;
+namespace Genbox.FastEnum.Examples;
 
 /// <summary>
 /// Just a few utilities to help printing to the console

@@ -1,4 +1,4 @@
-﻿// Global using directives
+// Global using directives
 global using System.Text;
 global using Genbox.FastEnum.Data;
 global using Genbox.FastEnum.Helpers;

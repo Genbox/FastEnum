@@ -1,4 +1,4 @@
-﻿//ReSharper disable RedundantNameQualifier
+//ReSharper disable RedundantNameQualifier
 
 namespace Genbox.FastEnum;
 

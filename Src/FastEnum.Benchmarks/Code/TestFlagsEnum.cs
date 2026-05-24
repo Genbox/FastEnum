@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastEnum.Benchmarks.Code;
+namespace Genbox.FastEnum.Benchmarks.Code;
 
 [Flags]
 [FastEnum]

@@ -1,4 +1,4 @@
-﻿namespace Genbox.FastEnum;
+namespace Genbox.FastEnum;
 
 public enum Visibility : byte
 {

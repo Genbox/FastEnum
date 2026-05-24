@@ -1,4 +1,4 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using Genbox.FastEnum.Tests.CodeGen.Code;
 using Microsoft.CodeAnalysis;
 

@@ -1,4 +1,4 @@
-﻿using Genbox.FastEnum.Tests.CodeGen.Code;
+using Genbox.FastEnum.Tests.CodeGen.Code;
 
 namespace Genbox.FastEnum.Tests.CodeGen;
 
