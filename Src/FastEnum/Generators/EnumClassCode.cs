@@ -15,8 +15,8 @@ internal static class EnumClassCode
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
         int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
-        bool omitUnderlyingValues = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
-        bool omitIsDefined = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
+        bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
+        bool omitIsDefined = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
         string ef = (ns != null ? ns + '.' : null) + cn + "Format";
         EnumTransformData? transform = es.TransformData;
 

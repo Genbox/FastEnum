@@ -130,9 +130,9 @@ internal static class EnumExtensionCode
         {
             StringBuilder sb2 = StringBuilderPool.Rent();
 
-            bool hasDisplayNames = es.HasDisplay && es.Members.Any(x => x.DisplayData?.Name != null);
-            bool hasDescriptions = es.HasDescription && es.Members.Any(x => x.DisplayData?.Description != null);
-            bool hasOmit = es.Members.Any(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true);
+            bool hasDisplayNames = es.HasDisplay && Array.Exists(es.Members, x => x.DisplayData?.Name != null);
+            bool hasDescriptions = es.HasDescription && Array.Exists(es.Members, x => x.DisplayData?.Description != null);
+            bool hasOmit = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true);
 
             if (hasDisplayNames)
             {
@@ -203,7 +203,7 @@ internal static class EnumExtensionCode
             if (containsDuplicateValue)
             {
                 // If there are no omissions or transforms, we can just return the value.
-                if (es.Members.All(x => x.OmitValueData == null && x.TransformValueData == null))
+                if (Array.TrueForAll(es.Members, x => x.OmitValueData == null && x.TransformValueData == null))
                     return "return value.ToString();";
 
                 StringBuilder sb2 = StringBuilderPool.Rent();
