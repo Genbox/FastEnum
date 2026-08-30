@@ -1,4 +1,16 @@
-$Config = "Release"
-$Root = "$PSScriptRoot/.."
+param(
+    [ValidateSet("Debug", "Release")]
+    [string]$Config = "Debug"
+)
 
-dotnet build $Root/FastEnum.slnx -c $Config
+$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version Latest
+
+. "$PSScriptRoot/Common.ps1"
+
+$Root = (Resolve-Path "$PSScriptRoot/..").Path
+$Solution = "$Root/FastEnum.slnx"
+
+Invoke-DotNet restore $Solution --locked-mode
+Invoke-DotNet build $Solution -c $Config --no-restore
+Invoke-DotNet test --solution $Solution -c $Config --no-build

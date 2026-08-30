@@ -12,10 +12,12 @@
     <IncludeBaseProject>true</IncludeBaseProject>
     <IncludeInternalsVisibleTo>true</IncludeInternalsVisibleTo>
     <IncludeAnalyzers>true</IncludeAnalyzers>
+    <ContinueOnCapturedContext Condition="'$(ContinueOnCapturedContext)' == ''">false</ContinueOnCapturedContext>
 
     <!--Assembly settings-->
     <RootNamespace>Genbox.$(MSBuildProjectName)</RootNamespace>
-    <AssemblyName Condition="'$(PackAssemblyName)' == 'true'">Genbox.$(MSBuildProjectName)</AssemblyName>
+    <AssemblyNamePrefix Condition="'$(_IsPacking)' == 'true' OR '$(_IsPublishing)' == 'true'">Genbox.</AssemblyNamePrefix>
+    <AssemblyName Condition="'$(AssemblyNamePrefix)' != ''">$(AssemblyNamePrefix)$(MSBuildProjectName)</AssemblyName>
 
     <!--C# settings-->
     <LangVersion>latest</LangVersion>
@@ -23,8 +25,6 @@
     <Features>strict</Features>
     <ImplicitUsings>true</ImplicitUsings>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <WarningLevel>0</WarningLevel>
-    <NoWarn>$(NoWarn);CA1014;CS1573;CS1591</NoWarn>
 
     <!--.NET settings-->
     <RestoreUseStaticGraphEvaluation>true</RestoreUseStaticGraphEvaluation>
@@ -35,9 +35,9 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
 
-    <!--Enable analyzers by default, but not during builds-->
+    <!--Enable analyzers during builds and live analysis by default-->
     <EnableNETAnalyzers>$(IncludeAnalyzers)</EnableNETAnalyzers>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>$(IncludeAnalyzers)</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
     <AnalysisMode>all</AnalysisMode>
     <AnalysisLevel>latest</AnalysisLevel>
@@ -45,12 +45,14 @@
     <!--NuGet settings-->
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageVersionOverrideEnabled>false</CentralPackageVersionOverrideEnabled>
 
     <!--Other settings-->
     <CopyRetryCount>2</CopyRetryCount>
     <CopyRetryDelayMilliseconds>500</CopyRetryDelayMilliseconds>
     <ErrorReport>none</ErrorReport>
     <SatelliteResourceLanguages>en-US;en</SatelliteResourceLanguages>
+    <DefaultItemExcludes>$(DefaultItemExcludes);packages.lock.json</DefaultItemExcludes>
 
     <!--Force reproducible builds-->
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
@@ -69,13 +71,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-  </PropertyGroup>
-
-  <!--Only report compiler warnings when compiling in Visual Studio or Rider-->
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true' OR '$(BuildingByReSharper)' == 'true'">
-    <WarningLevel>5</WarningLevel>
+    <DeterministicSourcePaths>true</DeterministicSourcePaths>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -87,9 +85,30 @@
   <ItemGroup>
     <!--Analyzers-->
     <AdditionalFiles Include="../../Imports/BannedSymbols.txt" Condition="Exists('../../Imports/BannedSymbols.txt')" />
+
+    <!--Don't show the packages.lock file in projects-->
+    <None Remove="packages.lock.json" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release' AND '$(IsPackable)' == 'true'">
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <Import Project="../Locals/Directory.Build.props" Condition="Exists('../Locals/Directory.Build.props')" />
   <Import Project="../Imports/$(ProjectType).props" Condition="Exists('../Imports/$(ProjectType).props')" />
+  <Import Project="../Imports/Analyzers.props" Condition="'$(IncludeAnalyzers)' == 'True' AND Exists('../Imports/Analyzers.props')" />
+
+  <PropertyGroup Condition="'$(DisableConfigureAwaitFody)' != 'true' AND '$(DisableFody)' != 'true'">
+    <WeaverConfiguration>
+      <Weavers>
+        <ConfigureAwait ContinueOnCapturedContext="$(ContinueOnCapturedContext)" />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(DisableConfigureAwaitFody)' != 'true' AND '$(DisableFody)' != 'true'">
+    <PackageReference Include="Fody" PrivateAssets="all" />
+    <PackageReference Include="ConfigureAwait.Fody" PrivateAssets="all" />
+  </ItemGroup>
 
 </Project>

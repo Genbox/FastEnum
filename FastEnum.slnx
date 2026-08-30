@@ -4,6 +4,9 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Folder Name="/_Docs/">
+    <File Path="Docs/CONTRIBUTING.md" />
+  </Folder>
   <Folder Name="/_Github/">
     <File Path=".github/FUNDING.yml" />
   </Folder>
@@ -24,27 +27,34 @@
   <Folder Name="/_Imports/Managed/">
     <File Path="Src/Directory.Build.props" />
     <File Path="Src/Directory.Build.targets" />
+    <File Path="Src/Directory.Packages.props" />
   </Folder>
   <Folder Name="/_Imports/Managed/Packages/">
     <File Path="Src/Directory.Packages.Analyzers.props" />
-    <File Path="Src/Directory.Packages.props" />
   </Folder>
   <Folder Name="/_Imports/Managed/Project/">
+    <File Path="Imports/Analyzers.props" />
     <File Path="Imports/Benchmarks.props" />
+    <File Path="Imports/Console.props" />
     <File Path="Imports/Examples.props" />
     <File Path="Imports/Library.props" />
     <File Path="Imports/Tests.props" />
+    <File Path="Imports/Web.props" />
   </Folder>
   <Folder Name="/_Items/">
     <File Path=".editorconfig" />
     <File Path=".gitattributes" />
     <File Path=".gitignore" />
+    <File Path=".globalconfig" />
     <File Path="AGENTS.md" />
+    <File Path="global.json" />
+    <File Path="Imports/BannedSymbols.txt" />
     <File Path="LICENSE.txt" />
     <File Path="README.md" />
   </Folder>
   <Folder Name="/_Scripts/">
     <File Path="Scripts/Build.ps1" />
+    <File Path="Scripts/Common.ps1" />
     <File Path="Scripts/Publish.ps1" />
   </Folder>
   <Project Path="Src/FastEnum.Benchmarks/FastEnum.Benchmarks.csproj" />
