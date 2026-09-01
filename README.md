@@ -14,20 +14,20 @@ Print values, parse, or get the underlying value of enums without using reflecti
 * High-performance
     * Zero allocations whenever possible.
     * `GetMemberNames()`, `GetMemberValues()` etc. are cached by default. Use `DisableCache` to disable it.
-    * `MemberCount` and `IsFlagsEnum` is const to allow the compiler to fold constants.
-* Supports name and description from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0).
-* Support for flag enums via the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0).
-* Support for skipping enum values completely with `[EnumOmitValue]` on enum members.
-* Support for private/internal enums
-* Support for enums nested inside classes
-* Support for user-set underlying values such as long, uint, byte, etc.
-* Support for duplicate enum names from different namespaces
-* Support for enums that reside in the global namespace
-* Has several options to control namespace, class name and more for generated code. See Options section below for details.
+    * `MemberCount` and `IsFlagEnum` are constants, allowing the compiler to fold them.
+* Support for names and descriptions from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0).
+* Support for flag enums, including composite values, negative values, duplicate aliases, transformed names and per-member omissions.
+* Support for preset, regex, case-pattern and per-member name transformations, plus independent metadata sorting.
+* Support for fully or selectively skipping enum values with `[EnumOmitValue]`.
+* Support for public and internal enums, including empty enums and enums in the global namespace or non-generic containing types.
+* Support for every C# enum underlying type, explicit/negative values and duplicate values.
+* Support for string and span parsing by name, value, display name or description with configurable `StringComparison`.
+* Support for duplicate enum names in different namespaces and escaped C# identifiers.
+* Options for controlling namespaces, class names, and other generated-code details. See the Options section below.
 
 ### Examples
 
-Lets create a very simple enum, and add the `[FastEnum]` attribute to it.
+Let's create a simple enum and add the `[FastEnum]` attribute to it.
 
 ```csharp
 [FastEnum]
@@ -41,15 +41,15 @@ public enum Color
 
 #### Extensions
 
-Extensions tell you something about an instance of an enum you have. For example, `MyEnum.Value1.GetString()` is the same as `MyEnum.Value1.ToString()` from dotnet, except that it does not need to do any work at runtime.
+Extensions tell you something about an enum value. For example, `MyEnum.Value1.GetString()` is equivalent to `MyEnum.Value1.ToString()` from .NET, but does not need to discover the name at runtime.
 
 The following extensions are auto-generated:
 
 ```csharp
-Color c = Color.Red;
+Color color = Color.Red;
 
-Console.WriteLine("String value: " + e.GetString());
-Console.WriteLine("Underlying value: " + e.GetUnderlyingValue());
+Console.WriteLine("String value: " + color.GetString());
+Console.WriteLine("Underlying value: " + color.GetUnderlyingValue());
 ```
 
 Output:
@@ -72,7 +72,7 @@ PrintArray("Member names:", Enums.Color.GetMemberNames());
 PrintArray("Underlying values:", Enums.Color.GetUnderlyingValues());
 ```
 
-PrintArray simply iterates an array and list the values on separate lines.
+`PrintArray` simply iterates an array and lists the values on separate lines.
 
 Output:
 
@@ -90,11 +90,18 @@ Underlying values:
 - 2
 ```
 
+### Generated API overview
+
+| API style | Examples | Purpose |
+|-----------|----------|---------|
+| Enum extensions | `GetString()`, `GetUnderlyingValue()`, `IsFlagSet()` | Operate on a specific enum value. |
+| Metadata helper | `Enums.Color.TryParse()`, `GetMemberNames()`, `IsDefined()` | Parse values and inspect the enum type. |
+
 ### Values via attributes
 
 #### DisplayAttribute
 
-If you add [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0) to an enum, the source generator will generate extra methods. For example, you can add [DisplayAttribute] to an enum value like this:
+If you add [DisplayAttribute](https://learn.microsoft.com/dotnet/api/system.componentmodel.dataannotations.displayattribute) to an enum member, the source generator generates display-name and description APIs:
 
 ```csharp
 [FastEnum]
@@ -105,7 +112,8 @@ internal enum MyEnum
     Value2 = 2
 }
 ```
-It will generate `GetDisplayName()` and `GetDescription()` extensions to your enum.
+
+FastEnum generates `GetDisplayName()` and `GetDescription()` extensions for the enum.
 
 ```csharp
 MyEnum e = MyEnum.Value1;
@@ -113,9 +121,10 @@ Console.WriteLine("Display name: " + e.GetDisplayName());
 Console.WriteLine("Description: " + e.GetDescription());
 ```
 
-Prefer the `TryGetDisplayName()`, `TryGetDescription()` and `TryGetUnderlyingValue()` helpers when you want a boolean + `out` pattern instead of exceptions.
+Prefer `TryGetDisplayName()`, `TryGetDescription()`, and `TryGetUnderlyingValue()` when you want a boolean plus `out` pattern instead of exceptions. `Enums.MyEnum.GetDisplayNames()` and `GetDescriptions()` return all included metadata pairs.
 
 Output:
+
 ```
 Display name: Value1Name
 Description: Value1Description
@@ -123,7 +132,7 @@ Description: Value1Description
 
 #### FlagsAttribute
 
-If you have an enum with the [FlagsAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.flagsattribute?view=net-7.0), FastEnum will add a method called `IsFlagSet()`.
+For an enum with [FlagsAttribute](https://learn.microsoft.com/dotnet/api/system.flagsattribute), FastEnum adds `IsFlagSet()` and recognizes valid composite values in `IsDefined()`, `TryGetUnderlyingValue()`, and `GetUnderlyingValue()`.
 
 ```csharp
 [Flags]
@@ -132,7 +141,7 @@ internal enum MyFlagsEnum
 {
     None = 0,
     Value1 = 1,
-    Value2 = 2
+    Value2 = 2,
     Value3 = 4
 }
 ```
@@ -140,29 +149,32 @@ internal enum MyFlagsEnum
 ```csharp
 MyFlagsEnum e = MyFlagsEnum.Value1 | MyFlagsEnum.Value3;
 Console.WriteLine("Is Value2 set: " + e.IsFlagSet(MyFlagsEnum.Value2));
+Console.WriteLine("Composite value: " + e.GetUnderlyingValue());
 ```
 
 Output:
+
 ```
 Is Value2 set: False
+Composite value: 5
 ```
 
 ### Options
 
-`[FastEnum]` have several options to control the behavior of the generated code.
+`[FastEnum]` has several options that control the generated code.
 
 #### ExtensionClassName
 
-The generated extension class is `partial` by default. So if you want to combine extension from your own class and the autogenerated one, you can use this option to set the name to
-the same as your extensions class. Defaults to &lt;EnumName&gt;Extensions.
+The generated extension class is `partial`. Set this to the name of your own partial extension class to combine generated and user-authored methods. The default is `<EnumName>Extensions`.
 
 #### ExtensionClassNamespace
 
-Use this to control which namespace the extensions class belongs to. Defaults to the namespace of the enum.
+Controls the namespace containing the extension class. The default is the enum's namespace.
 
 #### ExtensionClassVisibility
 
-Use this to override the visibility of the generated extensions class. Defaults to the enum's own visibility (`Visibility.Inherit`).
+Use this to override the visibility of the generated extension class. It defaults to the enum's own visibility (`Visibility.Inherit`).
+
 ```csharp
 [FastEnum(ExtensionClassVisibility = Visibility.Internal)] // Generates an internal StatusExtensions class instead of public.
 public enum Status { Ok, Error }
@@ -170,15 +182,16 @@ public enum Status { Ok, Error }
 
 #### EnumsClassName
 
-Use this to set the name of the `Enums` class to something else.
+Changes the name of the outer `Enums` wrapper.
 
 #### EnumsClassNamespace
 
-Used this to specify the namespace for the Enums class. Defaults to the namespace of the enum.
+Controls the namespace containing the generated metadata helper and format enum. The default is the enum's namespace.
 
 #### EnumsClassVisibility
 
-Use this to override the visibility of the generated `Enums` wrapper class. Defaults to the enum's own visibility (`Visibility.Inherit`).
+Use this to override the visibility of the generated `Enums` wrapper class. It defaults to the enum's own visibility (`Visibility.Inherit`).
+
 ```csharp
 [FastEnum(EnumsClassVisibility = Visibility.Internal)] // Enums.Status will be internal.
 public enum Status { Ok, Error }
@@ -186,14 +199,14 @@ public enum Status { Ok, Error }
 
 #### EnumNameOverride
 
-Sometimes you might have two enums named the same, but in different namespaces. You can use this option to override the name of the enum in the generated code.
-For example, if your enum is named `MyEnum` the Enums class can be accessed like this:
+Overrides the generated helper name and the default format-enum and extension-class names. This is useful when generated namespaces bring otherwise distinct enums into the same scope.
+For example, if your enum is named `MyEnum`, the generated helper can be accessed like this:
 
 ```csharp
 Enums.MyEnum.GetMemberNames()
 ```
 
-If you set EnumNameOverride to `OtherEnum` it will look like this instead:
+If you set `EnumNameOverride` to `OtherEnum`, it will look like this instead:
 
 ```csharp
 Enums.OtherEnum.GetMemberNames()
@@ -201,35 +214,34 @@ Enums.OtherEnum.GetMemberNames()
 
 #### DisableEnumsWrapper
 
-Enable this to avoid generating the static Enums class that wraps all the enums. When enabled, Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace
-across projects. Note that you must use `EnumNameOverride` or set `EnumsClassNamespace` to something to avoid the name collision between your enum and the generated class.
+Removes the outer static `Enums` wrapper, changing `Enums.MyEnum` to `MyEnum`. Use `EnumNameOverride` or a different `EnumsClassNamespace` if the helper would otherwise collide with the enum type.
 
 #### DisableCache
 
-By default arrays from `GetMemberNames()`, `GetMemberValues()` etc. is cached to avoid an allocation each time you call them. If your application only needs the arrays once, then caching them in memory take up unnecessary space.
-Use this option to disable the cache.
+By default, arrays returned by metadata methods are cached to avoid repeat allocations. Set this option to return a new array on every call instead.
 
 ### Transformations
 
 You can transform the string output of enums with `[EnumTransform]` at compile time. There are a few ways to do this.
 
 ```csharp
-[EnumTransform(Preset = EnumTransform.UpperCase)] //Will uppercase all enum values
-[EnumTransform(Regex = "/^Enum//")] //A regex to replace values starting with "Enum" with nothing.
-[EnumTransform(CasePattern = "U_U_U")] //Uppercase the first, third and fifth characters
+[EnumTransform(Preset = EnumTransform.UpperCase)] // Uppercase all enum values
+[EnumTransform(Regex = "/^Enum//")] // Replace a leading "Enum" with nothing
+[EnumTransform(CasePattern = "U_U_U")] // Uppercase the first, third, and fifth characters
 ```
 
-Note: You can only specify one `[EnumTransform]` at the time.
+You can specify only one `[EnumTransform]` per enum.
 
 *Regex* must have the format `/regex-here/replacement-here/`.
 
-*CasePattern* is a way to either uppercase, lowercase or omit charaters.
+*CasePattern* can uppercase, lowercase, or omit characters.
 
-The language uses the following modifier chars:
-* U: Uppercase the char
-* L: Lowercase the char
-* O: Omit the char
-* _: Do nothing. Keep the char as-is.
+The language uses the following modifier characters:
+
+* U: Uppercase the character.
+* L: Lowercase the character.
+* O: Omit the character.
+* _: Keep the character as-is.
 
 Let's say you want to omit the first character in all values, uppercase the third character and lowercase the rest.
 
@@ -251,7 +263,8 @@ The pattern is matched as much as possible. A pattern of `U` will simply upperca
 * `Preset` uppercases or lowercases all member names.
 * `Regex` allows replacing a pattern.
 * `CasePattern` applies a simple U/L/O/_ mask.
-* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues`, `SortDisplayNames`, `SortDescriptions` control ordering of the corresponding generated arrays. Defaults to `EnumOrder.None`; set to `Ascending` or `Descending` to change.
+* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues`, `SortDisplayNames`, and `SortDescriptions` control the corresponding generated arrays. Each accepts `EnumOrder.None` (declaration order), `Ascending`, or `Descending`.
+
 ```csharp
 [FastEnum]
 [EnumTransform(Preset = EnumTransform.UpperCase)]
@@ -264,7 +277,7 @@ public enum Color { ClrRed, ClrGreen }
 // GetString(Color.ClrRed) => "Red"
 
 [FastEnum]
-[EnumTransform(CasePattern = "UOlll")]
+[EnumTransform(CasePattern = "U____")]
 public enum Color { apple, pears }
 // GetString(Color.apple) => "Apple"
 // GetString(Color.pears) => "Pears"
@@ -280,6 +293,7 @@ You can override the string for specific members with `[EnumTransformValue(Value
 `[EnumTransformValue]` options:
 
 * `ValueOverride` changes the generated string for that member and what `TryParse` will accept for it.
+
 ```csharp
 [FastEnum]
 public enum Status
@@ -292,24 +306,18 @@ public enum Status
 // Enums.Status.TryParse("all good", out var s) => true
 ```
 
-`[EnumTransform]` also accepts ordering hints so generated lists come out sorted without extra runtime work:
-
-* `SortMemberNames`, `SortMemberValues`, `SortUnderlyingValues` affect the ordering of `GetMemberNames()`, `GetMemberValues()` and `GetUnderlyingValues()`.
-* `SortDisplayNames`, `SortDescriptions` affect the ordering of `GetDisplayNames()` and `GetDescriptions()`.
-* Values can be `EnumOrder.None` (default; retain declared order), `EnumOrder.Ascending`, or `EnumOrder.Descending`.
-
 ### Omitting values
 
-It is possible to omit enum value both fully and partially. This is useful if you, let's say, want to use the enum values directly in a dropdown on a website, but don't want to include a value in the list.
+Enum members can be omitted from all generated APIs or from selected APIs. This is useful when an enum populates a UI list but some values should not be shown.
 
 ```csharp
 [FastEnum]
 public enum Color
 {
-    [EnumOmitValue] //Completely omitted
+    [EnumOmitValue] // Completely omitted
     Unknown,
 
-    [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames] //Partially omitted
+    [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames)] // Partially omitted
     Red,
     Green
 }
@@ -325,23 +333,24 @@ foreach (string name in Enums.Color.GetMemberNames())
 ```
 
 Output:
+
 ```
-Red
 Green
 ```
 
 `[EnumOmitValue]` options:
 
 * `Exclude` is a flag enum controlling which generated APIs omit the member. Defaults to `EnumOmitExclude.All` when not specified.
+
 ```csharp
 [FastEnum]
 public enum Color
 {
-    [EnumOmitValue] //omitted everywhere
+    [EnumOmitValue] // Omitted everywhere
     Unknown,
 
     [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames | EnumOmitExclude.TryParse)]
-    Red, //shown in values but hidden from names/parse
+    Red, // Shown in values but hidden from names and parsing
     Green
 }
 
@@ -350,7 +359,7 @@ public enum Color
 // Enums.Color.GetMemberValues() => [Color.Red, Color.Green]
 ```
 
-Since we excluded `GetMemberNames()` for the Red color, it showed up in the list above, but it won't show up when calling `GetMemberValues()`.
+Only `GetMemberNames()` and `TryParse()` exclude `Red`, so it remains available through `GetMemberValues()`.
 
 ```csharp
 foreach (Color value in Enums.Color.GetMemberValues())
@@ -360,32 +369,40 @@ foreach (Color value in Enums.Color.GetMemberValues())
 ```
 
 Output:
+
 ```
+Red
 Green
 ```
+
+### Limitations
+
+* Enums must be `public` or `internal`; private and protected nested enums are not supported, and containing types cannot be less visible than the enum.
+* Enums inside generic containing types are not supported.
+* An enum can have only one `[EnumTransform]` attribute.
 
 ### Notes
 
 #### Parse/TryParse methods
 
-FastEnum has some additional features compared to dotnet's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
+FastEnum has some additional features compared to .NET's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
 
-* Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0) (defaults to ordinal comparison)
-* Supports parsing `ValueOverride` when using `[EnumTransformValue]`. Also supports `DisplayName` and `Description` when using [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0)
-* You can enable/disable Name, Value, DisplayName or Description parsing via an enum: `Enums.MyEnum.TryParse("val", out MyEnum v, MyEnumFormat.Name | MyEnumFormat.DisplayName)`
+* Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0), defaulting to ordinal comparison.
+* Supports parsing `ValueOverride` when using `[EnumTransformValue]`, plus `DisplayName` and `Description` from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0).
+* Allows `Name`, `Value`, `DisplayName`, and `Description` parsing to be selected with a format enum: `Enums.MyEnum.TryParse("val", out MyEnum v, MyEnumFormat.Name | MyEnumFormat.DisplayName)`.
 * Overloads accept both `string` and `ReadOnlySpan<char>` to avoid unnecessary allocations when parsing substrings.
 
 #### IsDefined method
 
-The IsDefined method is different than the one provided by dotnet. It supports flags out of the box. `Enums.MyEnum.IsDefined((MyEnum)42)`
+The `IsDefined` method differs from the one provided by .NET and supports flags. `Enums.MyEnum.IsDefined((MyEnum)42)`
 and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
 
 ### Benchmarks
 
-Here are benchmarks for calling different methods in dotnet vs. using CodeGen vs. using [Enums.net](https://github.com/TylerBrinkley/Enums.NET).
-Enums.net is a high-performance library for working with enum values.
+Here are benchmarks for calling different methods in .NET versus using CodeGen or [Enums.NET](https://github.com/TylerBrinkley/Enums.NET).
+Enums.NET is a high-performance library for working with enum values.
 
-The table below shows that Enums.net is between 2-80x faster than dotnet, but FastEnum is 2-14x faster than Enums.net.
+The table below shows that Enums.NET is between 2-80x faster than .NET, but FastEnum is 2-14x faster than Enums.NET.
 
 | Method                        |          Mean |      Error |     StdDev |        Median |
 |-------------------------------|--------------:|-----------:|-----------:|--------------:|
