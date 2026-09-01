@@ -102,4 +102,26 @@ public class ValidationTests
         Assert.Empty(codeGenDiag);
         Assert.Empty(compilerDiag);
     }
+
+    /// <summary>Ensures enums inside generic containing types produce a validation diagnostic.</summary>
+    [Fact]
+    public void TestGenericContainingType()
+    {
+        string code = """
+                      public class GenericContainer<T>
+                      {
+                          [FastEnum]
+                          public enum MyEnum
+                          {
+                              Value
+                          }
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Diagnostic res = Assert.Single(codeGenDiag);
+        Assert.Empty(compilerDiag);
+        Assert.Equal("FE001", res.Id);
+    }
+
 }

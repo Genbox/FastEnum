@@ -81,6 +81,13 @@ public class EnumGenerator : IIncrementalGenerator
         {
             FastEnumData esd = es.Data;
 
+            // Nested enums in generic types cannot be named from a non-generic generated API.
+            if (es.HasGenericContainingType)
+            {
+                message = $"FastEnum is not supported on enum '{es.FullName}' inside a generic containing type";
+                return false;
+            }
+
             string enumNamespace = esd.EnumsClassNamespace ?? (es.Namespace ?? "global::");
             string enumClassName = esd.EnumsClassName ?? "Enums";
             string enumName = esd.EnumNameOverride ?? es.Name;
@@ -280,44 +287,16 @@ public class EnumGenerator : IIncrementalGenerator
             curSym = curSym.ContainingSymbol;
         }
 
-        ImmutableArray<SymbolDisplayPart> parts = symbol.ToDisplayParts();
-
-        StringBuilder namespaceSb = new StringBuilder(25);
-        StringBuilder enumFullSb = new StringBuilder(25);
-
-        bool inNamespace = false;
-        foreach (SymbolDisplayPart part in parts)
-        {
-            switch (part.Kind)
-            {
-                case SymbolDisplayPartKind.NamespaceName:
-                    inNamespace = true;
-                    break;
-                case SymbolDisplayPartKind.ClassName:
-                case SymbolDisplayPartKind.EnumName:
-                case SymbolDisplayPartKind.StructName:
-                case SymbolDisplayPartKind.RecordClassName:
-                case SymbolDisplayPartKind.RecordStructName:
-                case SymbolDisplayPartKind.InterfaceName:
-                    inNamespace = false;
-                    break;
-                case SymbolDisplayPartKind.Punctuation:
-                    break;
-                default:
-                    throw new InvalidOperationException("Unsupported value: " + part.Kind);
-            }
-
-            if (inNamespace)
-                namespaceSb.Append(part);
-            else
-                enumFullSb.Append(part);
-        }
-
         string enumName = symbol.Name;
-        string enumFullName = enumFullSb.ToString(); //This includes the nested type name (if any)
+        // Symbol display formats handle generic parts and produce escaped, global-qualified names.
+        string enumFullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
         string fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
+        string? enumNamespace = symbol.ContainingNamespace.IsGlobalNamespace ? null : symbol.ContainingNamespace.ToDisplayString();
+        bool hasGenericContainingType = false;
 
-        return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
+        for (INamedTypeSymbol? containingType = symbol.ContainingType; containingType != null; containingType = containingType.ContainingType)
+            hasGenericContainingType |= containingType.Arity > 0;
+
+        return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
     }
 }
