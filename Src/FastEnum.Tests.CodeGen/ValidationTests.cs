@@ -124,6 +124,63 @@ public class ValidationTests
         Assert.Equal("FE001", res.Id);
     }
 
+    /// <summary>Ensures unsupported nested enum accessibilities produce a validation diagnostic.</summary>
+    [Theory]
+    [InlineData("private")]
+    [InlineData("protected")]
+    [InlineData("protected internal")]
+    [InlineData("private protected")]
+    public void TestUnsupportedEnumAccessibility(string accessibility)
+    {
+        string code = $$"""
+                        public class Container
+                        {
+                            [FastEnum]
+                            {{accessibility}} enum MyEnum
+                            {
+                                Value
+                            }
+                        }
+                        """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Diagnostic res = Assert.Single(codeGenDiag);
+        Assert.Empty(compilerDiag);
+        Assert.Equal("FE001", res.Id);
+    }
+
+    /// <summary>Ensures generated type-name collisions produce a validation diagnostic.</summary>
+    [Theory]
+    [InlineData("Alpha")]
+    [InlineData("@Alpha")]
+    public void TestGeneratedNameCollision(string generatedName)
+    {
+        string code = $$"""
+                        namespace First
+                        {
+                            [FastEnum(EnumsClassNamespace = "Shared")]
+                            public enum Alpha
+                            {
+                                Value
+                            }
+                        }
+
+                        namespace Second
+                        {
+                            [FastEnum(EnumsClassNamespace = "Shared", EnumNameOverride = "{{generatedName}}")]
+                            public enum Beta
+                            {
+                                Value
+                            }
+                        }
+                        """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Diagnostic res = Assert.Single(codeGenDiag);
+        Assert.Empty(compilerDiag);
+        Assert.Equal("FE001", res.Id);
+    }
+
     /// <summary>Ensures escaped enum and member identifiers are emitted correctly.</summary>
     [Fact]
     public void TestEscapedIdentifiers()

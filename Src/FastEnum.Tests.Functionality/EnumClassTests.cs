@@ -14,6 +14,7 @@ public class EnumClassTests
     public void IsFlagEnumTest()
     {
         Assert.True(Enums.TestEnum.IsFlagEnum);
+        Assert.False(Enums.NonFlagsEnum.IsFlagEnum);
     }
 
     [Fact]
@@ -23,6 +24,10 @@ public class EnumClassTests
         Assert.Equal(TestEnum.First, result);
 
         Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(TestEnum.First, result);
+        Assert.False(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name));
+
+        Assert.True(Enums.TestEnum.TryParse("8", out result, TestEnumFormat.Value));
         Assert.Equal(TestEnum.First, result);
 
         //Check if we support span inputs
@@ -34,6 +39,11 @@ public class EnumClassTests
         //Check that we also support parsing display names
         Assert.True(Enums.TestEnum.TryParse("FirstDisplayName", out result, TestEnumFormat.DisplayName));
         Assert.Equal(TestEnum.First, result);
+
+        Assert.True(Enums.TestEnum.TryParse("FirstDescription", out result, TestEnumFormat.Description));
+        Assert.Equal(TestEnum.First, result);
+
+        Assert.False(Enums.TestEnum.TryParse("First", out result, TestEnumFormat.None));
     }
 
     [Fact]
@@ -41,6 +51,11 @@ public class EnumClassTests
     {
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("First"));
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", TestEnumFormat.Default, StringComparison.OrdinalIgnoreCase));
+        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("8", TestEnumFormat.Value));
+
+        ReadOnlySpan<char> span = "First";
+        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse(span));
+
         Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
 

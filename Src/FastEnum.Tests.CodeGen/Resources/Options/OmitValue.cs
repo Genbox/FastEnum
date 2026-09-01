@@ -11,8 +11,14 @@ internal enum MyEnum
     [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberNames | EnumOmitExclude.TryParse)]
     OmitNameParse,
 
+    [EnumOmitValue(Exclude = EnumOmitExclude.GetMemberValues)]
+    OmitMemberValue,
+
     [EnumOmitValue(Exclude = EnumOmitExclude.GetUnderlyingValues)]
     OmitUnderlying,
+
+    [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue)]
+    OmitUnderlyingLookup,
 
     [EnumOmitValue(Exclude = EnumOmitExclude.TryGetDisplayName | EnumOmitExclude.TryGetDescription)]
     [Display(Name = "Disp", Description = "Desc")]
@@ -23,4 +29,7 @@ internal enum MyEnum
 
     [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]
     OmitString,
+
+    [EnumOmitValue(Exclude = EnumOmitExclude.None)]
+    KeepExplicitly,
 }

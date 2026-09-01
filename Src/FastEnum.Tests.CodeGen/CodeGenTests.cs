@@ -32,8 +32,11 @@ public class CodeGenTests
     {
         TheoryData<string> data = new TheoryData<string>();
 
-        foreach (string resource in Directory.GetFiles(_resourcesDir, "*.input", SearchOption.AllDirectories))
+        foreach (string resource in Directory.GetFiles(_resourcesDir, "*.cs", SearchOption.AllDirectories))
         {
+            if (string.Equals(Path.GetFileName(resource), "_Header.cs", StringComparison.Ordinal))
+                continue;
+
             string relativePath = Path.GetRelativePath(_resourcesDir, resource);
             data.Add(relativePath);
         }

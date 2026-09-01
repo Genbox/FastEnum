@@ -1,7 +1,7 @@
 // Sorting options on EnumTransform (names, values, underlying, display, description)
 
 [FastEnum]
-[EnumTransform(SortMemberNames = EnumOrder.Descending, SortMemberValues = EnumOrder.Descending, SortUnderlyingValues = EnumOrder.Descending, SortDisplayNames = EnumOrder.Descending, SortDescriptions = EnumOrder.Descending)]
+[EnumTransform(SortMemberNames = EnumOrder.Ascending, SortMemberValues = EnumOrder.Descending, SortUnderlyingValues = EnumOrder.Ascending, SortDisplayNames = EnumOrder.Descending, SortDescriptions = EnumOrder.Ascending)]
 public enum SortedEnum
 {
     [Display(Name = "Bravo", Description = "Second")]
