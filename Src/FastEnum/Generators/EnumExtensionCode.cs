@@ -9,10 +9,10 @@ internal static class EnumExtensionCode
         string? ns = op.ExtensionClassNamespace ?? es.Namespace;
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.ExtensionClassName ?? cn + "Extensions";
-        string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
+        string sn = es.FullyQualifiedName;
         string vi = op.ExtensionClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
-        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"{op.EnumsClassNamespace ?? es.Namespace}.{cn}Format" : $"{cn}Format";
+        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"global::{op.EnumsClassNamespace ?? es.Namespace}.{cn}Format" : $"global::{cn}Format";
 
         bool containsDuplicateValue = false;
         HashSet<object> values = new HashSet<object>();
@@ -31,8 +31,6 @@ internal static class EnumExtensionCode
 
         StringBuilder sb = StringBuilderPool.Rent(16384);
         sb.Append($$"""
-                    using System;
-                    using System.Diagnostics.CodeAnalysis;
                     {{(ns != null ? $"\nnamespace {ns};\n" : null)}}
                     {{vi}} static partial class {{en}}
                     {
@@ -56,7 +54,7 @@ internal static class EnumExtensionCode
                         public static {{ut}} GetUnderlyingValue(this {{sn}} value)
                         {
                             if (!TryGetUnderlyingValue(value, out {{ut}} underlyingValue))
-                                throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                                throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
                             return underlyingValue;
                         }
@@ -69,7 +67,7 @@ internal static class EnumExtensionCode
 
                             public static bool TryGetDisplayName(this {{sn}} value,
                         #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                        [NotNullWhen(true)]
+                        [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
                         #endif
                         out string? displayName)
                             {
@@ -81,7 +79,7 @@ internal static class EnumExtensionCode
                             public static string GetDisplayName(this {{sn}} value)
                             {
                                 if (!TryGetDisplayName(value, out string? displayName))
-                                    throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
                                 return displayName!;
                             }
@@ -95,7 +93,7 @@ internal static class EnumExtensionCode
 
                             public static bool TryGetDescription(this {{sn}} value,
                         #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                        [NotNullWhen(true)]
+                        [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
                         #endif
                         out string? description)
                             {
@@ -107,7 +105,7 @@ internal static class EnumExtensionCode
                             public static string GetDescription(this {{sn}} value)
                             {
                                 if (!TryGetDescription(value, out string? description))
-                                    throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
                                 return description!;
                             }
@@ -190,7 +188,7 @@ internal static class EnumExtensionCode
                 }
             }
 
-            sb2.Append($"            return (({ut})value).ToString(System.Globalization.NumberFormatInfo.InvariantInfo);\n");
+            sb2.Append($"            return (({ut})value).ToString(global::System.Globalization.NumberFormatInfo.InvariantInfo);\n");
             sb2.Append("        }\n\n        ");
 
             sb2.Append("return value.ToString();");

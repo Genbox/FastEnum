@@ -11,9 +11,8 @@ internal static class EnumFormatCode
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
 
         string res = $$"""
-                       using System;
                        {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                       [Flags]
+                       [global::System.Flags]
                        {{vi}} enum {{cn}}Format : byte
                        {
                            None = 0,

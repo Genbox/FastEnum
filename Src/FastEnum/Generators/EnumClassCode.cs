@@ -11,13 +11,13 @@ internal static class EnumClassCode
         string? ns = op.EnumsClassNamespace ?? es.Namespace;
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.EnumsClassName ?? "Enums";
-        string sn = es.Namespace == null ? "global::" + es.FullyQualifiedName : es.FullyQualifiedName;
+        string sn = es.FullyQualifiedName;
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
         int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
         bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
         bool omitIsDefined = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
-        string ef = (ns != null ? ns + '.' : null) + cn + "Format";
+        string ef = ns != null ? $"global::{ns}.{cn}Format" : $"global::{cn}Format";
         EnumTransformData? transform = es.TransformData;
 
         List<string> fields = new List<string>();
@@ -25,7 +25,6 @@ internal static class EnumClassCode
         StringBuilder sb = StringBuilderPool.Rent(16384);
 
         sb.Append($$"""
-                    using System;
                     {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
                     {{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
                         {{vi}} static partial class {{cn}}
@@ -39,7 +38,7 @@ internal static class EnumClassCode
 
                             public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
 
-                            public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 {{TryParse()}}
                                 result = default;
@@ -47,26 +46,26 @@ internal static class EnumClassCode
                             }
 
                     #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                            public static bool TryParse(ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            public static bool TryParse(global::System.ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 {{TryParse()}}
                                 result = default;
                                 return false;
                             }
 
-                            public static {{sn}} Parse(ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            public static {{sn}} Parse(global::System.ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 if (!TryParse(value, out {{sn}} result, format, comparison))
-                                    throw new ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
+                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
 
                                 return result;
                             }
                     #endif
 
-                            public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, StringComparison comparison = StringComparison.Ordinal)
+                            public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 if (!TryParse(value, out {{sn}} result, format, comparison))
-                                    throw new ArgumentOutOfRangeException($"Invalid value: {value}");
+                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
                                 return result;
                             }
@@ -381,7 +380,7 @@ internal static class EnumClassCode
             string[] arr = elements.ToArray();
 
             if (arr.Length == 0)
-                return $"Array.Empty<{type}>();";
+                return $"global::System.Array.Empty<{type}>();";
 
             StringBuilder sb = StringBuilderPool.Rent();
 

@@ -47,7 +47,7 @@ public class EnumGenerator : IIncrementalGenerator
             {
                 try
                 {
-                    string fqn = enumSpec.FullyQualifiedName;
+                    string fqn = enumSpec.FullyQualifiedName.Replace("global::", "");
 
                     StringBuilder sb = new StringBuilder(4096);
                     spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
@@ -242,7 +242,8 @@ public class EnumGenerator : IIncrementalGenerator
             members.Add(new EnumMemberSpec(member.Name, field.ConstantValue, displayData, omitValueData, transformValueData));
         }
 
-        string underlyingType = symbol.EnumUnderlyingType?.Name ?? "int";
+        // Underlying framework type names must not bind to user-defined symbols.
+        string underlyingType = symbol.EnumUnderlyingType?.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ?? "global::System.Int32";
 
         List<Accessibility> accessChain = new List<Accessibility>();
 
@@ -256,7 +257,6 @@ public class EnumGenerator : IIncrementalGenerator
 
         ImmutableArray<SymbolDisplayPart> parts = symbol.ToDisplayParts();
 
-        StringBuilder fqnSb = new StringBuilder(50);
         StringBuilder namespaceSb = new StringBuilder(25);
         StringBuilder enumFullSb = new StringBuilder(25);
 
@@ -286,13 +286,11 @@ public class EnumGenerator : IIncrementalGenerator
                 namespaceSb.Append(part);
             else
                 enumFullSb.Append(part);
-
-            fqnSb.Append(part);
         }
 
         string enumName = symbol.Name;
         string enumFullName = enumFullSb.ToString(); //This includes the nested type name (if any)
-        string fqn = fqnSb.ToString();
+        string fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         string? enumNamespace = namespaceSb.Length == 0 ? null : namespaceSb.ToString().TrimEnd('.');
 
         return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
