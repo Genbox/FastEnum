@@ -10,7 +10,7 @@ public class InvariantCultureTests
     public void ValueParseUsesInvariantCulture()
     {
         CultureInfo original = CultureInfo.CurrentCulture;
-        CultureInfo.CurrentCulture = new CultureInfo("ar-EG");
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ar-EG");
 
         try
         {
@@ -25,8 +25,8 @@ public class InvariantCultureTests
 
             string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code);
 
-            Assert.Contains("value.Equals(\"-1234\"", output);
-            Assert.Contains("value.Equals(\"1234567890\"", output);
+            Assert.Contains("value.Equals(\"-1234\"", output, StringComparison.Ordinal);
+            Assert.Contains("value.Equals(\"1234567890\"", output, StringComparison.Ordinal);
             Assert.DoesNotContain('١', output); //Arabic-Indic digit one; indicates culture bleed
         }
         finally

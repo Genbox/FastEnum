@@ -16,7 +16,7 @@ public class CodeGenTests
     public async Task RunResources(string testName)
     {
         string inputPath = Path.Combine(_resourcesDir, testName);
-        string inputSource = await File.ReadAllTextAsync(inputPath);
+        string inputSource = await File.ReadAllTextAsync(inputPath, TestContext.Current.CancellationToken);
         string actual = GetGeneratedOutput<EnumGenerator>(inputSource);
 
         string fileName = Path.GetFileName(testName);
