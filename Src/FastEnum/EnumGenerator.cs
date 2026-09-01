@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Reflection;
 using Genbox.FastEnum.Generators;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 #if RELEASE
@@ -9,6 +10,7 @@ using System.Globalization;
 
 namespace Genbox.FastEnum;
 
+/// <summary>Generates optimized helper APIs for enums marked with <see cref="FastEnumAttribute"/>.</summary>
 [Generator(LanguageNames.CSharp)]
 public class EnumGenerator : IIncrementalGenerator
 {
@@ -19,6 +21,7 @@ public class EnumGenerator : IIncrementalGenerator
     private const string EnumTransformValueAttr = "Genbox.FastEnum." + nameof(EnumTransformValueAttribute);
     private const string EnumOmitValueAttr = "Genbox.FastEnum." + nameof(EnumOmitValueAttribute);
 
+    /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<ImmutableArray<EnumSpec>> sp = context.SyntaxProvider

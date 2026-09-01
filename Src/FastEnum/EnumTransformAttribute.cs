@@ -2,6 +2,7 @@
 
 namespace Genbox.FastEnum;
 
+/// <summary>Configures transformations and ordering for generated enum data.</summary>
 [global::System.Diagnostics.Conditional("FASTENUM_INCLUDE_ATTRIBUTE")]
 [global::System.AttributeUsage(AttributeTargets.Enum)]
 public sealed class EnumTransformAttribute : global::System.Attribute
