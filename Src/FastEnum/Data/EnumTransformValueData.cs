@@ -2,5 +2,5 @@ namespace Genbox.FastEnum.Data;
 
 internal record EnumTransformValueData
 {
-    public string ValueOverride { get; [UsedImplicitly]set; }
+    public string? ValueOverride { get; [UsedImplicitly]set; }
 }
