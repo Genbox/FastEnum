@@ -69,6 +69,6 @@ internal static class TestHelper
 
     private static string GetHeader()
     {
-        return _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.dat"));
+        return _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.cs"));
     }
 }

@@ -17,4 +17,9 @@
     <ProjectReference Include="..\FastEnum\FastEnum.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Resources\_Header.cs" />
+    <None Include="Resources\_Header.cs" />
+  </ItemGroup>
+
 </Project>
