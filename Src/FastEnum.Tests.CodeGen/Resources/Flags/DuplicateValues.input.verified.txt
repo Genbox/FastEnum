@@ -292,6 +292,14 @@ public static partial class ProfileExtensions
             case "NewestServer":
                 underlyingValue = 256;
                 return true;
+            default:
+                if (unchecked(((int)257UL & (int)value) == (int)value))
+                {
+                    underlyingValue = (int)value;
+                    return true;
+                }
+
+                break;
         }
         underlyingValue = default;
         return false;

@@ -293,6 +293,14 @@ internal static partial class SignedFlagsExtensions
             case global::SignedFlags.Combo:
                 underlyingValue = -1L;
                 return true;
+            default:
+                if (unchecked(((long)18446744073709551615UL & (long)value) == (long)value))
+                {
+                    underlyingValue = (long)value;
+                    return true;
+                }
+
+                break;
         }
         underlyingValue = default;
         return false;

@@ -302,6 +302,28 @@ internal static class EnumExtensionCode
                                   """;
                 }
             }
+
+            if (es.HasFlags)
+            {
+                ulong mask = 0;
+                foreach (EnumMemberSpec em in es.Members)
+                {
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
+                        mask |= ToUInt64(em.Value);
+                }
+
+                // Valid Flags combinations need not have a separately declared alias.
+                yield return $$"""
+                                     default:
+                                         if (unchecked((({{ut}}){{mask}}UL & ({{ut}})value) == ({{ut}})value))
+                                         {
+                                             underlyingValue = ({{ut}})value;
+                                             return true;
+                                         }
+
+                                         break;
+                         """;
+            }
         }
 
         IEnumerable<string> TryGetDisplayName()
@@ -365,5 +387,18 @@ internal static class EnumExtensionCode
 
             return StringBuilderPool.ReturnGetString(sb);
         }
+
+        static ulong ToUInt64(object value) => value switch
+        {
+            byte b => b,
+            sbyte sb => unchecked((ulong)sb),
+            short s => unchecked((ulong)s),
+            ushort us => us,
+            int i => unchecked((ulong)i),
+            uint ui => ui,
+            long l => unchecked((ulong)l),
+            ulong ul => ul,
+            _ => throw new InvalidOperationException("Unsupported enum underlying type")
+        };
     }
 }

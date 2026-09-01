@@ -26,6 +26,16 @@ public class EnumExtensionsTest
     }
 
     [Fact]
+    public void GetUnderlyingValueSupportsFlagCombinations()
+    {
+        const TestEnum combined = TestEnum.Second | TestEnum.Third;
+
+        Assert.True(combined.TryGetUnderlyingValue(out long underlyingValue));
+        Assert.Equal(3, underlyingValue);
+        Assert.Equal(3, combined.GetUnderlyingValue());
+    }
+
+    [Fact]
     public void GetDisplayNameTest()
     {
         Assert.True(_valid.TryGetDisplayName(out string? displayName));

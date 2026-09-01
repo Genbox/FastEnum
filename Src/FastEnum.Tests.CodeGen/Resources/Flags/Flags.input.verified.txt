@@ -299,6 +299,14 @@ public static partial class MyEnumExtensions
             case global::Some.Namespace.Here.MyEnum.Other:
                 underlyingValue = 256;
                 return true;
+            default:
+                if (unchecked(((int)266UL & (int)value) == (int)value))
+                {
+                    underlyingValue = (int)value;
+                    return true;
+                }
+
+                break;
         }
         underlyingValue = default;
         return false;
