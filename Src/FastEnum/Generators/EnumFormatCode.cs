@@ -2,58 +2,46 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumFormatCode
 {
-    internal static string Generate(EnumSpec es)
+    internal static string Generate(EnumSpec spec)
     {
-        FastEnumData op = es.Data;
-
-        string? ns = es.Data.EnumsClassNamespace ?? es.Namespace; //We use the same namespace as the Enums class
-        bool isPublicEnum = es.AccessChain[0] == Accessibility.Public;
-        bool isEnumsClassPublic = op.EnumsClassVisibility == Visibility.Inherit ? isPublicEnum : op.EnumsClassVisibility == Visibility.Public;
-        bool isExtensionClassPublic = op.ExtensionClassVisibility == Visibility.Inherit ? isPublicEnum : op.ExtensionClassVisibility == Visibility.Public;
+        FastEnumData options = spec.Data;
+        string? namespaceName = options.EnumsClassNamespace ?? spec.Namespace;
+        bool isPublicEnum = spec.AccessChain[0] == Accessibility.Public;
+        bool isEnumsClassPublic = options.EnumsClassVisibility == Visibility.Inherit ? isPublicEnum : options.EnumsClassVisibility == Visibility.Public;
+        bool isExtensionClassPublic = options.ExtensionClassVisibility == Visibility.Inherit ? isPublicEnum : options.ExtensionClassVisibility == Visibility.Public;
 
         // Format enum visibility must cover every generated public API that exposes it.
-        string vi = isEnumsClassPublic || isExtensionClassPublic ? "public" : "internal";
+        string visibility = isEnumsClassPublic || isExtensionClassPublic ? "public" : "internal";
 
-        string res = $$"""
-                       {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                       /// <summary>Specifies the representations used to parse and format <see cref="{{es.FullyQualifiedName}}"/> values.</summary>
-                       [global::System.Flags]
-                       {{vi}} enum {{es.Name}}Format : byte
-                       {
-                           /// <summary>Do not use any representation.</summary>
-                           None = 0,
+        return $$"""
+                 {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
+                 /// <summary>Specifies the representations used to parse and format <see cref="{{spec.FullyQualifiedName}}"/> values.</summary>
+                 [global::System.Flags]
+                 {{visibility}} enum {{spec.Name}}Format : byte
+                 {
+                     /// <summary>Do not use any representation.</summary>
+                     None = 0,
 
-                           /// <summary>Use generated member names.</summary>
-                           Name = 1,
+                     /// <summary>Use generated member names.</summary>
+                     Name = 1,
 
-                           /// <summary>Use underlying numeric values.</summary>
-                           Value = 2,
-                       """;
+                     /// <summary>Use underlying numeric values.</summary>
+                     Value = 2,{{DisplayNameMember()}}{{DescriptionMember()}}
+                     /// <summary>Use the default representations.</summary>
+                     Default = Name | Value
+                 }
+                 """;
 
-        if (es.HasDisplay)
-        {
-            res += """
+        string DisplayNameMember() => !spec.HasDisplay ? string.Empty : """
 
-                       /// <summary>Use display names.</summary>
-                       DisplayName = 4,
-                   """;
-        }
+                                                                             /// <summary>Use display names.</summary>
+                                                                             DisplayName = 4,
+                                                                         """;
 
-        if (es.HasDescription)
-        {
-            res += """
+        string DescriptionMember() => !spec.HasDescription ? string.Empty : """
 
-                       /// <summary>Use descriptions.</summary>
-                       Description = 8,
-                   """;
-        }
-
-        res += """
-
-                   /// <summary>Use the default representations.</summary>
-                   Default = Name | Value
-               }
-               """;
-        return res;
+                                                                                   /// <summary>Use descriptions.</summary>
+                                                                                   Description = 8,
+                                                                               """;
     }
 }

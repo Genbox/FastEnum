@@ -4,465 +4,270 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumClassCode
 {
-    internal static string Generate(EnumSpec es, bool wrapperPublic)
+    internal static string Generate(EnumSpec spec, bool wrapperPublic)
     {
-        FastEnumData op = es.Data;
-
-        string? ns = op.EnumsClassNamespace ?? es.Namespace;
-        string cn = es.EmittedIdentifier;
-        string en = op.EnumsClassName ?? "Enums";
-        string sn = es.FullyQualifiedName;
-        string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
-        string vi = op.EnumsClassVisibility == Visibility.Inherit ? inheritedVisibility : op.EnumsClassVisibility.ToString().ToLowerInvariant();
+        FastEnumData options = spec.Data;
+        string? namespaceName = options.EnumsClassNamespace ?? spec.Namespace;
+        string className = spec.EmittedIdentifier;
+        string wrapperName = options.EnumsClassName ?? "Enums";
+        string enumName = spec.FullyQualifiedName;
+        string inheritedVisibility = spec.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string visibility = options.EnumsClassVisibility == Visibility.Inherit ? inheritedVisibility : options.EnumsClassVisibility.ToString().ToLowerInvariant();
         string wrapperVisibility = wrapperPublic ? "public" : "internal";
-        string ut = es.UnderlyingType;
-        int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
-        bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
-        bool omitIsDefined = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
-        string formatName = es.Name + "Format";
-        string ef = ns != null ? $"global::{ns}.{formatName}" : $"global::{formatName}";
-        EnumTransformData? transform = es.TransformData;
-
+        string underlyingType = spec.UnderlyingType;
+        string enumFormat = namespaceName != null ? $"global::{namespaceName}.{spec.Name}Format" : $"global::{spec.Name}Format";
+        EnumTransformData? transform = spec.TransformData;
         List<string> fields = new List<string>();
 
-        StringBuilder sb = StringBuilderPool.Rent(16384);
+        string memberNames = Assignment("_names", "string", GetMemberNames());
+        string memberValues = Assignment("_values", enumName, GetMemberValues());
+        string underlyingValues = Assignment("_underlyingValues", underlyingType, GetUnderlyingValues());
+        string tryParse = TryParse();
+        string isDefined = IsDefined();
+        string displayNames = MetadataMethod(spec.HasDisplay, "display names", "DisplayNames", "_displayNames", x => x.DisplayData?.Name, transform?.SortDisplayNames ?? EnumOrder.None, EnumOmitExclude.TryGetDisplayName);
+        string descriptions = MetadataMethod(spec.HasDescription, "descriptions", "Descriptions", "_descriptions", x => x.DisplayData?.Description, transform?.SortDescriptions ?? EnumOrder.None, EnumOmitExclude.TryGetDescription);
+        string generatedFields = fields.Count == 0 ? string.Empty : $"\n\n{string.Join("\n", fields.Select(x => $"{Indent(2)}{x}"))}\n";
+        int memberCount = spec.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
 
-        sb.Append($$"""
-                    {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                    {{(!op.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{sn}\"/>.</summary>\n{wrapperVisibility} static partial class {en}\n{{" : "")}}
-                        /// <summary>Provides generated helper methods for <see cref="{{sn}}"/>.</summary>
-                        {{vi}} static partial class {{cn}}
-                        {
-                            /// <summary>Gets the number of enum members included in the generated APIs.</summary>
-                            public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
+        return $$"""
+                 {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
+                 {{(!options.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{enumName}\"/>.</summary>\n{wrapperVisibility} static partial class {wrapperName}\n{{" : null)}}
+                     /// <summary>Provides generated helper methods for <see cref="{{enumName}}"/>.</summary>
+                     {{visibility}} static partial class {{className}}
+                     {
+                         /// <summary>Gets the number of enum members included in the generated APIs.</summary>
+                         public const int MemberCount = {{memberCount.ToString(NumberFormatInfo.InvariantInfo)}};
 
-                            /// <summary>Indicates whether <see cref="{{sn}}"/> is a flags enum.</summary>
-                            public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
+                         /// <summary>Indicates whether <see cref="{{enumName}}"/> is a flags enum.</summary>
+                         public const bool IsFlagEnum = {{spec.HasFlags.ToString().ToLowerInvariant()}};
 
-                            /// <summary>Gets the generated names of the enum members.</summary>
-                            /// <returns>An array containing the generated member names.</returns>
-                            public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
+                         /// <summary>Gets the generated names of the enum members.</summary>
+                         /// <returns>An array containing the generated member names.</returns>
+                         public static string[] GetMemberNames() => {{memberNames}}
 
-                            /// <summary>Gets the enum member values.</summary>
-                            /// <returns>An array containing the enum member values.</returns>
-                            public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
+                         /// <summary>Gets the enum member values.</summary>
+                         /// <returns>An array containing the enum member values.</returns>
+                         public static {{enumName}}[] GetMemberValues() => {{memberValues}}
 
-                            /// <summary>Gets the underlying numeric values of the enum members.</summary>
-                            /// <returns>An array containing the underlying values.</returns>
-                            public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
+                         /// <summary>Gets the underlying numeric values of the enum members.</summary>
+                         /// <returns>An array containing the underlying values.</returns>
+                         public static {{underlyingType}}[] GetUnderlyingValues() => {{underlyingValues}}
 
-                            /// <summary>Attempts to parse a string into an enum value.</summary>
-                            /// <param name="value">The string to parse.</param>
-                            /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
-                            /// <param name="format">The formats to consider while parsing.</param>
-                            /// <param name="comparison">The string comparison to use.</param>
-                            /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-                            public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
-                            {
-                                {{TryParse()}}
-                                result = default;
-                                return false;
-                            }
+                         {{TryParseMethod("string", "string")}}
 
-                    #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                            /// <summary>Attempts to parse a character span into an enum value.</summary>
-                            /// <param name="value">The character span to parse.</param>
-                            /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
-                            /// <param name="format">The formats to consider while parsing.</param>
-                            /// <param name="comparison">The string comparison to use.</param>
-                            /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-                            public static bool TryParse(global::System.ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
-                            {
-                                {{TryParse()}}
-                                result = default;
-                                return false;
-                            }
+                 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                         {{TryParseMethod("global::System.ReadOnlySpan<char>", "character span")}}
 
-                            /// <summary>Parses a character span into an enum value.</summary>
-                            /// <param name="value">The character span to parse.</param>
-                            /// <param name="format">The formats to consider while parsing.</param>
-                            /// <param name="comparison">The string comparison to use.</param>
-                            /// <returns>The parsed enum value.</returns>
-                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
-                            public static {{sn}} Parse(global::System.ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
-                            {
-                                if (!TryParse(value, out {{sn}} result, format, comparison))
-                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value.ToString()}");
+                         {{ParseMethod("global::System.ReadOnlySpan<char>", "character span", "{value.ToString()}")}}
+                 #endif
 
-                                return result;
-                            }
-                    #endif
+                         {{ParseMethod("string", "string", "{value}")}}
 
-                            /// <summary>Parses a string into an enum value.</summary>
-                            /// <param name="value">The string to parse.</param>
-                            /// <param name="format">The formats to consider while parsing.</param>
-                            /// <param name="comparison">The string comparison to use.</param>
-                            /// <returns>The parsed enum value.</returns>
-                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
-                            public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
-                            {
-                                if (!TryParse(value, out {{sn}} result, format, comparison))
-                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
+                         /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
+                         /// <param name="input">The enum value to test.</param>
+                         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
+                         public static bool IsDefined({{enumName}} input)
+                         {
+                             {{isDefined}}
+                         }{{displayNames}}{{descriptions}}{{generatedFields}}
+                     }{{(!options.DisableEnumsWrapper ? "\n}" : null)}}
+                 """;
 
-                                return result;
-                            }
-
-                            /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
-                            /// <param name="input">The enum value to test.</param>
-                            /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
-                            public static bool IsDefined({{sn}} input)
-                            {
-                                {{IsDefined()}}
-                            }
-                    """);
-
-        if (es.HasDisplay)
+        string TryParseMethod(string valueType, string label)
         {
-            sb.Append($"""
-
-
-                               /// <summary>Gets the display names defined for the enum members.</summary>
-                               /// <returns>An array of enum values paired with their display names.</returns>
-                               public static ({sn}, string)[] GetDisplayNames() => {Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}
-                       """);
+            return IndentFollowingLines(
+                $$"""
+                /// <summary>Attempts to parse a {{label}} into an enum value.</summary>
+                /// <param name="value">The {{label}} to parse.</param>
+                /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+                /// <param name="format">The formats to consider while parsing.</param>
+                /// <param name="comparison">The string comparison to use.</param>
+                /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
+                public static bool TryParse({{valueType}} value, out {{enumName}} result, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+                {
+                    {{tryParse}}
+                    result = default;
+                    return false;
+                }
+                """,
+                2);
         }
 
-        if (es.HasDescription)
+        string ParseMethod(string valueType, string label, string errorValue)
         {
-            sb.Append($"""
+            return IndentFollowingLines(
+                $$"""
+                /// <summary>Parses a {{label}} into an enum value.</summary>
+                /// <param name="value">The {{label}} to parse.</param>
+                /// <param name="format">The formats to consider while parsing.</param>
+                /// <param name="comparison">The string comparison to use.</param>
+                /// <returns>The parsed enum value.</returns>
+                /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
+                public static {{enumName}} Parse({{valueType}} value, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+                {
+                    if (!TryParse(value, out {{enumName}} result, format, comparison))
+                        throw new global::System.ArgumentOutOfRangeException($"Invalid value: {{errorValue}}");
 
-
-                               /// <summary>Gets the descriptions defined for the enum members.</summary>
-                               /// <returns>An array of enum values paired with their descriptions.</returns>
-                               public static ({sn}, string)[] GetDescriptions() => {Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}
-                       """);
+                    return result;
+                }
+                """,
+                2);
         }
 
-        if (fields.Count > 0)
-        {
-            sb.AppendLine();
-            sb.AppendLine();
+        IEnumerable<string> GetMemberNames() => GetMembers(transform?.SortMemberNames ?? EnumOrder.None, EnumOmitExclude.GetMemberNames, m => TransformHelper.TransformName(spec, m), m => $"\"{EscapeString(TransformHelper.TransformName(spec, m))}\"");
 
-            foreach (string field in fields)
-            {
-                sb.Append(Indent(2)).AppendLine(field);
-            }
+        IEnumerable<string> GetMemberValues() => GetMembers(transform?.SortMemberValues ?? EnumOrder.None, EnumOmitExclude.GetMemberValues, ValueKey, m => $"{enumName}.{m.EmittedIdentifier}");
+
+        IEnumerable<string> GetUnderlyingValues() => GetMembers(transform?.SortUnderlyingValues ?? EnumOrder.None, EnumOmitExclude.GetUnderlyingValues, ValueKey, m => FormatPrimitive(m.Value));
+
+        IEnumerable<string> GetMembers(EnumOrder order, EnumOmitExclude exclusion, Func<EnumMemberSpec, IComparable> sortKey, Func<EnumMemberSpec, string> format)
+        {
+            return ApplySort(spec.Members, order, sortKey).Where(x => IsIncluded(x, exclusion)).Select(format);
         }
 
-        sb.Append("\n    }");
+        string MetadataMethod(bool enabled, string label, string suffix, string field, Func<EnumMemberSpec, string?> getText, EnumOrder order, EnumOmitExclude exclusion) => !enabled ? string.Empty : $$"""
 
-        if (!op.DisableEnumsWrapper)
-            sb.Append("\n}");
 
-        return StringBuilderPool.ReturnGetString(sb);
+                                                /// <summary>Gets the {{label}} defined for the enum members.</summary>
+                                                /// <returns>An array of enum values paired with their {{label}}.</returns>
+                                                public static ({{enumName}}, string)[] Get{{suffix}}() => {{Assignment(field, $"({enumName}, string)", GetMetadataValues(getText, order, exclusion))}}
+                                        """;
 
-        IEnumerable<string> GetMemberNames()
+        IEnumerable<string> GetMetadataValues(Func<EnumMemberSpec, string?> getText, EnumOrder order, EnumOmitExclude exclusion)
         {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberNames ?? EnumOrder.None, m => TransformHelper.TransformName(es, m)))
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberNames) == true)
-                    continue;
-
-                yield return $"\"{EscapeString(TransformHelper.TransformName(es, em))}\"";
-            }
-        }
-
-        IEnumerable<string> GetMemberValues()
-        {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortMemberValues ?? EnumOrder.None, ValueKey))
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberValues) == true)
-                    continue;
-
-                yield return $"{sn}.{em.EmittedIdentifier}";
-            }
-        }
-
-        IEnumerable<string> GetUnderlyingValues()
-        {
-            foreach (EnumMemberSpec em in ApplySort(es.Members, transform?.SortUnderlyingValues ?? EnumOrder.None, ValueKey))
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true)
-                    continue;
-
-                yield return FormatPrimitive(em.Value);
-            }
-        }
-
-        IEnumerable<string> GetDisplayNames()
-        {
-            IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Name != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) != true);
-
-            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.None, DisplayNameKey))
-                yield return $"({sn}.{em.EmittedIdentifier}, \"{EscapeString(em.DisplayData!.Name!)}\")";
-        }
-
-        IEnumerable<string> GetDescriptions()
-        {
-            IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Description != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) != true);
-
-            foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.None, DescriptionKey))
-                yield return $"({sn}.{em.EmittedIdentifier}, \"{EscapeString(em.DisplayData!.Description!)}\")";
-        }
-
-        IEnumerable<EnumMemberSpec> GetTryParseMembers()
-        {
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryParse) == true)
-                    continue;
-
-                yield return em;
-            }
-        }
-
-        IEnumerable<string> IsDefinedMembers()
-        {
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
-                    continue;
-
-                yield return FormatPrimitive(em.Value);
-            }
+            IEnumerable<EnumMemberSpec> members = spec.Members.Where(x => getText(x) != null && x.OmitValueData?.Exclude.HasFlag(exclusion) != true);
+            return ApplySort(members, order, x => getText(x)!)
+                .Select(x => $"({enumName}.{x.EmittedIdentifier}, \"{EscapeString(getText(x)!)}\")");
         }
 
         string TryParse()
         {
-            EnumMemberSpec[] members = GetTryParseMembers().ToArray();
-
+            EnumMemberSpec[] members = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.TryParse)).ToArray();
             if (members.Length == 0)
                 return string.Empty;
 
-            StringBuilder sb2 = StringBuilderPool.Rent(8192);
-            sb2.Append($$"""
-                         if ((format & {{ef}}.Name) == {{ef}}.Name)
-                                     {
-                         """);
+            return IndentFollowingLines(string.Join("\n", GetBlocks()), 1);
 
-            for (int i = 0; i < members.Length; i++)
+            IEnumerable<string> GetBlocks()
             {
-                EnumMemberSpec em = members[i];
+                yield return ParseBlock("Name", m => TransformHelper.TransformName(spec, m));
+                yield return ParseBlock("Value", m => FormatPrimitive(m.Value, false));
 
-                sb2.Append($$"""
+                if (spec.HasDisplay)
+                    yield return ParseBlock("DisplayName", m => m.DisplayData?.Name);
 
-                                             if (value.Equals("{{EscapeString(TransformHelper.TransformName(es, em))}}", comparison))
-                                             {
-                                                 result = {{sn}}.{{em.EmittedIdentifier}};
-                                                 return true;
-                                             }
-                             """);
-
-                if (i != members.Length - 1)
-                    sb2.AppendLine();
+                if (spec.HasDescription)
+                    yield return ParseBlock("Description", m => m.DisplayData?.Description);
             }
 
-            sb2.Append("\n            }");
-
-            sb2.Append($$"""
-
-                                     if ((format & {{ef}}.Value) == {{ef}}.Value)
-                                     {
-                         """);
-
-            for (int i = 0; i < members.Length; i++)
+            string ParseBlock(string format, Func<EnumMemberSpec, string?> getText)
             {
-                EnumMemberSpec em = members[i];
+                string start = $$"""
+                                 if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
+                                 {
+                                 """;
+                return $"{start}{IndentFollowingLines(string.Concat(GetChecks()), 1)}\n}}";
 
-                string escapedValue = EscapeString(FormatPrimitive(em.Value, false));
-
-                sb2.Append($$"""
-
-                                             if (value.Equals("{{escapedValue}}", comparison))
-                                             {
-                                                 result = {{sn}}.{{em.EmittedIdentifier}};
-                                                 return true;
-                                             }
-                             """);
-
-                if (i != members.Length - 1)
-                    sb2.AppendLine();
-            }
-
-            sb2.Append("\n            }");
-
-            if (es.HasDisplay)
-            {
-                sb2.Append($$"""
-
-                                         if ((format & {{ef}}.DisplayName) == {{ef}}.DisplayName)
-                                         {
-                             """);
-
-                for (int i = 0; i < members.Length; i++)
+                IEnumerable<string> GetChecks()
                 {
-                    EnumMemberSpec em = members[i];
-
-                    if (em.DisplayData?.Name != null)
+                    for (int i = 0; i < members.Length; i++)
                     {
-                        string escapedDisplayName = EscapeString(em.DisplayData.Name);
+                        string? text = getText(members[i]);
+                        if (text != null)
+                            yield return $"\n{ParseCheck(members[i], text)}";
 
-                        sb2.Append($$"""
-
-                                                     if (value.Equals("{{escapedDisplayName}}", comparison))
-                                                     {
-                                                         result = {{sn}}.{{em.EmittedIdentifier}};
-                                                         return true;
-                                                     }
-                                     """);
+                        if (i < members.Length - 1)
+                            yield return "\n";
                     }
-                    if (i != members.Length - 1)
-                        sb2.AppendLine();
                 }
-
-                sb2.Append("\n            }");
             }
 
-            if (es.HasDescription)
-            {
-                sb2.Append($$"""
-
-                                         if ((format & {{ef}}.Description) == {{ef}}.Description)
-                                         {
-                             """);
-
-                for (int i = 0; i < members.Length; i++)
-                {
-                    EnumMemberSpec em = members[i];
-
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryParse) == true)
-                        continue;
-
-                    if (em.DisplayData?.Description != null)
-                    {
-                        string escapedDisplayDesc = EscapeString(em.DisplayData.Description);
-                        sb2.Append($$"""
-
-                                                     if (value.Equals("{{escapedDisplayDesc}}", comparison))
-                                                     {
-                                                         result = {{sn}}.{{em.EmittedIdentifier}};
-                                                         return true;
-                                                     }
-                                     """);
-                    }
-
-                    if (i != members.Length - 1)
-                        sb2.AppendLine();
-                }
-
-                sb2.Append("\n            }");
-            }
-
-            return StringBuilderPool.ReturnGetString(sb2);
+            string ParseCheck(EnumMemberSpec member, string text) => $$"""
+                                                                       if (value.Equals("{{EscapeString(text)}}", comparison))
+                                                                       {
+                                                                           result = {{enumName}}.{{member.EmittedIdentifier}};
+                                                                           return true;
+                                                                       }
+                                                                       """;
         }
 
         string IsDefined()
         {
-            if (es.HasFlags)
+            if (spec.HasFlags)
                 return $"return {IsFlagDefined()};";
 
-            StringBuilder sb2 = StringBuilderPool.Rent(8192);
+            bool canReuseUnderlyingValues = spec.Members.All(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) != true) && spec.Members.All(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) != true);
+            string[] values = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.IsDefined)).Select(x => FormatPrimitive(x.Value)).ToArray();
 
-            bool hasMembers = true;
+            if (!canReuseUnderlyingValues && values.Length == 0)
+                return "return false;";
 
-            //If we have no omissions impacting IsDefined, then we can reuse GetUnderlyingValues()
-            if (!omitUnderlyingValues && !omitIsDefined)
-                sb2.Append(ut).AppendLine("[] _isDefinedValues = GetUnderlyingValues();");
-            else
-            {
-                string[] arr = IsDefinedMembers().ToArray();
-                string assignment = Assignment("_isDefinedValues", ut, op.DisableCache, fields, arr);
+            string valuesExpression = canReuseUnderlyingValues
+                ? $"{underlyingType}[] _isDefinedValues = GetUnderlyingValues();"
+                : Assignment("_isDefinedValues", underlyingType, values);
+            string separator = canReuseUnderlyingValues ? "\n" : string.Empty;
 
-                hasMembers = arr.Length > 0;
+            return $$"""
+                     {{valuesExpression}}{{separator}}
+                                 for (int i = 0; i < _isDefinedValues.Length; i++)
+                                 {
+                                     if (_isDefinedValues[i] == ({{underlyingType}})input)
+                                         return true;
+                                 }
 
-                if (!hasMembers)
-                    sb2.Append("return false;");
-                else
-                    sb2.Append(assignment);
-            }
-
-            if (hasMembers)
-            {
-                sb2.Append($$"""
-
-                                         for (int i = 0; i < _isDefinedValues.Length; i++)
-                                         {
-                                             if (_isDefinedValues[i] == ({{ut}})input)
-                                                 return true;
-                                         }
-
-                                         return false;
-                             """);
-            }
-
-            return StringBuilderPool.ReturnGetString(sb2);
+                                 return false;
+                     """;
         }
 
         string IsFlagDefined()
         {
-            if (es.Members.Length == 0)
+            if (spec.Members.Length == 0)
                 return "false";
 
-            ulong value = 0;
-
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true)
-                    continue;
-
-                value |= ToUInt64(em.Value);
-            }
-
-            if (value == 0)
-                return $"({ut})input == 0";
-
-            return $"unchecked((({ut}){value}UL & ({ut})input) == ({ut})input)";
+            ulong mask = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.IsDefined)).Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
+            return mask == 0
+                ? $"({underlyingType})input == 0"
+                : $"unchecked((({underlyingType}){mask}UL & ({underlyingType})input) == ({underlyingType})input)";
         }
 
-        static string Assignment(string name, string type, bool cacheDisabled, List<string> fields, IEnumerable<string> elements)
+        string Assignment(string name, string type, IEnumerable<string> elements)
         {
-            string[] arr = elements.ToArray();
-
-            if (arr.Length == 0)
+            string[] values = elements.ToArray();
+            if (values.Length == 0)
                 return $"global::System.Array.Empty<{type}>();";
 
-            StringBuilder sb = StringBuilderPool.Rent();
+            string assignment;
 
-            if (cacheDisabled)
-                sb.Append("new ").Append(type).AppendLine("[] {");
+            if (options.DisableCache)
+                assignment = $"new {type}[]";
             else
             {
                 fields.Add($"private static {type}[]? {name};");
-                sb.Append(name).Append(" ??= new ").Append(type).Append("[] {\n");
+                assignment = $"{name} ??= new {type}[]";
             }
 
-            for (int i = 0; i < arr.Length; i++)
-            {
-                sb.Append(Indent(4)).Append(arr[i]);
-
-                if (i != arr.Length - 1)
-                    sb.Append(',');
-
-                sb.Append('\n');
-            }
-
-            sb.Append(Indent(3)).Append("};");
-
-            return StringBuilderPool.ReturnGetString(sb);
+            return $$"""
+                     {{assignment}} {
+                                     {{IndentFollowingLines(string.Join(",\n", values), 4)}}
+                                 };
+                     """;
         }
 
-        static ulong ToUInt64(object value) => value switch
+        static bool IsIncluded(EnumMemberSpec member, EnumOmitExclude exclusion) => member.OmitValueData?.Exclude.HasFlag(exclusion) != true;
+
+        static string IndentFollowingLines(string value, int amount)
         {
-            byte b => b,
-            sbyte sb => unchecked((ulong)sb),
-            short s => unchecked((ulong)s),
-            ushort us => us,
-            int i => unchecked((ulong)i),
-            uint ui => ui,
-            long l => unchecked((ulong)l),
-            ulong ul => ul,
-            _ => throw new InvalidOperationException("Unsupported enum underlying type")
-        };
+            string indent = Indent(amount);
+            string[] lines = value.Split('\n');
+
+            for (int i = 1; i < lines.Length; i++)
+            {
+                if (lines[i].Length > 0)
+                    lines[i] = $"{indent}{lines[i]}";
+            }
+
+            return string.Join("\n", lines);
+        }
 
         static IEnumerable<EnumMemberSpec> ApplySort(IEnumerable<EnumMemberSpec> members, EnumOrder order, Func<EnumMemberSpec, IComparable> selector) => order switch
         {
@@ -471,10 +276,6 @@ internal static class EnumClassCode
             _ => members
         };
 
-        static IComparable ValueKey(EnumMemberSpec em) => (IComparable)em.Value;
-
-        static IComparable DisplayNameKey(EnumMemberSpec em) => em.DisplayData!.Name!;
-
-        static IComparable DescriptionKey(EnumMemberSpec em) => em.DisplayData!.Description!;
+        static IComparable ValueKey(EnumMemberSpec member) => (IComparable)member.Value;
     }
 }

@@ -45,4 +45,17 @@ internal static class CodeGenHelper
         ulong ul => ul.ToString(CultureInfo.InvariantCulture) + (outputTypeLabel ? "UL" : ""),
         _ => throw new InvalidOperationException("Unsupported literal type")
     };
+
+    internal static ulong ToUInt64(object value) => value switch
+    {
+        byte b => b,
+        sbyte sb => unchecked((ulong)sb),
+        short s => unchecked((ulong)s),
+        ushort us => us,
+        int i => unchecked((ulong)i),
+        uint ui => ui,
+        long l => unchecked((ulong)l),
+        ulong ul => ul,
+        _ => throw new InvalidOperationException("Unsupported enum underlying type")
+    };
 }

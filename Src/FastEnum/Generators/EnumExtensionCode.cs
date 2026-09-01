@@ -2,235 +2,186 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumExtensionCode
 {
-    public static string Generate(EnumSpec es)
+    public static string Generate(EnumSpec spec)
     {
-        FastEnumData op = es.Data;
+        FastEnumData options = spec.Data;
 
-        string? ns = op.ExtensionClassNamespace ?? es.Namespace;
-        string cn = es.Name + "Format";
-        string en = op.ExtensionClassName ?? es.Name + "Extensions";
-        string sn = es.FullyQualifiedName;
-        string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
-        string vi = op.ExtensionClassVisibility == Visibility.Inherit ? inheritedVisibility : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
-        string ut = es.UnderlyingType;
-        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"global::{op.EnumsClassNamespace ?? es.Namespace}.{cn}" : $"global::{cn}";
+        string? namespaceName = options.ExtensionClassNamespace ?? spec.Namespace;
+        string extensionName = options.ExtensionClassName ?? $"{spec.Name}Extensions";
+        string enumName = spec.FullyQualifiedName;
+        string inheritedVisibility = spec.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string visibility = options.ExtensionClassVisibility == Visibility.Inherit ? inheritedVisibility : options.ExtensionClassVisibility.ToString().ToLowerInvariant();
+        string underlyingType = spec.UnderlyingType;
+        string? formatNamespace = options.EnumsClassNamespace ?? spec.Namespace;
+        string enumFormat = formatNamespace != null ? $"global::{formatNamespace}.{spec.Name}Format" : $"global::{spec.Name}Format";
 
-        bool containsDuplicateValue = false;
         HashSet<object> values = new HashSet<object>();
+        bool containsDuplicateValue = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
+                                          .Any(x => !values.Add(x.Value));
 
-        foreach (EnumMemberSpec em in es.Members)
-        {
-            if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
-                continue;
+        return $$"""
+                 {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
+                 /// <summary>Provides generated extension methods for <see cref="{{enumName}}"/>.</summary>
+                 {{visibility}} static partial class {{extensionName}}
+                 {
+                     /// <summary>Gets the generated string representation of an enum value.</summary>
+                     /// <param name="value">The enum value.</param>
+                     /// <returns>The generated string representation.</returns>
+                     public static string GetString(this {{enumName}} value)
+                     {
+                         {{GetString()}}
+                     }
 
-            if (!values.Add(em.Value))
-            {
-                containsDuplicateValue = true;
-                break;
-            }
-        }
+                     /// <summary>Gets the string representation of an enum value using the specified formats.</summary>
+                     /// <param name="value">The enum value.</param>
+                     /// <param name="format">The formats to use.</param>
+                     /// <returns>The formatted string representation.</returns>
+                     public static string GetString(this {{enumName}} value, {{enumFormat}} format = {{enumFormat}}.Default)
+                     {
+                         {{GetStringWithFormat()}}
+                     }
 
-        StringBuilder sb = StringBuilderPool.Rent(16384);
-        sb.Append($$"""
-                    {{(ns != null ? $"\nnamespace {ns};\n" : null)}}
-                    /// <summary>Provides generated extension methods for <see cref="{{sn}}"/>.</summary>
-                    {{vi}} static partial class {{en}}
-                    {
-                        /// <summary>Gets the generated string representation of an enum value.</summary>
-                        /// <param name="value">The enum value.</param>
-                        /// <returns>The generated string representation.</returns>
-                        public static string GetString(this {{sn}} value)
-                        {
-                            {{GetString()}}
-                        }
+                     /// <summary>Attempts to get the underlying numeric value of an enum value.</summary>
+                     /// <param name="value">The enum value.</param>
+                     /// <param name="underlyingValue">When this method returns, contains the underlying value if the lookup succeeded.</param>
+                     /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
+                     public static bool TryGetUnderlyingValue(this {{enumName}} value, out {{underlyingType}} underlyingValue)
+                     {
+                         {{PrintSwitch(TryGetUnderlyingValue(), containsDuplicateValue)}}
+                         underlyingValue = default;
+                         return false;
+                     }
 
-                        /// <summary>Gets the string representation of an enum value using the specified formats.</summary>
-                        /// <param name="value">The enum value.</param>
-                        /// <param name="format">The formats to use.</param>
-                        /// <returns>The formatted string representation.</returns>
-                        public static string GetString(this {{sn}} value, {{ef}} format = {{ef}}.Default)
-                        {
-                            {{GetStringWithFormat()}}
-                        }
+                     /// <summary>Gets the underlying numeric value of an enum value.</summary>
+                     /// <param name="value">The enum value.</param>
+                     /// <returns>The underlying value.</returns>
+                     /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> is not included in the generated metadata.</exception>
+                     public static {{underlyingType}} GetUnderlyingValue(this {{enumName}} value)
+                     {
+                         if (!TryGetUnderlyingValue(value, out {{underlyingType}} underlyingValue))
+                             throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
-                        /// <summary>Attempts to get the underlying numeric value of an enum value.</summary>
-                        /// <param name="value">The enum value.</param>
-                        /// <param name="underlyingValue">When this method returns, contains the underlying value if the lookup succeeded.</param>
-                        /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
-                        public static bool TryGetUnderlyingValue(this {{sn}} value, out {{ut}} underlyingValue)
-                        {
-                            {{PrintSwitch(TryGetUnderlyingValue(), containsDuplicateValue)}}
-                            underlyingValue = default;
-                            return false;
-                        }
+                         return underlyingValue;
+                     }{{GetDisplayMethods()}}{{GetDescriptionMethods()}}{{GetFlagsMethod()}}
+                 }
+                 """;
 
-                        /// <summary>Gets the underlying numeric value of an enum value.</summary>
-                        /// <param name="value">The enum value.</param>
-                        /// <returns>The underlying value.</returns>
-                        /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> is not included in the generated metadata.</exception>
-                        public static {{ut}} GetUnderlyingValue(this {{sn}} value)
-                        {
-                            if (!TryGetUnderlyingValue(value, out {{ut}} underlyingValue))
-                                throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
+        string GetDisplayMethods() => GetMetadataMethods(spec.HasDisplay, "display name", "DisplayName", "displayName", x => x.DisplayData?.Name, EnumOmitExclude.TryGetDisplayName);
 
-                            return underlyingValue;
-                        }
-                    """);
+        string GetDescriptionMethods() => GetMetadataMethods(spec.HasDescription, "description", "Description", "description", x => x.DisplayData?.Description, EnumOmitExclude.TryGetDescription);
 
-        if (es.HasDisplay)
-        {
-            sb.Append($$"""
+        string GetMetadataMethods(bool enabled, string label, string suffix, string variable, Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion) => !enabled ? string.Empty : $$"""
 
 
-                            /// <summary>Attempts to get the display name of an enum value.</summary>
+                            /// <summary>Attempts to get the {{label}} of an enum value.</summary>
                             /// <param name="value">The enum value.</param>
-                            /// <param name="displayName">When this method returns, contains the display name if the lookup succeeded.</param>
-                            /// <returns><see langword="true"/> if a display name was found; otherwise, <see langword="false"/>.</returns>
-                            public static bool TryGetDisplayName(this {{sn}} value,
+                            /// <param name="{{variable}}">When this method returns, contains the {{label}} if the lookup succeeded.</param>
+                            /// <returns><see langword="true"/> if a {{label}} was found; otherwise, <see langword="false"/>.</returns>
+                            public static bool TryGet{{suffix}}(this {{enumName}} value,
                         #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                         [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
                         #endif
-                        out string? displayName)
+                        out string? {{variable}})
                             {
-                                {{PrintSwitch(TryGetDisplayName())}}
-                                displayName = null;
+                                {{PrintSwitch(GetMetadataCases(getText, exclusion, variable))}}
+                                {{variable}} = null;
                                 return false;
                             }
 
-                            /// <summary>Gets the display name of an enum value.</summary>
+                            /// <summary>Gets the {{label}} of an enum value.</summary>
                             /// <param name="value">The enum value.</param>
-                            /// <returns>The display name.</returns>
-                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not have a display name.</exception>
-                            public static string GetDisplayName(this {{sn}} value)
+                            /// <returns>The {{label}}.</returns>
+                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not have a {{label}}.</exception>
+                            public static string Get{{suffix}}(this {{enumName}} value)
                             {
-                                if (!TryGetDisplayName(value, out string? displayName))
+                                if (!TryGet{{suffix}}(value, out string? {{variable}}))
                                     throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
-                                return displayName!;
+                                return {{variable}}!;
                             }
-                        """);
-        }
+                        """;
 
-        if (es.HasDescription)
-        {
-            sb.Append($$"""
-
-
-                            /// <summary>Attempts to get the description of an enum value.</summary>
-                            /// <param name="value">The enum value.</param>
-                            /// <param name="description">When this method returns, contains the description if the lookup succeeded.</param>
-                            /// <returns><see langword="true"/> if a description was found; otherwise, <see langword="false"/>.</returns>
-                            public static bool TryGetDescription(this {{sn}} value,
-                        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
-                        [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
-                        #endif
-                        out string? description)
-                            {
-                                {{PrintSwitch(TryGetDescription())}}
-                                description = null;
-                                return false;
-                            }
-
-                            /// <summary>Gets the description of an enum value.</summary>
-                            /// <param name="value">The enum value.</param>
-                            /// <returns>The description.</returns>
-                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not have a description.</exception>
-                            public static string GetDescription(this {{sn}} value)
-                            {
-                                if (!TryGetDescription(value, out string? description))
-                                    throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
-
-                                return description!;
-                            }
-                        """);
-        }
-
-        if (es.HasFlags)
-        {
-            sb.Append($"""
+        string GetFlagsMethod() => !spec.HasFlags ? string.Empty : $"""
 
 
                            /// <summary>Determines whether all bits in a flag are set on an enum value.</summary>
                            /// <param name="value">The enum value to test.</param>
                            /// <param name="flag">The flag to test.</param>
                            /// <returns><see langword="true"/> if all bits in <paramref name="flag"/> are set; otherwise, <see langword="false"/>.</returns>
-                           public static bool IsFlagSet(this {sn} value, {sn} flag) => (({ut})value & ({ut})flag) == ({ut})flag;
-                       """);
-        }
-
-        sb.Append("\n}");
-        return StringBuilderPool.ReturnGetString(sb);
+                           public static bool IsFlagSet(this {enumName} value, {enumName} flag) => (({underlyingType})value & ({underlyingType})flag) == ({underlyingType})flag;
+                       """;
 
         string GetStringWithFormat()
         {
-            StringBuilder sb2 = StringBuilderPool.Rent();
+            bool hasDisplayNames = spec.HasDisplay && Array.Exists(spec.Members, x => x.DisplayData?.Name != null);
+            bool hasDescriptions = spec.HasDescription && Array.Exists(spec.Members, x => x.DisplayData?.Description != null);
 
-            bool hasDisplayNames = es.HasDisplay && Array.Exists(es.Members, x => x.DisplayData?.Name != null);
-            bool hasDescriptions = es.HasDescription && Array.Exists(es.Members, x => x.DisplayData?.Description != null);
-            bool hasOmit = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true);
+            return $"""
+                    {string.Join("\n\n        ", GetFormatBlocks())}
 
-            if (hasDisplayNames)
+                            return value.ToString();
+                    """;
+
+            IEnumerable<string> GetFormatBlocks()
             {
-                sb2.Append($"if ((format & {ef}.DisplayName) == {ef}.DisplayName)\n        {{\n");
+                if (hasDisplayNames)
+                    yield return GetFormatBlock("DisplayName", GetMetadataChecks(x => x.DisplayData?.Name));
 
-                foreach (EnumMemberSpec em in es.Members)
-                {
-                    if (em.DisplayData?.Name == null)
-                        continue;
+                if (hasDescriptions)
+                    yield return GetFormatBlock("Description", GetMetadataChecks(x => x.DisplayData?.Description));
 
-                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(em.DisplayData.Name)}\";\n");
-                }
-
-                sb2.Append("        }\n\n        ");
+                yield return GetFormatBlock("Name", GetNameChecks());
+                yield return GetFormatBlock("Value", GetValueStatements());
             }
 
-            if (hasDescriptions)
+            string GetFormatBlock(string format, IEnumerable<string> statements)
             {
-                sb2.Append($"if ((format & {ef}.Description) == {ef}.Description)\n        {{\n");
+                string[] arr = statements.ToArray();
 
-                foreach (EnumMemberSpec em in es.Members)
+                if (arr.Length == 0)
                 {
-                    if (em.DisplayData?.Description == null)
-                        continue;
-
-                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(em.DisplayData.Description)}\";\n");
+                    return $$"""
+                             if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
+                                     {
+                                     }
+                             """;
                 }
 
-                sb2.Append("        }\n\n        ");
+                return $$"""
+                         if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
+                                 {
+                         {{string.Join("\n", arr)}}
+                                 }
+                         """;
             }
 
-            sb2.Append($"if ((format & {ef}.Name) == {ef}.Name)\n        {{\n");
-
-            foreach (EnumMemberSpec em in es.Members)
+            IEnumerable<string> GetMetadataChecks(Func<EnumMemberSpec, string?> getValue)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                foreach (EnumMemberSpec em in spec.Members)
                 {
-                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
-                    continue;
-                }
+                    string? value = getValue(em);
 
-                sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
+                    if (value != null)
+                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return \"{EscapeString(value)}\";";
+                }
             }
 
-            sb2.Append("        }\n\n        ");
-
-            sb2.Append($"if ((format & {ef}.Value) == {ef}.Value)\n        {{\n");
-
-            if (hasOmit)
+            IEnumerable<string> GetNameChecks()
             {
-                foreach (EnumMemberSpec em in es.Members)
+                foreach (EnumMemberSpec em in spec.Members)
+                    yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return {GetNameResult(em)};";
+            }
+
+            IEnumerable<string> GetValueStatements()
+            {
+                foreach (EnumMemberSpec em in spec.Members)
                 {
                     if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                        sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
+                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return string.Empty;";
                 }
+
+                yield return $"            return (({underlyingType})value).ToString(global::System.Globalization.NumberFormatInfo.InvariantInfo);";
             }
-
-            sb2.Append($"            return (({ut})value).ToString(global::System.Globalization.NumberFormatInfo.InvariantInfo);\n");
-            sb2.Append("        }\n\n        ");
-
-            sb2.Append("return value.ToString();");
-
-            return StringBuilderPool.ReturnGetString(sb2);
         }
 
         string GetString()
@@ -238,125 +189,86 @@ internal static class EnumExtensionCode
             if (containsDuplicateValue)
             {
                 // If there are no omissions or transforms, we can just return the value.
-                if (Array.TrueForAll(es.Members, x => x.OmitValueData == null && x.TransformValueData == null))
+                if (Array.TrueForAll(spec.Members, x => x.OmitValueData == null && x.TransformValueData == null))
                     return "return value.ToString();";
 
-                StringBuilder sb2 = StringBuilderPool.Rent();
-
-                foreach (EnumMemberSpec em in es.Members)
-                {
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                    {
-                        sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
-                        continue;
-                    }
-
-                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
-                }
-
-                sb2.Append("            return value.ToString();");
-                return StringBuilderPool.ReturnGetString(sb2);
+                return $"""
+                        {string.Join("\n", GetDuplicateValueChecks())}
+                                    return value.ToString();
+                        """;
             }
 
-            StringBuilder sb3 = StringBuilderPool.Rent();
-            sb3.Append("return value switch\n        {\n            ");
+            return $$"""
+                     return value switch
+                             {
+                     {{string.Join("\n", GetSwitchArms())}}
+                             };
+                     """;
 
-            foreach (EnumMemberSpec em in es.Members)
+            IEnumerable<string> GetDuplicateValueChecks()
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                {
-                    sb3.Append(sn).Append('.').Append(em.EmittedIdentifier).Append(" => string.Empty,\n            ");
-                    continue;
-                }
-
-                sb3.Append(sn).Append('.').Append(em.EmittedIdentifier).Append(" => \"").Append(EscapeString(TransformHelper.TransformName(es, em))).Append("\",\n            ");
+                foreach (EnumMemberSpec em in spec.Members)
+                    yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return {GetNameResult(em)};";
             }
 
-            sb3.Append("_ => value.ToString()\n        };");
-            return StringBuilderPool.ReturnGetString(sb3);
+            IEnumerable<string> GetSwitchArms()
+            {
+                foreach (EnumMemberSpec em in spec.Members)
+                    yield return $"            {enumName}.{em.EmittedIdentifier} => {GetNameResult(em)},";
+
+                yield return "            _ => value.ToString()";
+            }
         }
 
         IEnumerable<string> TryGetUnderlyingValue()
         {
-            foreach (EnumMemberSpec em in es.Members)
+            foreach (EnumMemberSpec em in spec.Members)
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
                     continue;
 
-                //We default to doing a fast comparison using enum values (which is basically just integers), but in the case we have a flags enum with a duplicate value
-                //we must fall back to using string comparisons, otherwise there will be duplicate branches in the switch.
-                if (containsDuplicateValue)
-                {
-                    yield return $"""
-                                              case "{em.Name}":
-                                                  underlyingValue = {FormatPrimitive(em.Value)};
-                                                  return true;
-                                  """;
-                }
-                else
-                {
-                    yield return $"""
-                                              case {sn}.{em.EmittedIdentifier}:
-                                                  underlyingValue = {FormatPrimitive(em.Value)};
-                                                  return true;
-                                  """;
-                }
-            }
-
-            if (es.HasFlags)
-            {
-                ulong mask = 0;
-                foreach (EnumMemberSpec em in es.Members)
-                {
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
-                        mask |= ToUInt64(em.Value);
-                }
-
-                // Valid Flags combinations need not have a separately declared alias.
-                yield return $$"""
-                                     default:
-                                         if (unchecked((({{ut}}){{mask}}UL & ({{ut}})value) == ({{ut}})value))
-                                         {
-                                             underlyingValue = ({{ut}})value;
-                                             return true;
-                                         }
-
-                                         break;
-                         """;
-            }
-        }
-
-        IEnumerable<string> TryGetDisplayName()
-        {
-            foreach (EnumMemberSpec em in es.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) == true)
-                    continue;
-
-                if (em.DisplayData?.Name == null)
-                    continue;
-
+                // Duplicate enum values need string comparisons to avoid duplicate switch branches.
+                string caseValue = containsDuplicateValue ? $"\"{em.Name}\"" : $"{enumName}.{em.EmittedIdentifier}";
                 yield return $"""
-                                          case {sn}.{em.EmittedIdentifier}:
-                                              displayName = "{EscapeString(em.DisplayData.Name)}";
+                                          case {caseValue}:
+                                              underlyingValue = {FormatPrimitive(em.Value)};
                                               return true;
                               """;
             }
+
+            if (spec.HasFlags)
+            {
+                ulong mask = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
+                                 .Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
+
+                // Valid Flags combinations need not have a separately declared alias.
+                yield return $$"""
+                                           default:
+                                               if (unchecked((({{underlyingType}}){{mask}}UL & ({{underlyingType}})value) == ({{underlyingType}})value))
+                                               {
+                                                   underlyingValue = ({{underlyingType}})value;
+                                                   return true;
+                                               }
+
+                                               break;
+                               """;
+            }
         }
 
-        IEnumerable<string> TryGetDescription()
+        IEnumerable<string> GetMetadataCases(Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion, string resultName)
         {
-            foreach (EnumMemberSpec em in es.Members)
+            foreach (EnumMemberSpec em in spec.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) == true)
+                if (em.OmitValueData?.Exclude.HasFlag(exclusion) == true)
                     continue;
 
-                if (em.DisplayData?.Description == null)
+                string? text = getText(em);
+                if (text == null)
                     continue;
 
                 yield return $"""
-                                          case {sn}.{em.EmittedIdentifier}:
-                                              description = "{EscapeString(em.DisplayData.Description)}";
+                                          case {enumName}.{em.EmittedIdentifier}:
+                                              {resultName} = "{EscapeString(text)}";
                                               return true;
                               """;
             }
@@ -369,36 +281,21 @@ internal static class EnumExtensionCode
             if (arr.Length == 0)
                 return string.Empty;
 
-            StringBuilder sb = StringBuilderPool.Rent();
-            sb.AppendLine(stringComparison ? "switch (value.ToString())" : "switch (value)");
-            sb.Append(Indent(2)).Append('{');
-            sb.AppendLine();
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                sb.Append(arr[i]);
-
-                if (i != arr.Length - 1)
-                    sb.AppendLine();
-            }
-
-            sb.AppendLine();
-            sb.Append(Indent(2)).Append('}');
-
-            return StringBuilderPool.ReturnGetString(sb);
+            return $$"""
+                     {{(stringComparison ? "switch (value.ToString())" : "switch (value)")}}
+                             {
+                     {{string.Join("\n", arr)}}
+                             }
+                     """;
         }
 
-        static ulong ToUInt64(object value) => value switch
+        string GetNameResult(EnumMemberSpec em)
         {
-            byte b => b,
-            sbyte sb => unchecked((ulong)sb),
-            short s => unchecked((ulong)s),
-            ushort us => us,
-            int i => unchecked((ulong)i),
-            uint ui => ui,
-            long l => unchecked((ulong)l),
-            ulong ul => ul,
-            _ => throw new InvalidOperationException("Unsupported enum underlying type")
-        };
+            if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                return "string.Empty";
+
+            return $"\"{EscapeString(TransformHelper.TransformName(spec, em))}\"";
+        }
+
     }
 }
