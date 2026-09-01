@@ -7,10 +7,10 @@ internal static class EnumFormatCode
         FastEnumData op = es.Data;
 
         string? ns = es.Data.EnumsClassNamespace ?? es.Namespace; //We use the same namespace as the Enums class
-        string cn = es.Data.EnumNameOverride ?? es.Name;
         bool isPublicEnum = es.AccessChain[0] == Accessibility.Public;
         bool isEnumsClassPublic = op.EnumsClassVisibility == Visibility.Inherit ? isPublicEnum : op.EnumsClassVisibility == Visibility.Public;
         bool isExtensionClassPublic = op.ExtensionClassVisibility == Visibility.Inherit ? isPublicEnum : op.ExtensionClassVisibility == Visibility.Public;
+
         // Format enum visibility must cover every generated public API that exposes it.
         string vi = isEnumsClassPublic || isExtensionClassPublic ? "public" : "internal";
 
@@ -18,7 +18,7 @@ internal static class EnumFormatCode
                        {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
                        /// <summary>Specifies the representations used to parse and format <see cref="{{es.FullyQualifiedName}}"/> values.</summary>
                        [global::System.Flags]
-                       {{vi}} enum {{cn}}Format : byte
+                       {{vi}} enum {{es.Name}}Format : byte
                        {
                            /// <summary>Do not use any representation.</summary>
                            None = 0,

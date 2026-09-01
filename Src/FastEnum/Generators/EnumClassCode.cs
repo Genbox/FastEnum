@@ -9,7 +9,7 @@ internal static class EnumClassCode
         FastEnumData op = es.Data;
 
         string? ns = op.EnumsClassNamespace ?? es.Namespace;
-        string cn = op.EnumNameOverride ?? es.Name;
+        string cn = es.EmittedIdentifier;
         string en = op.EnumsClassName ?? "Enums";
         string sn = es.FullyQualifiedName;
         string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
@@ -19,7 +19,8 @@ internal static class EnumClassCode
         int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
         bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
         bool omitIsDefined = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) == true);
-        string ef = ns != null ? $"global::{ns}.{cn}Format" : $"global::{cn}Format";
+        string formatName = es.Name + "Format";
+        string ef = ns != null ? $"global::{ns}.{formatName}" : $"global::{formatName}";
         EnumTransformData? transform = es.TransformData;
 
         List<string> fields = new List<string>();
@@ -173,7 +174,7 @@ internal static class EnumClassCode
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetMemberValues) == true)
                     continue;
 
-                yield return $"{sn}.{em.Name}";
+                yield return $"{sn}.{em.EmittedIdentifier}";
             }
         }
 
@@ -193,7 +194,7 @@ internal static class EnumClassCode
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Name != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) != true);
 
             foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.None, DisplayNameKey))
-                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData!.Name!)}\")";
+                yield return $"({sn}.{em.EmittedIdentifier}, \"{EscapeString(em.DisplayData!.Name!)}\")";
         }
 
         IEnumerable<string> GetDescriptions()
@@ -201,7 +202,7 @@ internal static class EnumClassCode
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Description != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) != true);
 
             foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.None, DescriptionKey))
-                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData!.Description!)}\")";
+                yield return $"({sn}.{em.EmittedIdentifier}, \"{EscapeString(em.DisplayData!.Description!)}\")";
         }
 
         IEnumerable<EnumMemberSpec> GetTryParseMembers()
@@ -247,7 +248,7 @@ internal static class EnumClassCode
 
                                              if (value.Equals("{{EscapeString(TransformHelper.TransformName(es, em))}}", comparison))
                                              {
-                                                 result = {{sn}}.{{em.Name}};
+                                                 result = {{sn}}.{{em.EmittedIdentifier}};
                                                  return true;
                                              }
                              """);
@@ -274,7 +275,7 @@ internal static class EnumClassCode
 
                                              if (value.Equals("{{escapedValue}}", comparison))
                                              {
-                                                 result = {{sn}}.{{em.Name}};
+                                                 result = {{sn}}.{{em.EmittedIdentifier}};
                                                  return true;
                                              }
                              """);
@@ -305,7 +306,7 @@ internal static class EnumClassCode
 
                                                      if (value.Equals("{{escapedDisplayName}}", comparison))
                                                      {
-                                                         result = {{sn}}.{{em.Name}};
+                                                         result = {{sn}}.{{em.EmittedIdentifier}};
                                                          return true;
                                                      }
                                      """);
@@ -339,7 +340,7 @@ internal static class EnumClassCode
 
                                                      if (value.Equals("{{escapedDisplayDesc}}", comparison))
                                                      {
-                                                         result = {{sn}}.{{em.Name}};
+                                                         result = {{sn}}.{{em.EmittedIdentifier}};
                                                          return true;
                                                      }
                                      """);

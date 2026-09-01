@@ -7,9 +7,10 @@ internal class EnumSpec : IEquatable<EnumSpec>
     //This class overrides equality to provide caching to the source generator framework. It cannot just be a record
     //as it contains lists that has to be compared, so we need to override equality anyway.
 
-    public EnumSpec(string name, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasGenericContainingType, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, FastEnumData data, EnumMemberSpec[] members, EnumTransformData? transformData)
+    public EnumSpec(string name, string emittedIdentifier, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasGenericContainingType, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, FastEnumData data, EnumMemberSpec[] members, EnumTransformData? transformData)
     {
         Name = name;
+        EmittedIdentifier = emittedIdentifier;
         FullName = fullName;
         FullyQualifiedName = fullyQualifiedName;
         Namespace = @namespace;
@@ -25,6 +26,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
     }
 
     public string Name { get; }
+    public string EmittedIdentifier { get; }
     public string FullName { get; }
     public string FullyQualifiedName { get; }
     public string? Namespace { get; }
@@ -41,6 +43,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
     public bool Equals(EnumSpec other)
     {
         return Name == other.Name &&
+               EmittedIdentifier == other.EmittedIdentifier &&
                FullName == other.FullName &&
                FullyQualifiedName == other.FullyQualifiedName &&
                Namespace == other.Namespace &&
@@ -62,6 +65,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
         unchecked
         {
             int hashCode = Name.GetDeterministicHashCode();
+            hashCode = (hashCode * 397) ^ EmittedIdentifier.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ FullName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ FullyQualifiedName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ (Namespace != null ? Namespace.GetDeterministicHashCode() : 0);

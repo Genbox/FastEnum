@@ -124,4 +124,42 @@ public class ValidationTests
         Assert.Equal("FE001", res.Id);
     }
 
+    /// <summary>Ensures escaped enum and member identifiers are emitted correctly.</summary>
+    [Fact]
+    public void TestEscapedIdentifiers()
+    {
+        string code = """
+                      [FastEnum(EnumNameOverride = "@class")]
+                      public enum @event
+                      {
+                          @class
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Assert.Empty(codeGenDiag);
+        Assert.Empty(compilerDiag);
+    }
+
+    [Theory]
+    [InlineData("EnumNameOverride", "Bad-Name")]
+    [InlineData("EnumsClassName", "Bad Name")]
+    [InlineData("ExtensionClassName", "1BadName")]
+    [InlineData("EnumsClassNamespace", "Good..Bad")]
+    [InlineData("ExtensionClassNamespace", "Good.Bad-Name")]
+    public void TestInvalidOverrides(string propertyName, string value)
+    {
+        string code = $$"""
+                        [FastEnum({{propertyName}} = "{{value}}")]
+                        public enum MyEnum
+                        {
+                            Value
+                        }
+                        """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Diagnostic res = Assert.Single(codeGenDiag);
+        Assert.Empty(compilerDiag);
+        Assert.Equal("FE001", res.Id);
+    }
 }

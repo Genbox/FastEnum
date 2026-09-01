@@ -48,13 +48,12 @@ public class EnumGenerator : IIncrementalGenerator
             {
                 try
                 {
-                    string fqn = enumSpec.FullyQualifiedName.Replace("global::", "");
                     bool wrapperPublic = IsEnumsClassPublic(specs, enumSpec);
 
                     StringBuilder sb = new StringBuilder(4096);
-                    spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
-                    spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, enumSpec, spec => EnumClassCode.Generate(spec, wrapperPublic)));
-                    spc.AddSource(fqn + "_Extensions.g.cs", GetSource(sb, name, enumSpec, EnumExtensionCode.Generate));
+                    spc.AddSource(enumSpec.FullName + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
+                    spc.AddSource(enumSpec.FullName + "_Enums.g.cs", GetSource(sb, name, enumSpec, spec => EnumClassCode.Generate(spec, wrapperPublic)));
+                    spc.AddSource(enumSpec.FullName + "_Extensions.g.cs", GetSource(sb, name, enumSpec, EnumExtensionCode.Generate));
                 }
                 catch (Exception e)
                 {
@@ -67,41 +66,86 @@ public class EnumGenerator : IIncrementalGenerator
 
     private static bool IsSpecsValid(ImmutableArray<EnumSpec> specs, out string? message)
     {
-        //### Detect name conflicts ###
-        // By default the Enums class is generated as: <enum_namespace>.<enums_class_name>.<enum_name>
-        // <enum_namespace> is the namespace of the user's enum. It can be overriden by EnumsClassNamespace
-        // <enum_class_name> defaults to "Enums". It can be overriden by EnumsClassName
-        // <enum_name> is the name of the user's enum. It can be overriden by EnumNameOverride
-        //
-        // We therefore have to combine all these parts and check if there are duplicates.
-
-        HashSet<string> nameSet = new HashSet<string>(StringComparer.Ordinal); //Case-sensitive since C# is too
-
         foreach (EnumSpec es in specs)
         {
-            FastEnumData esd = es.Data;
-
-            // Nested enums in generic types cannot be named from a non-generic generated API.
             if (es.HasGenericContainingType)
             {
                 message = $"FastEnum is not supported on enum '{es.FullName}' inside a generic containing type";
                 return false;
             }
-
-            string enumNamespace = esd.EnumsClassNamespace ?? (es.Namespace ?? "global::");
-            string enumClassName = esd.EnumsClassName ?? "Enums";
-            string enumName = esd.EnumNameOverride ?? es.Name;
-
-            string fullName = string.Join(".", enumNamespace, enumClassName, enumName);
-
-            if (!nameSet.Add(fullName))
-            {
-                message = $"Two enums collide in name: {fullName}. Use {nameof(FastEnumAttribute.EnumNameOverride)}, {nameof(FastEnumAttribute.EnumsClassName)} or {nameof(FastEnumAttribute.EnumsClassNamespace)} to resolve the conflict";
-                return false;
-            }
         }
 
-        //### Detect accessibility/visibility issues ###
+        if (!AreGeneratedNamesValid(specs, out message))
+            return false;
+
+        return AreVisibilitiesValid(specs, out message);
+    }
+
+    private static bool AreGeneratedNamesValid(ImmutableArray<EnumSpec> specs, out string? message)
+    {
+        // By default, the enum helper is generated as <enum_namespace>.<enums_class_name>.<enum_name>.
+        // <enum_namespace> is the namespace of the user's enum. It can be overridden by EnumsClassNamespace.
+        // <enums_class_name> defaults to "Enums". It can be overridden by EnumsClassName.
+        // <enum_name> is the name of the user's enum. It can be overridden by EnumNameOverride.
+        //
+        // The format enum and extension class also derive their names from these inputs. Combine the semantic names
+        // of every generated type and check for duplicates so escaped identifiers cannot hide a collision.
+        Dictionary<string, string> emittedTypes = new Dictionary<string, string>(StringComparer.Ordinal); // Case-sensitive since C# is too.
+
+        foreach (EnumSpec es in specs)
+        {
+            FastEnumData esd = es.Data;
+
+            // Validate user-provided identifiers before they are emitted into generated C#.
+            if (!IsValidIdentifierOverride(esd.EnumNameOverride, nameof(FastEnumAttribute.EnumNameOverride), out message) ||
+                !IsValidIdentifierOverride(esd.EnumsClassName, nameof(FastEnumAttribute.EnumsClassName), out message) ||
+                !IsValidIdentifierOverride(esd.ExtensionClassName, nameof(FastEnumAttribute.ExtensionClassName), out message))
+                return false;
+
+            // Namespace overrides are also code, so reject invalid qualified names early.
+            if (!IsValidNamespaceOverride(esd.EnumsClassNamespace, nameof(FastEnumAttribute.EnumsClassNamespace), out message) ||
+                !IsValidNamespaceOverride(esd.ExtensionClassNamespace, nameof(FastEnumAttribute.ExtensionClassNamespace), out message))
+                return false;
+
+            string? enumNamespace = esd.EnumsClassNamespace ?? es.Namespace;
+            string enumClassName = esd.EnumsClassName ?? "Enums";
+            string enumName = es.Name;
+            string? extensionNamespace = esd.ExtensionClassNamespace ?? es.Namespace;
+            string extensionName = esd.ExtensionClassName ?? enumName + "Extensions";
+
+            // Validate every emitted type using semantic identifiers; Foo and @Foo name the same type.
+            if ((!esd.DisableEnumsWrapper && !AddEmittedType(JoinName(enumNamespace, enumClassName), "wrapper", true, out message)) ||
+                !AddEmittedType(esd.DisableEnumsWrapper ? JoinName(enumNamespace, enumName) : JoinName(enumNamespace, enumClassName, enumName), "enum helper", false, out message) ||
+                !AddEmittedType(JoinName(enumNamespace, enumName + "Format"), "format enum", false, out message) ||
+                !AddEmittedType(JoinName(extensionNamespace, extensionName), "extension class", false, out message))
+                return false;
+        }
+
+        message = null;
+        return true;
+
+        bool AddEmittedType(string fullName, string kind, bool allowSharedWrapper, out string? error)
+        {
+            if (!emittedTypes.TryGetValue(fullName, out string? existingKind))
+            {
+                emittedTypes.Add(fullName, kind);
+                error = null;
+                return true;
+            }
+
+            if (allowSharedWrapper && existingKind == "wrapper")
+            {
+                error = null;
+                return true;
+            }
+
+            error = $"Generated {kind} collides with generated {existingKind}: {fullName}. Use a FastEnum name or namespace override to resolve the conflict";
+            return false;
+        }
+    }
+
+    private static bool AreVisibilitiesValid(ImmutableArray<EnumSpec> specs, out string? message)
+    {
         // We don't support private enums. For example:
         //
         // public class MyClass
@@ -109,12 +153,9 @@ public class EnumGenerator : IIncrementalGenerator
         //     private enum MyEnum { Value }
         // }
         //
-        // The reason being that the generated Enums.MyEnum class can't expose the enum due to it being private.
-        // The user can disable the Enums wrapper with DisableEnumsWrapper, but the resulting MyEnum class still can't expose the private enum.
-        // We could stop generating the Enums.MyEnum class altogether, but the generated extension methods wouldn't work either. So then, what is the point?
-        //
-        // We therefore only support internal and public enums. However, we can't have a public enum in an internal class.
-
+        // The generated Enums.MyEnum class cannot expose the enum because it is private. Disabling the Enums wrapper
+        // does not help because the resulting MyEnum class and generated extension methods still cannot expose it.
+        // We therefore only support internal and public enums, and a containing type cannot be less visible than its enum.
         foreach (EnumSpec es in specs)
         {
             //The first part of the AccessChain is the enum's own accessibility
@@ -163,19 +204,31 @@ public class EnumGenerator : IIncrementalGenerator
         return true;
     }
 
+    private static string JoinName(string? @namespace, params string[] names)
+    {
+        string name = string.Join(".", Array.ConvertAll(names, NormalizeIdentifier));
+
+        return @namespace == null ? name : NormalizeQualifiedName(@namespace) + "." + name;
+    }
+
+    private static string NormalizeQualifiedName(string value)
+    {
+        return string.Join(".", Array.ConvertAll(value.Split('.'), NormalizeIdentifier));
+    }
+
+    private static string NormalizeIdentifier(string value) => value.Length > 0 && value[0] == '@' ? value.Substring(1) : value;
+
     private static bool IsEnumsClassPublic(ImmutableArray<EnumSpec> specs, EnumSpec target)
     {
         FastEnumData targetData = target.Data;
-        string? targetNamespace = targetData.EnumsClassNamespace ?? target.Namespace;
-        string targetClassName = targetData.EnumsClassName ?? "Enums";
+        string targetWrapper = JoinName(targetData.EnumsClassNamespace ?? target.Namespace, targetData.EnumsClassName ?? "Enums");
 
+        // Group partial wrappers by semantic identity so Foo and @Foo share accessibility.
         foreach (EnumSpec spec in specs)
         {
             FastEnumData data = spec.Data;
-            string? wrapperNamespace = data.EnumsClassNamespace ?? spec.Namespace;
-            string wrapperClassName = data.EnumsClassName ?? "Enums";
-
-            if (data.DisableEnumsWrapper || wrapperNamespace != targetNamespace || wrapperClassName != targetClassName)
+            string wrapper = JoinName(data.EnumsClassNamespace ?? spec.Namespace, data.EnumsClassName ?? "Enums");
+            if (data.DisableEnumsWrapper || wrapper != targetWrapper)
                 continue;
 
             if (data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.AccessChain[0] == Accessibility.Public))
@@ -183,6 +236,50 @@ public class EnumGenerator : IIncrementalGenerator
         }
 
         return false;
+    }
+
+    private static bool IsValidIdentifierOverride(string? value, string propertyName, out string? message)
+    {
+        if (value == null || IsValidIdentifier(value))
+        {
+            message = null;
+            return true;
+        }
+
+        message = $"Invalid C# identifier '{value}' in {propertyName}";
+        return false;
+    }
+
+    private static bool IsValidNamespaceOverride(string? value, string propertyName, out string? message)
+    {
+        if (value == null)
+        {
+            message = null;
+            return true;
+        }
+
+        string[] parts = value.Split('.');
+        if (parts.Length > 0 && Array.TrueForAll(parts, IsValidIdentifier))
+        {
+            message = null;
+            return true;
+        }
+
+        message = $"Invalid C# namespace '{value}' in {propertyName}";
+        return false;
+    }
+
+    private static bool IsValidIdentifier(string value)
+    {
+        if (SyntaxFacts.IsValidIdentifier(value))
+            return true;
+
+        // Overrides may retain an explicit escape even when the semantic identifier is ordinary.
+        if (value.Length < 2 || value[0] != '@')
+            return false;
+
+        string unescaped = value.Substring(1);
+        return SyntaxFacts.IsValidIdentifier(unescaped) || SyntaxFacts.GetKeywordKind(unescaped) != SyntaxKind.None || SyntaxFacts.GetContextualKeywordKind(unescaped) != SyntaxKind.None;
     }
 
     [SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "The parameter is used in release builds")]
@@ -271,7 +368,8 @@ public class EnumGenerator : IIncrementalGenerator
                 }
             }
 
-            members.Add(new EnumMemberSpec(member.Name, field.ConstantValue, displayData, omitValueData, transformValueData));
+            string memberName = member.Name;
+            members.Add(new EnumMemberSpec(memberName, EscapeIdentifier(memberName), field.ConstantValue, displayData, omitValueData, transformValueData));
         }
 
         // Underlying framework type names must not bind to user-defined symbols.
@@ -287,9 +385,9 @@ public class EnumGenerator : IIncrementalGenerator
             curSym = curSym.ContainingSymbol;
         }
 
-        string enumName = symbol.Name;
-        // Symbol display formats handle generic parts and produce escaped, global-qualified names.
-        string enumFullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+        string enumName = NormalizeIdentifier(fastEnumData.EnumNameOverride ?? symbol.Name);
+        // Symbol display formats handle containing types; only code references retain escapes and the global qualifier.
+        string enumFullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat).Replace("@", "");
         string fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         string? enumNamespace = symbol.ContainingNamespace.IsGlobalNamespace ? null : symbol.ContainingNamespace.ToDisplayString();
         bool hasGenericContainingType = false;
@@ -297,6 +395,12 @@ public class EnumGenerator : IIncrementalGenerator
         for (INamedTypeSymbol? containingType = symbol.ContainingType; containingType != null; containingType = containingType.ContainingType)
             hasGenericContainingType |= containingType.Arity > 0;
 
-        return new EnumSpec(enumName, enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
+        return new EnumSpec(enumName, EscapeIdentifier(enumName), enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
+    }
+
+    private static string EscapeIdentifier(string value)
+    {
+        // Roslyn symbol names omit the source '@', so restore it for keyword identifiers.
+        return SyntaxFacts.GetKeywordKind(value) != SyntaxKind.None || SyntaxFacts.GetContextualKeywordKind(value) != SyntaxKind.None ? "@" + value : value;
     }
 }

@@ -7,13 +7,13 @@ internal static class EnumExtensionCode
         FastEnumData op = es.Data;
 
         string? ns = op.ExtensionClassNamespace ?? es.Namespace;
-        string cn = op.EnumNameOverride ?? es.Name;
-        string en = op.ExtensionClassName ?? cn + "Extensions";
+        string cn = es.Name + "Format";
+        string en = op.ExtensionClassName ?? es.Name + "Extensions";
         string sn = es.FullyQualifiedName;
         string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
         string vi = op.ExtensionClassVisibility == Visibility.Inherit ? inheritedVisibility : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
-        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"global::{op.EnumsClassNamespace ?? es.Namespace}.{cn}Format" : $"global::{cn}Format";
+        string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"global::{op.EnumsClassNamespace ?? es.Namespace}.{cn}" : $"global::{cn}";
 
         bool containsDuplicateValue = false;
         HashSet<object> values = new HashSet<object>();
@@ -178,7 +178,7 @@ internal static class EnumExtensionCode
                     if (em.DisplayData?.Name == null)
                         continue;
 
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(em.DisplayData.Name)}\";\n");
+                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(em.DisplayData.Name)}\";\n");
                 }
 
                 sb2.Append("        }\n\n        ");
@@ -193,7 +193,7 @@ internal static class EnumExtensionCode
                     if (em.DisplayData?.Description == null)
                         continue;
 
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(em.DisplayData.Description)}\";\n");
+                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(em.DisplayData.Description)}\";\n");
                 }
 
                 sb2.Append("        }\n\n        ");
@@ -205,11 +205,11 @@ internal static class EnumExtensionCode
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 {
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
                     continue;
                 }
 
-                sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
+                sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
             }
 
             sb2.Append("        }\n\n        ");
@@ -221,7 +221,7 @@ internal static class EnumExtensionCode
                 foreach (EnumMemberSpec em in es.Members)
                 {
                     if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                        sb2.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                        sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
                 }
             }
 
@@ -247,11 +247,11 @@ internal static class EnumExtensionCode
                 {
                     if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                     {
-                        sb2.Append($"            if (value == {sn}.{em.Name}) return string.Empty;\n");
+                        sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return string.Empty;\n");
                         continue;
                     }
 
-                    sb2.Append($"            if (value == {sn}.{em.Name}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
+                    sb2.Append($"            if (value == {sn}.{em.EmittedIdentifier}) return \"{EscapeString(TransformHelper.TransformName(es, em))}\";\n");
                 }
 
                 sb2.Append("            return value.ToString();");
@@ -265,11 +265,11 @@ internal static class EnumExtensionCode
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 {
-                    sb3.Append(sn).Append('.').Append(em.Name).Append(" => string.Empty,\n            ");
+                    sb3.Append(sn).Append('.').Append(em.EmittedIdentifier).Append(" => string.Empty,\n            ");
                     continue;
                 }
 
-                sb3.Append(sn).Append('.').Append(em.Name).Append(" => \"").Append(EscapeString(TransformHelper.TransformName(es, em))).Append("\",\n            ");
+                sb3.Append(sn).Append('.').Append(em.EmittedIdentifier).Append(" => \"").Append(EscapeString(TransformHelper.TransformName(es, em))).Append("\",\n            ");
             }
 
             sb3.Append("_ => value.ToString()\n        };");
@@ -296,7 +296,7 @@ internal static class EnumExtensionCode
                 else
                 {
                     yield return $"""
-                                              case {sn}.{em.Name}:
+                                              case {sn}.{em.EmittedIdentifier}:
                                                   underlyingValue = {FormatPrimitive(em.Value)};
                                                   return true;
                                   """;
@@ -315,7 +315,7 @@ internal static class EnumExtensionCode
                     continue;
 
                 yield return $"""
-                                          case {sn}.{em.Name}:
+                                          case {sn}.{em.EmittedIdentifier}:
                                               displayName = "{EscapeString(em.DisplayData.Name)}";
                                               return true;
                               """;
@@ -333,7 +333,7 @@ internal static class EnumExtensionCode
                     continue;
 
                 yield return $"""
-                                          case {sn}.{em.Name}:
+                                          case {sn}.{em.EmittedIdentifier}:
                                               description = "{EscapeString(em.DisplayData.Description)}";
                                               return true;
                               """;
