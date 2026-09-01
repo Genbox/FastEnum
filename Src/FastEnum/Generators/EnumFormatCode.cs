@@ -8,7 +8,11 @@ internal static class EnumFormatCode
 
         string? ns = es.Data.EnumsClassNamespace ?? es.Namespace; //We use the same namespace as the Enums class
         string cn = es.Data.EnumNameOverride ?? es.Name;
-        string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
+        bool isPublicEnum = es.AccessChain[0] == Accessibility.Public;
+        bool isEnumsClassPublic = op.EnumsClassVisibility == Visibility.Inherit ? isPublicEnum : op.EnumsClassVisibility == Visibility.Public;
+        bool isExtensionClassPublic = op.ExtensionClassVisibility == Visibility.Inherit ? isPublicEnum : op.ExtensionClassVisibility == Visibility.Public;
+        // Format enum visibility must cover every generated public API that exposes it.
+        string vi = isEnumsClassPublic || isExtensionClassPublic ? "public" : "internal";
 
         string res = $$"""
                        {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}

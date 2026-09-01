@@ -62,4 +62,44 @@ public class ValidationTests
         Assert.Empty(compilerDiag);
         Assert.Equal("FE001", res.Id); //Enum visibility validation failed
     }
+
+    /// <summary>Ensures shared partial wrapper declarations use compatible visibility.</summary>
+    [Fact]
+    public void TestSharedEnumsClassVisibility()
+    {
+        string code = """
+                      [FastEnum]
+                      internal enum InternalEnum
+                      {
+                          Value
+                      }
+
+                      [FastEnum]
+                      public enum PublicEnum
+                      {
+                          Value
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Assert.Empty(codeGenDiag);
+        Assert.Empty(compilerDiag);
+    }
+
+    /// <summary>Ensures a format enum is visible wherever a generated public API exposes it.</summary>
+    [Fact]
+    public void TestFormatEnumVisibility()
+    {
+        string code = """
+                      [FastEnum(EnumsClassVisibility = Visibility.Internal, ExtensionClassVisibility = Visibility.Public)]
+                      public enum PublicEnum
+                      {
+                          Value
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Assert.Empty(codeGenDiag);
+        Assert.Empty(compilerDiag);
+    }
 }

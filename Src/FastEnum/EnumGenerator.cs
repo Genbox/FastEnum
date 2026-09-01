@@ -49,10 +49,11 @@ public class EnumGenerator : IIncrementalGenerator
                 try
                 {
                     string fqn = enumSpec.FullyQualifiedName.Replace("global::", "");
+                    bool wrapperPublic = IsEnumsClassPublic(specs, enumSpec);
 
                     StringBuilder sb = new StringBuilder(4096);
                     spc.AddSource(fqn + "_EnumFormat.g.cs", GetSource(sb, name, enumSpec, EnumFormatCode.Generate));
-                    spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, enumSpec, EnumClassCode.Generate));
+                    spc.AddSource(fqn + "_Enums.g.cs", GetSource(sb, name, enumSpec, spec => EnumClassCode.Generate(spec, wrapperPublic)));
                     spc.AddSource(fqn + "_Extensions.g.cs", GetSource(sb, name, enumSpec, EnumExtensionCode.Generate));
                 }
                 catch (Exception e)
@@ -153,6 +154,28 @@ public class EnumGenerator : IIncrementalGenerator
 
         message = null;
         return true;
+    }
+
+    private static bool IsEnumsClassPublic(ImmutableArray<EnumSpec> specs, EnumSpec target)
+    {
+        FastEnumData targetData = target.Data;
+        string? targetNamespace = targetData.EnumsClassNamespace ?? target.Namespace;
+        string targetClassName = targetData.EnumsClassName ?? "Enums";
+
+        foreach (EnumSpec spec in specs)
+        {
+            FastEnumData data = spec.Data;
+            string? wrapperNamespace = data.EnumsClassNamespace ?? spec.Namespace;
+            string wrapperClassName = data.EnumsClassName ?? "Enums";
+
+            if (data.DisableEnumsWrapper || wrapperNamespace != targetNamespace || wrapperClassName != targetClassName)
+                continue;
+
+            if (data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.AccessChain[0] == Accessibility.Public))
+                return true;
+        }
+
+        return false;
     }
 
     [SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "The parameter is used in release builds")]

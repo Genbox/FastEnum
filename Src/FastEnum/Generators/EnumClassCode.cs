@@ -4,7 +4,7 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumClassCode
 {
-    internal static string Generate(EnumSpec es)
+    internal static string Generate(EnumSpec es, bool wrapperPublic)
     {
         FastEnumData op = es.Data;
 
@@ -14,6 +14,7 @@ internal static class EnumClassCode
         string sn = es.FullyQualifiedName;
         string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
         string vi = op.EnumsClassVisibility == Visibility.Inherit ? inheritedVisibility : op.EnumsClassVisibility.ToString().ToLowerInvariant();
+        string wrapperVisibility = wrapperPublic ? "public" : "internal";
         string ut = es.UnderlyingType;
         int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
         bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
@@ -27,7 +28,7 @@ internal static class EnumClassCode
 
         sb.Append($$"""
                     {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                    {{(!op.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{sn}\"/>.</summary>\n{vi} static partial class {en}\n{{" : "")}}
+                    {{(!op.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{sn}\"/>.</summary>\n{wrapperVisibility} static partial class {en}\n{{" : "")}}
                         /// <summary>Provides generated helper methods for <see cref="{{sn}}"/>.</summary>
                         {{vi}} static partial class {{cn}}
                         {
