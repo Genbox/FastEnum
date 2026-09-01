@@ -16,7 +16,7 @@ public sealed class FastEnumAttribute : global::System.Attribute
     /// <summary>The namespace used for the extensions class. If not provided the namespace of the enum will be used</summary>
     public string? ExtensionClassNamespace { get; set; }
 
-    /// <summary>Use this to override the visibility of the extension class. If set to inherit, it will default to the same as the enum. It must be set to the same or less visible than the enum. </summary>
+    /// <summary>Use this to override the visibility of the extension class. If set to inherit, it will default to the same as the enum. It must be set to the same or less visible than the enum.</summary>
     public Visibility ExtensionClassVisibility { get; set; } = Visibility.Inherit;
 
     /// <summary>Override the name of the Enums class. If not provided, it will be "Enums"</summary>
@@ -34,6 +34,6 @@ public sealed class FastEnumAttribute : global::System.Attribute
     /// <summary>Enable this to avoid generating the static Enums class that wraps all the enums. Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace across projects</summary>
     public bool DisableEnumsWrapper { get; set; }
 
-    /// <summary>By default arrays from GetValues(), GetNames() etc. is cached. Set this to true to avoid caching.</summary>
+    /// <summary>By default, arrays from methods such as GetMemberValues() and GetMemberNames() are cached. Set this to <see langword="true"/> to avoid caching.</summary>
     public bool DisableCache { get; set; }
 }
