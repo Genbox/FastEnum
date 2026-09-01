@@ -1,3 +1,6 @@
+# Default
+*               text=auto eol=lf
+
 # Repo meta
 .gitattributes	text eol=lf
 .gitignore		text eol=lf
