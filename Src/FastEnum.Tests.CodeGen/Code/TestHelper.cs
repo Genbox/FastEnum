@@ -46,15 +46,15 @@ internal static class TestHelper
                                                                      MetadataReference.CreateFromFile(typeof(FlagsAttribute).Assembly.Location)
                                                                  ]);
 
-        CSharpCompilation compilation = CSharpCompilation.Create(
-            "generator",
+        CSharpCompilation compilation = CSharpCompilation.Create("generator",
             [syntaxTree],
             refs,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         T generator = new T();
+        IEnumerable<ISourceGenerator> generators = [generator.AsSourceGenerator()];
 
-        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
+        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generators);
 
         driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out codeGenDiag, cancellationToken);
         compilerDiag = outputCompilation.GetDiagnostics(cancellationToken).Where(x => !_ignore.Contains(x.Id));

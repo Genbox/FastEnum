@@ -79,7 +79,7 @@ internal static class Program
     {
         [Display(Name = "Value1Name", Description = "Value1Description")]
         Value1 = 0,
-        Value2
+        Value2 = 1 << 0
     }
 
     [FastEnum]

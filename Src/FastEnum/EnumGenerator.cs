@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Genbox.FastEnum.Generators;
 using Microsoft.CodeAnalysis.CSharp;
@@ -154,6 +155,7 @@ public class EnumGenerator : IIncrementalGenerator
         return true;
     }
 
+    [SuppressMessage("Roslynator", "RCS1163:Unused parameter", Justification = "The parameter is used in release builds")]
     private static SourceText GetSource(StringBuilder sb, AssemblyName assemblyName, EnumSpec spec, Func<EnumSpec, string> action)
     {
         sb.Clear();

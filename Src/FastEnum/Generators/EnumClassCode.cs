@@ -12,7 +12,8 @@ internal static class EnumClassCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.EnumsClassName ?? "Enums";
         string sn = es.FullyQualifiedName;
-        string vi = op.EnumsClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.EnumsClassVisibility.ToString().ToLowerInvariant();
+        string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string vi = op.EnumsClassVisibility == Visibility.Inherit ? inheritedVisibility : op.EnumsClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
         int mc = es.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
         bool omitUnderlyingValues = Array.Exists(es.Members, x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) == true);
@@ -191,7 +192,7 @@ internal static class EnumClassCode
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Name != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDisplayName) != true);
 
             foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDisplayNames ?? EnumOrder.None, DisplayNameKey))
-                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Name)}\")";
+                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData!.Name!)}\")";
         }
 
         IEnumerable<string> GetDescriptions()
@@ -199,7 +200,7 @@ internal static class EnumClassCode
             IEnumerable<EnumMemberSpec> filtered = es.Members.Where(x => x.DisplayData?.Description != null && x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetDescription) != true);
 
             foreach (EnumMemberSpec em in ApplySort(filtered, transform?.SortDescriptions ?? EnumOrder.None, DescriptionKey))
-                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData.Description)}\")";
+                yield return $"({sn}.{em.Name}, \"{EscapeString(em.DisplayData!.Description!)}\")";
         }
 
         IEnumerable<EnumMemberSpec> GetTryParseMembers()

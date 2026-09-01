@@ -10,7 +10,8 @@ internal static class EnumExtensionCode
         string cn = op.EnumNameOverride ?? es.Name;
         string en = op.ExtensionClassName ?? cn + "Extensions";
         string sn = es.FullyQualifiedName;
-        string vi = op.ExtensionClassVisibility == Visibility.Inherit ? (es.AccessChain[0] == Accessibility.Public ? "public" : "internal") : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
+        string inheritedVisibility = es.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string vi = op.ExtensionClassVisibility == Visibility.Inherit ? inheritedVisibility : op.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string ut = es.UnderlyingType;
         string ef = (op.EnumsClassNamespace ?? es.Namespace) != null ? $"global::{op.EnumsClassNamespace ?? es.Namespace}.{cn}Format" : $"global::{cn}Format";
 
