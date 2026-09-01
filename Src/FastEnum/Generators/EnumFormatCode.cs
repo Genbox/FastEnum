@@ -12,11 +12,17 @@ internal static class EnumFormatCode
 
         string res = $$"""
                        {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
+                       /// <summary>Specifies the representations used to parse and format <see cref="{{es.FullyQualifiedName}}"/> values.</summary>
                        [global::System.Flags]
                        {{vi}} enum {{cn}}Format : byte
                        {
+                           /// <summary>Do not use any representation.</summary>
                            None = 0,
+
+                           /// <summary>Use generated member names.</summary>
                            Name = 1,
+
+                           /// <summary>Use underlying numeric values.</summary>
                            Value = 2,
                        """;
 
@@ -24,6 +30,7 @@ internal static class EnumFormatCode
         {
             res += """
 
+                       /// <summary>Use display names.</summary>
                        DisplayName = 4,
                    """;
         }
@@ -32,12 +39,14 @@ internal static class EnumFormatCode
         {
             res += """
 
+                       /// <summary>Use descriptions.</summary>
                        Description = 8,
                    """;
         }
 
         res += """
 
+                   /// <summary>Use the default representations.</summary>
                    Default = Name | Value
                }
                """;

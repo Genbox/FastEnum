@@ -32,18 +32,30 @@ internal static class EnumExtensionCode
         StringBuilder sb = StringBuilderPool.Rent(16384);
         sb.Append($$"""
                     {{(ns != null ? $"\nnamespace {ns};\n" : null)}}
+                    /// <summary>Provides generated extension methods for <see cref="{{sn}}"/>.</summary>
                     {{vi}} static partial class {{en}}
                     {
+                        /// <summary>Gets the generated string representation of an enum value.</summary>
+                        /// <param name="value">The enum value.</param>
+                        /// <returns>The generated string representation.</returns>
                         public static string GetString(this {{sn}} value)
                         {
                             {{GetString()}}
                         }
 
+                        /// <summary>Gets the string representation of an enum value using the specified formats.</summary>
+                        /// <param name="value">The enum value.</param>
+                        /// <param name="format">The formats to use.</param>
+                        /// <returns>The formatted string representation.</returns>
                         public static string GetString(this {{sn}} value, {{ef}} format = {{ef}}.Default)
                         {
                             {{GetStringWithFormat()}}
                         }
 
+                        /// <summary>Attempts to get the underlying numeric value of an enum value.</summary>
+                        /// <param name="value">The enum value.</param>
+                        /// <param name="underlyingValue">When this method returns, contains the underlying value if the lookup succeeded.</param>
+                        /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
                         public static bool TryGetUnderlyingValue(this {{sn}} value, out {{ut}} underlyingValue)
                         {
                             {{PrintSwitch(TryGetUnderlyingValue(), containsDuplicateValue)}}
@@ -51,6 +63,10 @@ internal static class EnumExtensionCode
                             return false;
                         }
 
+                        /// <summary>Gets the underlying numeric value of an enum value.</summary>
+                        /// <param name="value">The enum value.</param>
+                        /// <returns>The underlying value.</returns>
+                        /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> is not included in the generated metadata.</exception>
                         public static {{ut}} GetUnderlyingValue(this {{sn}} value)
                         {
                             if (!TryGetUnderlyingValue(value, out {{ut}} underlyingValue))
@@ -65,6 +81,10 @@ internal static class EnumExtensionCode
             sb.Append($$"""
 
 
+                            /// <summary>Attempts to get the display name of an enum value.</summary>
+                            /// <param name="value">The enum value.</param>
+                            /// <param name="displayName">When this method returns, contains the display name if the lookup succeeded.</param>
+                            /// <returns><see langword="true"/> if a display name was found; otherwise, <see langword="false"/>.</returns>
                             public static bool TryGetDisplayName(this {{sn}} value,
                         #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                         [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
@@ -76,6 +96,10 @@ internal static class EnumExtensionCode
                                 return false;
                             }
 
+                            /// <summary>Gets the display name of an enum value.</summary>
+                            /// <param name="value">The enum value.</param>
+                            /// <returns>The display name.</returns>
+                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not have a display name.</exception>
                             public static string GetDisplayName(this {{sn}} value)
                             {
                                 if (!TryGetDisplayName(value, out string? displayName))
@@ -91,6 +115,10 @@ internal static class EnumExtensionCode
             sb.Append($$"""
 
 
+                            /// <summary>Attempts to get the description of an enum value.</summary>
+                            /// <param name="value">The enum value.</param>
+                            /// <param name="description">When this method returns, contains the description if the lookup succeeded.</param>
+                            /// <returns><see langword="true"/> if a description was found; otherwise, <see langword="false"/>.</returns>
                             public static bool TryGetDescription(this {{sn}} value,
                         #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                         [global::System.Diagnostics.CodeAnalysis.NotNullWhen(true)]
@@ -102,6 +130,10 @@ internal static class EnumExtensionCode
                                 return false;
                             }
 
+                            /// <summary>Gets the description of an enum value.</summary>
+                            /// <param name="value">The enum value.</param>
+                            /// <returns>The description.</returns>
+                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not have a description.</exception>
                             public static string GetDescription(this {{sn}} value)
                             {
                                 if (!TryGetDescription(value, out string? description))
@@ -117,6 +149,10 @@ internal static class EnumExtensionCode
             sb.Append($"""
 
 
+                           /// <summary>Determines whether all bits in a flag are set on an enum value.</summary>
+                           /// <param name="value">The enum value to test.</param>
+                           /// <param name="flag">The flag to test.</param>
+                           /// <returns><see langword="true"/> if all bits in <paramref name="flag"/> are set; otherwise, <see langword="false"/>.</returns>
                            public static bool IsFlagSet(this {sn} value, {sn} flag) => (({ut})value & ({ut})flag) == ({ut})flag;
                        """);
         }

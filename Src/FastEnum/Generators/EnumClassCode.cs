@@ -26,18 +26,34 @@ internal static class EnumClassCode
 
         sb.Append($$"""
                     {{(ns != null ? "\nnamespace " + ns + ";\n" : null)}}
-                    {{(!op.DisableEnumsWrapper ? $"{vi} static partial class {en}\n{{" : "")}}
+                    {{(!op.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{sn}\"/>.</summary>\n{vi} static partial class {en}\n{{" : "")}}
+                        /// <summary>Provides generated helper methods for <see cref="{{sn}}"/>.</summary>
                         {{vi}} static partial class {{cn}}
                         {
+                            /// <summary>Gets the number of enum members included in the generated APIs.</summary>
                             public const int MemberCount = {{mc.ToString(NumberFormatInfo.InvariantInfo)}};
+
+                            /// <summary>Indicates whether <see cref="{{sn}}"/> is a flags enum.</summary>
                             public const bool IsFlagEnum = {{es.HasFlags.ToString().ToLowerInvariant()}};
 
+                            /// <summary>Gets the generated names of the enum members.</summary>
+                            /// <returns>An array containing the generated member names.</returns>
                             public static string[] GetMemberNames() => {{Assignment("_names", "string", op.DisableCache, fields, GetMemberNames())}}
 
+                            /// <summary>Gets the enum member values.</summary>
+                            /// <returns>An array containing the enum member values.</returns>
                             public static {{sn}}[] GetMemberValues() => {{Assignment("_values", sn, op.DisableCache, fields, GetMemberValues())}}
 
+                            /// <summary>Gets the underlying numeric values of the enum members.</summary>
+                            /// <returns>An array containing the underlying values.</returns>
                             public static {{ut}}[] GetUnderlyingValues() => {{Assignment("_underlyingValues", ut, op.DisableCache, fields, GetUnderlyingValues())}}
 
+                            /// <summary>Attempts to parse a string into an enum value.</summary>
+                            /// <param name="value">The string to parse.</param>
+                            /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+                            /// <param name="format">The formats to consider while parsing.</param>
+                            /// <param name="comparison">The string comparison to use.</param>
+                            /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
                             public static bool TryParse(string value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 {{TryParse()}}
@@ -46,6 +62,12 @@ internal static class EnumClassCode
                             }
 
                     #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+                            /// <summary>Attempts to parse a character span into an enum value.</summary>
+                            /// <param name="value">The character span to parse.</param>
+                            /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+                            /// <param name="format">The formats to consider while parsing.</param>
+                            /// <param name="comparison">The string comparison to use.</param>
+                            /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
                             public static bool TryParse(global::System.ReadOnlySpan<char> value, out {{sn}} result, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 {{TryParse()}}
@@ -53,6 +75,12 @@ internal static class EnumClassCode
                                 return false;
                             }
 
+                            /// <summary>Parses a character span into an enum value.</summary>
+                            /// <param name="value">The character span to parse.</param>
+                            /// <param name="format">The formats to consider while parsing.</param>
+                            /// <param name="comparison">The string comparison to use.</param>
+                            /// <returns>The parsed enum value.</returns>
+                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
                             public static {{sn}} Parse(global::System.ReadOnlySpan<char> value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 if (!TryParse(value, out {{sn}} result, format, comparison))
@@ -62,6 +90,12 @@ internal static class EnumClassCode
                             }
                     #endif
 
+                            /// <summary>Parses a string into an enum value.</summary>
+                            /// <param name="value">The string to parse.</param>
+                            /// <param name="format">The formats to consider while parsing.</param>
+                            /// <param name="comparison">The string comparison to use.</param>
+                            /// <returns>The parsed enum value.</returns>
+                            /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
                             public static {{sn}} Parse(string value, {{ef}} format = {{ef}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                             {
                                 if (!TryParse(value, out {{sn}} result, format, comparison))
@@ -70,6 +104,9 @@ internal static class EnumClassCode
                                 return result;
                             }
 
+                            /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
+                            /// <param name="input">The enum value to test.</param>
+                            /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
                             public static bool IsDefined({{sn}} input)
                             {
                                 {{IsDefined()}}
@@ -81,6 +118,8 @@ internal static class EnumClassCode
             sb.Append($"""
 
 
+                               /// <summary>Gets the display names defined for the enum members.</summary>
+                               /// <returns>An array of enum values paired with their display names.</returns>
                                public static ({sn}, string)[] GetDisplayNames() => {Assignment("_displayNames", $"({sn}, string)", op.DisableCache, fields, GetDisplayNames())}
                        """);
         }
@@ -90,6 +129,8 @@ internal static class EnumClassCode
             sb.Append($"""
 
 
+                               /// <summary>Gets the descriptions defined for the enum members.</summary>
+                               /// <returns>An array of enum values paired with their descriptions.</returns>
                                public static ({sn}, string)[] GetDescriptions() => {Assignment("_descriptions", $"({sn}, string)", op.DisableCache, fields, GetDescriptions())}
                        """);
         }
