@@ -11,7 +11,7 @@ public class IsDefinedBenchmark
     private static readonly TestFlagsEnum _flagsEnum = TestFlagsEnum.One;
 
     [Benchmark(Baseline = true)]
-    public bool EnumIsDefined() => Enum.IsDefined(typeof(TestFlagsEnum), _enum);
+    public bool EnumIsDefined() => Enum.IsDefined(typeof(TestEnum), _enum);
 
     [Benchmark]
     public bool CodeGenIsDefined() => Enums.TestEnum.IsDefined(_enum);
