@@ -86,6 +86,7 @@ public class EnumGenerator : IIncrementalGenerator
         // The format enum and extension class also derive their names from these inputs. Combine the semantic names
         // of every generated type and check for duplicates so escaped identifiers cannot hide a collision.
         Dictionary<string, string> emittedTypes = new Dictionary<string, string>(StringComparer.Ordinal); // Case-sensitive since C# is too.
+        Dictionary<string, bool> extensionVisibilities = new Dictionary<string, bool>(StringComparer.Ordinal);
 
         foreach (EnumSpec es in specs)
         {
@@ -107,19 +108,22 @@ public class EnumGenerator : IIncrementalGenerator
             string enumName = es.Name;
             string? extensionNamespace = esd.ExtensionClassNamespace ?? es.Namespace;
             string extensionName = esd.ExtensionClassName ?? $"{enumName}Extensions";
+            string extensionFullName = JoinName(extensionNamespace, extensionName);
+            bool extensionPublic = esd.ExtensionClassVisibility == Visibility.Public || (esd.ExtensionClassVisibility == Visibility.Inherit && es.AccessChain[0] == Accessibility.Public);
 
             // Validate every emitted type using semantic identifiers; Foo and @Foo name the same type.
             if ((!esd.DisableEnumsWrapper && !AddEmittedType(JoinName(enumNamespace, enumClassName), "wrapper", true, out message)) ||
                 !AddEmittedType(esd.DisableEnumsWrapper ? JoinName(enumNamespace, enumName) : JoinName(enumNamespace, enumClassName, enumName), "enum helper", false, out message) ||
                 !AddEmittedType(JoinName(enumNamespace, $"{enumName}Format"), "format enum", false, out message) ||
-                !AddEmittedType(JoinName(extensionNamespace, extensionName), "extension class", false, out message))
+                !AddEmittedType(extensionFullName, "extension class", true, out message) ||
+                !AddExtensionVisibility(extensionFullName, extensionPublic, out message))
                 return false;
         }
 
         message = null;
         return true;
 
-        bool AddEmittedType(string fullName, string kind, bool allowSharedWrapper, out string? error)
+        bool AddEmittedType(string fullName, string kind, bool allowSharedType, out string? error)
         {
             if (!emittedTypes.TryGetValue(fullName, out string? existingKind))
             {
@@ -128,13 +132,31 @@ public class EnumGenerator : IIncrementalGenerator
                 return true;
             }
 
-            if (allowSharedWrapper && existingKind == "wrapper")
+            if (allowSharedType && existingKind == kind)
             {
                 error = null;
                 return true;
             }
 
             return Fail($"Generated {kind} collides with generated {existingKind}: {fullName}. Use a FastEnum name or namespace override to resolve the conflict", out error);
+        }
+
+        bool AddExtensionVisibility(string fullName, bool isPublic, out string? error)
+        {
+            if (!extensionVisibilities.TryGetValue(fullName, out bool existingVisibility))
+            {
+                extensionVisibilities.Add(fullName, isPublic);
+                error = null;
+                return true;
+            }
+
+            if (existingVisibility == isPublic)
+            {
+                error = null;
+                return true;
+            }
+
+            return Fail($"Generated extension class has conflicting visibility: {fullName}. Use matching ExtensionClassVisibility values or separate extension classes", out error);
         }
     }
 

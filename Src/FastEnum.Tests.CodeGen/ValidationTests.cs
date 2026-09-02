@@ -86,6 +86,55 @@ public class ValidationTests
         Assert.Empty(compilerDiag);
     }
 
+    /// <summary>Ensures multiple enums can contribute overloads to one partial extension class.</summary>
+    [Fact]
+    public void TestSharedExtensionClass()
+    {
+        string code = """
+                      namespace Example;
+
+                      [FastEnum(ExtensionClassName = "SharedExtensions")]
+                      public enum First
+                      {
+                          Value
+                      }
+
+                      [FastEnum(ExtensionClassName = "SharedExtensions")]
+                      public enum Second
+                      {
+                          Value
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Assert.Empty(codeGenDiag);
+        Assert.Empty(compilerDiag);
+    }
+
+    /// <summary>Ensures shared partial extension declarations use compatible visibility.</summary>
+    [Fact]
+    public void TestSharedExtensionClassVisibility()
+    {
+        string code = """
+                      [FastEnum(ExtensionClassName = "SharedExtensions")]
+                      public enum PublicEnum
+                      {
+                          Value
+                      }
+
+                      [FastEnum(ExtensionClassName = "SharedExtensions")]
+                      internal enum InternalEnum
+                      {
+                          Value
+                      }
+                      """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Diagnostic res = Assert.Single(codeGenDiag);
+        Assert.Empty(compilerDiag);
+        Assert.Equal("FE001", res.Id);
+    }
+
     /// <summary>Ensures a format enum is visible wherever a generated public API exposes it.</summary>
     [Fact]
     public void TestFormatEnumVisibility()
