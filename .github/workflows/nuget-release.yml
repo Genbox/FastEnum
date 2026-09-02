@@ -15,6 +15,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: Checkout repo
@@ -27,7 +30,12 @@ jobs:
           global-json-file: global.json
           cache: true
           cache-dependency-path: Src/**/packages.lock.json
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: Genbox
       - name: Publish
         shell: pwsh
         run: |
-          ./Scripts/Publish.ps1 -NuGetKey '${{ secrets.NUGET_KEY }}' -PwshGKey '${{ secrets.PWSHG_KEY }}' -GitHubToken '${{ secrets.GITHUB_TOKEN }}'
+          ./Scripts/Publish.ps1 -NuGetKey '${{ steps.login.outputs.NUGET_API_KEY }}' -PwshGKey '${{ secrets.PWSHG_KEY }}' -GitHubToken '${{ secrets.GITHUB_TOKEN }}'
