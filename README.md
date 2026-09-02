@@ -5,8 +5,7 @@
 
 ### Description
 
-A source generator to generate common methods for your enum types at compile-time.
-Print values, parse, or get the underlying value of enums without using reflection.
+A source generator to generate common methods for your enum types at compile-time. Print values, parse, or get the underlying value of enums without using reflection.
 
 ### Features
 
@@ -92,9 +91,9 @@ Underlying values:
 
 ### Generated API overview
 
-| API style | Examples | Purpose |
-|-----------|----------|---------|
-| Enum extensions | `GetString()`, `GetUnderlyingValue()`, `IsFlagSet()` | Operate on a specific enum value. |
+| API style       | Examples                                                    | Purpose                                 |
+|-----------------|-------------------------------------------------------------|-----------------------------------------|
+| Enum extensions | `GetString()`, `GetUnderlyingValue()`, `IsFlagSet()`        | Operate on a specific enum value.       |
 | Metadata helper | `Enums.Color.TryParse()`, `GetMemberNames()`, `IsDefined()` | Parse values and inspect the enum type. |
 
 ### Values via attributes
@@ -199,8 +198,7 @@ public enum Status { Ok, Error }
 
 #### EnumNameOverride
 
-Overrides the generated helper name and the default format-enum and extension-class names. This is useful when generated namespaces bring otherwise distinct enums into the same scope.
-For example, if your enum is named `MyEnum`, the generated helper can be accessed like this:
+Overrides the generated helper name and the default format-enum and extension-class names. This is useful when generated namespaces bring otherwise distinct enums into the same scope. For example, if your enum is named `MyEnum`, the generated helper can be accessed like this:
 
 ```csharp
 Enums.MyEnum.GetMemberNames()
@@ -399,49 +397,51 @@ and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
 
 ### Benchmarks
 
-Here are benchmarks for calling different methods in .NET versus using CodeGen or [Enums.NET](https://github.com/TylerBrinkley/Enums.NET).
-Enums.NET is a high-performance library for working with enum values.
+Here are benchmarks for calling different methods in .NET versus using FastEnum or [Enums.NET](https://github.com/TylerBrinkley/Enums.NET). Enums.NET is a high-performance library for working with enum values.
 
-The table below shows that Enums.NET is between 2-80x faster than .NET, but FastEnum is 2-14x faster than Enums.NET.
+Results were produced with BenchmarkDotNet 0.15.8 on .NET 10.0.11 using an Intel Core i7-12700K. For measurements distinguishable from empty-method overhead, FastEnum is about 9-1,200x faster than the corresponding .NET or reflection APIs and 1.2-7.2x faster than Enums.NET. Measurements close to zero may be indistinguishable from the empty-method overhead.
 
-| Method                        |          Mean |      Error |     StdDev |        Median |
-|-------------------------------|--------------:|-----------:|-----------:|--------------:|
-| EnumHasFlag                   |     0.0056 ns |  0.0083 ns |  0.0074 ns |     0.0030 ns |
-| CodeGenHasFlag                |     0.0101 ns |  0.0062 ns |  0.0058 ns |     0.0083 ns |
-| EnumsNetHasFlag               |     0.6253 ns |  0.0238 ns |  0.0211 ns |     0.6192 ns |
-|                               |               |            |            |               |
-| EnumIsDefined                 |    42.6278 ns |  0.4633 ns |  0.4334 ns |    42.5181 ns |
-| CodeGenIsDefined              |     0.0045 ns |  0.0066 ns |  0.0058 ns |     0.0013 ns |
-| EnumsNetIsDefined             |     0.4842 ns |  0.0101 ns |  0.0085 ns |     0.4845 ns |
-|                               |               |            |            |               |
-| EnumLength                    |    20.5705 ns |  0.3509 ns |  0.5566 ns |    20.5117 ns |
-| CodeGenLength                 |     0.0001 ns |  0.0004 ns |  0.0003 ns |     0.0000 ns |
-| EnumsNetLength                |     5.3362 ns |  0.1085 ns |  0.0906 ns |     5.3495 ns |
-|                               |               |            |            |               |
-| EnumGetNames                  |    17.5890 ns |  0.2905 ns |  0.2717 ns |    17.6505 ns |
-| CodeGenGetNames               |     1.5764 ns |  0.0476 ns |  0.0446 ns |     1.5843 ns |
-| EnumsNetGetNames              |     1.6052 ns |  0.0323 ns |  0.0286 ns |     1.5994 ns |
-|                               |               |            |            |               |
-| EnumToString                  |    15.3389 ns |  0.1815 ns |  0.1698 ns |    15.3113 ns |
-| CodeGenToString               |     0.8379 ns |  0.0380 ns |  0.0337 ns |     0.8267 ns |
-| EnumsNetToString              |    21.3269 ns |  0.0836 ns |  0.0653 ns |    21.3056 ns |
-|                               |               |            |            |               |
-| ReflectionGetDisplayName      | 1,008.3327 ns |  6.6111 ns |  5.8606 ns | 1,007.1464 ns |
-| CodeGenGetDisplayName         |     3.2780 ns |  0.1182 ns |  0.1495 ns |     3.2501 ns |
-| EnumsNetGetDisplayName        |     9.3953 ns |  0.1237 ns |  0.0966 ns |     9.4036 ns |
-|                               |               |            |            |               |
-| EnumTryParse                  |    31.4662 ns |  0.4013 ns |  0.3557 ns |    31.3008 ns |
-| CodeGenTryParse               |     6.4197 ns |  0.0495 ns |  0.0463 ns |     6.4246 ns |
-| EnumsNetTryParse              |    41.8299 ns |  0.4277 ns |  0.4001 ns |    41.7159 ns |
-|                               |               |            |            |               |
-| ReflectionTryParseDisplayName | 1,763.8422 ns | 17.7619 ns | 15.7455 ns | 1,764.9430 ns |
-| CodeGenTryParseDisplayName    |     3.9371 ns |  0.0177 ns |  0.0138 ns |     3.9381 ns |
-| EnumsNetTryParseDisplayName   |    40.4373 ns |  0.7966 ns |  0.7061 ns |    40.6816 ns |
-|                               |               |            |            |               |
-| EnumGetValues                 |     0.0000 ns |  0.0000 ns |  0.0000 ns |     0.0000 ns |
-| CodeGenGetValues              |     2.2281 ns |  0.0281 ns |  0.0263 ns |     2.2237 ns |
-| EnumsNetGetValues             |     4.6160 ns |  0.0868 ns |  0.0769 ns |     4.6156 ns |
-|                               |               |            |            |               |
-| EnumGetValues                 |   254.3910 ns |  2.2232 ns |  1.8565 ns |   253.8503 ns |
-| CodeGenGetValues              |     1.6647 ns |  0.0508 ns |  0.0475 ns |     1.6750 ns |
-| EnumsNetGetValues             |     2.4889 ns |  0.0416 ns |  0.0389 ns |     2.4874 ns |
+| Method                        |        Mean |     Error |    StdDev |      Median |
+|-------------------------------|------------:|----------:|----------:|------------:|
+| EnumHasFlag                   |   0.0026 ns | 0.0050 ns | 0.0046 ns |   0.0000 ns |
+| FastEnumHasFlag               |   0.0018 ns | 0.0047 ns | 0.0044 ns |   0.0000 ns |
+| EnumsNetHasFlag               |   0.0055 ns | 0.0068 ns | 0.0063 ns |   0.0035 ns |
+|                               |             |           |           |             |
+| EnumIsDefined                 |  10.0648 ns | 0.0640 ns | 0.0568 ns |  10.0556 ns |
+| FastEnumIsDefined             |   0.5623 ns | 0.0134 ns | 0.0126 ns |   0.5596 ns |
+| EnumsNetIsDefined             |   0.0096 ns | 0.0061 ns | 0.0057 ns |   0.0102 ns |
+| EnumIsDefinedFlags            |  10.4711 ns | 0.2234 ns | 0.2391 ns |  10.5022 ns |
+| FastEnumIsDefinedFlags        |   0.0015 ns | 0.0033 ns | 0.0029 ns |   0.0000 ns |
+| EnumsNetIsDefinedFlags        |   0.0087 ns | 0.0058 ns | 0.0052 ns |   0.0095 ns |
+|                               |             |           |           |             |
+| EnumLength                    |   8.9904 ns | 0.1671 ns | 0.1482 ns |   9.0109 ns |
+| FastEnumLength                |   0.0056 ns | 0.0075 ns | 0.0070 ns |   0.0008 ns |
+| EnumsNetLength                |   1.2076 ns | 0.0402 ns | 0.0376 ns |   1.2038 ns |
+|                               |             |           |           |             |
+| EnumGetNames                  |  11.3200 ns | 0.2221 ns | 0.2644 ns |  11.3051 ns |
+| FastEnumGetNames              |   0.5888 ns | 0.0191 ns | 0.0169 ns |   0.5920 ns |
+| EnumsNetGetNames              |   0.8262 ns | 0.0300 ns | 0.0281 ns |   0.8205 ns |
+|                               |             |           |           |             |
+| EnumToString                  |   6.3870 ns | 0.0772 ns | 0.0685 ns |   6.3940 ns |
+| FastEnumToString              |   0.7065 ns | 0.0237 ns | 0.0222 ns |   0.7067 ns |
+| EnumsNetToString              |   0.8633 ns | 0.0086 ns | 0.0071 ns |   0.8613 ns |
+|                               |             |           |           |             |
+| ReflectionGetDisplayName      | 534.1293 ns | 2.6270 ns | 2.4573 ns | 533.7293 ns |
+| FastEnumGetDisplayName        |   0.4458 ns | 0.0086 ns | 0.0072 ns |   0.4429 ns |
+| EnumsNetGetDisplayName        |   3.1976 ns | 0.0285 ns | 0.0267 ns |   3.1947 ns |
+|                               |             |           |           |             |
+| EnumTryParse                  |  12.2020 ns | 0.1346 ns | 0.1259 ns |  12.1766 ns |
+| FastEnumTryParse              |   0.0055 ns | 0.0033 ns | 0.0031 ns |   0.0054 ns |
+| EnumsNetTryParse              |   5.1037 ns | 0.0471 ns | 0.0441 ns |   5.0905 ns |
+|                               |             |           |           |             |
+| ReflectionTryParseDisplayName | 754.9752 ns | 5.4228 ns | 5.0725 ns | 753.8582 ns |
+| FastEnumTryParseDisplayName   |   0.0017 ns | 0.0023 ns | 0.0022 ns |   0.0002 ns |
+| EnumsNetTryParseDisplayName   |   7.7411 ns | 0.0459 ns | 0.0407 ns |   7.7366 ns |
+|                               |             |           |           |             |
+| EnumGetValues                 |   0.0018 ns | 0.0041 ns | 0.0034 ns |   0.0000 ns |
+| FastEnumGetValues             |   0.0254 ns | 0.0169 ns | 0.0158 ns |   0.0241 ns |
+| EnumsNetGetValues             |   0.0025 ns | 0.0037 ns | 0.0034 ns |   0.0000 ns |
+|                               |             |           |           |             |
+| EnumGetValues                 |  17.7414 ns | 0.1586 ns | 0.1484 ns |  17.7418 ns |
+| FastEnumGetValues             |   0.6532 ns | 0.0205 ns | 0.0182 ns |   0.6536 ns |
+| EnumsNetGetValues             |   0.8308 ns | 0.0113 ns | 0.0089 ns |   0.8327 ns |

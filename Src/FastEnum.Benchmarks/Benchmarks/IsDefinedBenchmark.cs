@@ -14,7 +14,7 @@ public class IsDefinedBenchmark
     public bool EnumIsDefined() => Enum.IsDefined(typeof(TestEnum), _enum);
 
     [Benchmark]
-    public bool CodeGenIsDefined() => Enums.TestEnum.IsDefined(_enum);
+    public bool FastEnumIsDefined() => Enums.TestEnum.IsDefined(_enum);
 
     [Benchmark]
     public bool EnumsNetIsDefined() => EnumsNET.Enums.IsDefined(_enum);
@@ -23,7 +23,7 @@ public class IsDefinedBenchmark
     public bool EnumIsDefinedFlags() => Enum.IsDefined(typeof(TestFlagsEnum), _flagsEnum);
 
     [Benchmark]
-    public bool CodeGenIsDefinedFlags() => Enums.TestFlagsEnum.IsDefined(_flagsEnum);
+    public bool FastEnumIsDefinedFlags() => Enums.TestFlagsEnum.IsDefined(_flagsEnum);
 
     [Benchmark]
     public bool EnumsNetIsDefinedFlags() => EnumsNET.Enums.IsDefined(_flagsEnum);

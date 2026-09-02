@@ -9,7 +9,7 @@ public class GetValuesBenchmark
     public TestEnum[] EnumGetValues() => Enum.GetValues<TestEnum>();
 
     [Benchmark]
-    public TestEnum[] CodeGenGetValues() => Enums.TestEnum.GetMemberValues();
+    public TestEnum[] FastEnumGetValues() => Enums.TestEnum.GetMemberValues();
 
     [Benchmark]
     public IReadOnlyList<TestEnum> EnumsNetGetValues() => EnumsNET.Enums.GetValues<TestEnum>();

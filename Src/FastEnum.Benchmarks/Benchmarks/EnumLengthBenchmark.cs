@@ -9,7 +9,7 @@ public class EnumLengthBenchmark
     public int EnumLength() => Enum.GetNames(typeof(TestEnum)).Length;
 
     [Benchmark]
-    public int CodeGenLength() => Enums.TestEnum.MemberCount;
+    public int FastEnumLength() => Enums.TestEnum.MemberCount;
 
     [Benchmark]
     public int EnumsNetLength() => EnumsNET.Enums.GetMemberCount(typeof(TestEnum));

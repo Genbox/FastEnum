@@ -14,7 +14,7 @@ public class FlagBenchmarks
     public bool EnumHasFlag() => _flags.HasFlag(TestFlagsEnum.One);
 
     [Benchmark]
-    public bool CodeGenHasFlag() => _flags.IsFlagSet(TestFlagsEnum.One);
+    public bool FastEnumHasFlag() => _flags.IsFlagSet(TestFlagsEnum.One);
 
     [Benchmark]
     public bool EnumsNetHasFlag() => _flags.HasAnyFlags(TestFlagsEnum.One);

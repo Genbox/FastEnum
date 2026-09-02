@@ -9,7 +9,7 @@ public class GetNamesBenchmark
     public string[] EnumGetNames() => Enum.GetNames<TestEnum>();
 
     [Benchmark]
-    public string[] CodeGenGetNames() => Enums.TestEnum.GetMemberNames();
+    public string[] FastEnumGetNames() => Enums.TestEnum.GetMemberNames();
 
     [Benchmark]
     public IReadOnlyList<string> EnumsNetGetNames() => EnumsNET.Enums.GetNames<TestEnum>();

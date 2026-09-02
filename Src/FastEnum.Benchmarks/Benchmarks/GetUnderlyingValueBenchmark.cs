@@ -13,7 +13,7 @@ public class GetUnderlyingValueBenchmark
     public int EnumGetValues() => (int)_enum;
 
     [Benchmark]
-    public int CodeGenGetValues() => _enum.GetUnderlyingValue();
+    public int FastEnumGetValues() => _enum.GetUnderlyingValue();
 
     [Benchmark]
     public int EnumsNetGetValues() => (int)EnumsNET.Enums.GetUnderlyingValue(_enum);

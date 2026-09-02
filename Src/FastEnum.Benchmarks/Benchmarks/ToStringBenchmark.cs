@@ -14,13 +14,13 @@ public class ToStringBenchmark
     public string EnumToString() => _enum.ToString();
 
     [Benchmark]
-    public string CodeGenToString() => _enum.GetString();
+    public string FastEnumToString() => _enum.GetString();
 
     [Benchmark]
     public string EnumsNetToString() => _enum.AsString();
 
     [Benchmark]
-    public string CodeGenGetDisplayName() => _enum.GetDisplayName();
+    public string FastEnumGetDisplayName() => _enum.GetDisplayName();
 
     [Benchmark]
     public string? EnumsNetGetDisplayName() => _enum.AsString(EnumFormat.DisplayName);
