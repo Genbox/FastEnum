@@ -222,6 +222,9 @@ internal static class EnumExtensionCode
 
         IEnumerable<string> TryGetUnderlyingValue()
         {
+            HashSet<object> handledValues = new HashSet<object>(spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
+                                                                            .Select(x => x.Value));
+
             foreach (EnumMemberSpec em in spec.Members)
             {
                 if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
@@ -238,6 +241,18 @@ internal static class EnumExtensionCode
 
             if (spec.HasFlags)
             {
+                foreach (EnumMemberSpec em in spec.Members)
+                {
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true || !handledValues.Add(em.Value))
+                        continue;
+
+                    string caseValue = containsDuplicateValue ? $"\"{em.Name}\"" : $"{enumName}.{em.EmittedIdentifier}";
+                    yield return $"""
+                                              case {caseValue}:
+                                                  break;
+                                  """;
+                }
+
                 ulong mask = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
                                  .Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
 

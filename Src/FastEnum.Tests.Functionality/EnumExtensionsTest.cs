@@ -36,6 +36,13 @@ public class EnumExtensionsTest
     }
 
     [Fact]
+    public void GetUnderlyingValueHonorsOmittedCompositeFlags()
+    {
+        Assert.False(OmittedCompositeFlagsEnum.Both.TryGetUnderlyingValue(out _));
+        Assert.Throws<ArgumentOutOfRangeException>(() => OmittedCompositeFlagsEnum.Both.GetUnderlyingValue());
+    }
+
+    [Fact]
     public void GetDisplayNameTest()
     {
         Assert.True(_valid.TryGetDisplayName(out string? displayName));

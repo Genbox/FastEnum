@@ -101,6 +101,16 @@ namespace Genbox.FastEnum.Tests.Functionality.Code
         [EnumOmitValue(Exclude = EnumOmitExclude.None)]
         NoOmission = 11
     }
+
+    [Flags]
+    [FastEnum]
+    internal enum OmittedCompositeFlagsEnum
+    {
+        First = 1,
+        Second = 2,
+        [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue)]
+        Both = First | Second
+    }
 }
 
 namespace Genbox.FastEnum.Tests.Functionality.OtherNamespace
