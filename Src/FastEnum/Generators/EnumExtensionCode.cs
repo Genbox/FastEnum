@@ -2,7 +2,7 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumExtensionCode
 {
-    public static string Generate(EnumSpec spec)
+    public static string Generate(EnumSpec spec, bool includeGeneratedCodeAttribute)
     {
         FastEnumData options = spec.Data;
 
@@ -22,7 +22,7 @@ internal static class EnumExtensionCode
         return $$"""
                  {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
                  /// <summary>Provides generated extension methods for <see cref="{{enumName}}"/>.</summary>
-                 {{visibility}} static partial class {{extensionName}}
+                 {{(includeGeneratedCodeAttribute ? $"{EnumGenerator.GeneratedCodeAttribute}\n" : null)}}{{visibility}} static partial class {{extensionName}}
                  {
                      /// <summary>Gets the generated string representation of an enum value.</summary>
                      /// <param name="value">The enum value.</param>

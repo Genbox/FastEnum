@@ -6,5 +6,9 @@ namespace Genbox.FastEnum.Tests.CodeGen.Properties;
 internal static class ModuleInitializer
 {
     [ModuleInitializer]
-    public static void Initialize() => VerifyDiffPlex.Initialize(OutputType.Compact);
+    public static void Initialize()
+    {
+        VerifyDiffPlex.Initialize(OutputType.Compact);
+        VerifyTests.VerifierSettings.ScrubLinesContaining("global::System.CodeDom.Compiler.GeneratedCodeAttribute");
+    }
 }

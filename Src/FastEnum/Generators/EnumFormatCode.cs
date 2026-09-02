@@ -16,6 +16,7 @@ internal static class EnumFormatCode
         return $$"""
                  {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
                  /// <summary>Specifies the representations used to parse and format <see cref="{{spec.FullyQualifiedName}}"/> values.</summary>
+                 {{EnumGenerator.GeneratedCodeAttribute}}
                  [global::System.Flags]
                  {{visibility}} enum {{spec.Name}}Format : byte
                  {

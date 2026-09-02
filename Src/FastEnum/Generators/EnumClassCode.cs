@@ -4,7 +4,7 @@ namespace Genbox.FastEnum.Generators;
 
 internal static class EnumClassCode
 {
-    internal static string Generate(EnumSpec spec, bool wrapperPublic)
+    internal static string Generate(EnumSpec spec, bool wrapperPublic, bool attributeWrapper)
     {
         FastEnumData options = spec.Data;
         string? namespaceName = options.EnumsClassNamespace ?? spec.Namespace;
@@ -28,11 +28,16 @@ internal static class EnumClassCode
         string descriptions = MetadataMethod(spec.HasDescription, "descriptions", "Descriptions", "_descriptions", x => x.DisplayData?.Description, transform?.SortDescriptions ?? EnumOrder.None, EnumOmitExclude.TryGetDescription);
         string generatedFields = fields.Count == 0 ? string.Empty : $"\n\n{string.Join("\n", fields.Select(x => $"{Indent(2)}{x}"))}\n";
         int memberCount = spec.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
+        string wrapperAttribute = attributeWrapper ? $"{EnumGenerator.GeneratedCodeAttribute}\n" : string.Empty;
+        string? wrapper = !options.DisableEnumsWrapper
+            ? $"/// <summary>Contains generated helpers for <see cref=\"{enumName}\"/>.</summary>\n{wrapperAttribute}{wrapperVisibility} static partial class {wrapperName}\n{{"
+            : null;
 
         return $$"""
                  {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
-                 {{(!options.DisableEnumsWrapper ? $"/// <summary>Contains generated helpers for <see cref=\"{enumName}\"/>.</summary>\n{wrapperVisibility} static partial class {wrapperName}\n{{" : null)}}
+                 {{wrapper}}
                      /// <summary>Provides generated helper methods for <see cref="{{enumName}}"/>.</summary>
+                     {{EnumGenerator.GeneratedCodeAttribute}}
                      {{visibility}} static partial class {{className}}
                      {
                          /// <summary>Gets the number of enum members included in the generated APIs.</summary>
