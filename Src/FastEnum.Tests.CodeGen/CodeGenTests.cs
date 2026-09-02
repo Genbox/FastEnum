@@ -24,8 +24,7 @@ public class CodeGenTests
 
         await Verify(actual)
               .UseFileName(fileName)
-              .UseDirectory(string.IsNullOrEmpty(category) ? "Resources" : Path.Combine("Resources", category))
-              .DisableDiff();
+              .UseDirectory(string.IsNullOrEmpty(category) ? "Resources" : Path.Combine("Resources", category));
     }
 
     public static TheoryData<string> GetTests()

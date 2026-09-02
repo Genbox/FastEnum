@@ -51,7 +51,6 @@ public class BugTests
 
         await Verify(TestHelper.GetGeneratedOutput<EnumGenerator>(code))
               .UseFileName(nameof(TestIssue3))
-              .UseDirectory("Issues")
-              .DisableDiff();
+              .UseDirectory("Issues");
     }
 }
