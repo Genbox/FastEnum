@@ -38,4 +38,22 @@ public class DisplayAttributeTests
         Assert.Contains("description = \"Details\";", output, StringComparison.Ordinal);
         Assert.Contains("class OtherEnumExtensions", output, StringComparison.Ordinal);
     }
+
+    [Theory]
+    [InlineData("\\u0085")]
+    [InlineData("\\u2028")]
+    [InlineData("\\u2029")]
+    public void UnicodeNewlinesInDisplayTextCompile(string escape)
+    {
+        string source = $$"""
+            [FastEnum]
+            public enum DisplayEnum
+            {
+                [Display(Name = "First{{escape}}Second", Description = "Third{{escape}}Fourth")]
+                None
+            }
+            """;
+
+        Assert.NotEmpty(TestHelper.GetGeneratedOutput<EnumGenerator>(source));
+    }
 }

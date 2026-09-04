@@ -21,6 +21,9 @@ internal static class CodeGenHelper
                 '\n' => @"\n",
                 '\r' => @"\r",
                 '\t' => @"\t",
+                '\u0085' => @"\u0085",
+                '\u2028' => @"\u2028",
+                '\u2029' => @"\u2029",
                 _ => null
             };
 
