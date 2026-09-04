@@ -16,9 +16,6 @@ internal static class EnumExtensionCode
         string enumFormat = formatNamespace != null ? $"global::{formatNamespace}.{spec.Name}Format" : $"global::{spec.Name}Format";
 
         HashSet<object> values = new HashSet<object>();
-        bool containsDuplicateValue = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
-                                          .Any(x => !values.Add(x.Value));
-        values.Clear();
         bool hasAliases = spec.Members.Any(x => !values.Add(x.Value));
 
         return $$"""
@@ -49,7 +46,7 @@ internal static class EnumExtensionCode
                      /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
                      public static bool TryGetUnderlyingValue(this {{enumName}} value, out {{underlyingType}} underlyingValue)
                      {
-                         {{PrintSwitch(TryGetUnderlyingValue(), containsDuplicateValue)}}
+                         {{PrintSwitch(TryGetUnderlyingValue())}}
                          underlyingValue = default;
                          return false;
                      }
@@ -230,18 +227,15 @@ internal static class EnumExtensionCode
 
         IEnumerable<string> TryGetUnderlyingValue()
         {
-            HashSet<object> handledValues = new HashSet<object>(spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
-                                                                            .Select(x => x.Value));
+            HashSet<object> handledValues = new HashSet<object>();
 
             foreach (EnumMemberSpec em in spec.Members)
             {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true)
+                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true || !handledValues.Add(em.Value))
                     continue;
 
-                // Duplicate enum values need string comparisons to avoid duplicate switch branches.
-                string caseValue = containsDuplicateValue ? $"\"{em.Name}\"" : $"{enumName}.{em.EmittedIdentifier}";
                 yield return $"""
-                                          case {caseValue}:
+                                          case {enumName}.{em.EmittedIdentifier}:
                                               underlyingValue = {FormatPrimitive(em.Value)};
                                               return true;
                               """;
@@ -254,9 +248,8 @@ internal static class EnumExtensionCode
                     if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true || !handledValues.Add(em.Value))
                         continue;
 
-                    string caseValue = containsDuplicateValue ? $"\"{em.Name}\"" : $"{enumName}.{em.EmittedIdentifier}";
                     yield return $"""
-                                              case {caseValue}:
+                                              case {enumName}.{em.EmittedIdentifier}:
                                                   break;
                                   """;
                 }
@@ -299,7 +292,7 @@ internal static class EnumExtensionCode
             }
         }
 
-        static string PrintSwitch(IEnumerable<string> cases, bool stringComparison = false)
+        static string PrintSwitch(IEnumerable<string> cases)
         {
             string[] arr = cases.ToArray();
 
@@ -307,7 +300,7 @@ internal static class EnumExtensionCode
                 return string.Empty;
 
             return $$"""
-                     {{(stringComparison ? "switch (value.ToString())" : "switch (value)")}}
+                     switch (value)
                              {
                      {{string.Join("\n", arr)}}
                              }

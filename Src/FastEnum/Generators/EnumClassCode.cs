@@ -226,13 +226,18 @@ internal static class EnumClassCode
 
         string IsFlagDefined()
         {
-            if (spec.Members.Length == 0)
+            EnumMemberSpec[] includedMembers = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.IsDefined)).ToArray();
+            if (includedMembers.Length == 0)
                 return "false";
 
-            ulong mask = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.IsDefined)).Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
-            return mask == 0
+            HashSet<object> handledValues = new HashSet<object>(includedMembers.Select(x => x.Value));
+            string exclusions = string.Concat(spec.Members.Where(x => !IsIncluded(x, EnumOmitExclude.IsDefined) && handledValues.Add(x.Value))
+                                                  .Select(x => $"input != {enumName}.{x.EmittedIdentifier} && "));
+            ulong mask = includedMembers.Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
+            string maskCheck = mask == 0
                 ? $"({underlyingType})input == 0"
                 : $"unchecked((({underlyingType}){mask}UL & ({underlyingType})input) == ({underlyingType})input)";
+            return exclusions + maskCheck;
         }
 
         string Assignment(string name, string type, IEnumerable<string> elements)
