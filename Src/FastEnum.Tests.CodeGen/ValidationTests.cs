@@ -82,40 +82,20 @@ public class ValidationTests
         Assert.Contains("internal enum MyPublicEnum1Format", output, StringComparison.Ordinal);
     }
 
-    /// <summary>This test ensure that am internal enum where the user overrides either the enums class to be more visible</summary>
-    [Fact]
-    public void TestVisibleEnumsClassOverride()
+    /// <summary>Public helper overrides cannot expose an internal enum.</summary>
+    [Theory]
+    [InlineData("EnumsClassVisibility")]
+    [InlineData("ExtensionClassVisibility")]
+    public void TestPublicOverrideCannotExposeInternalEnum(string propertyName)
     {
-        string code = """
-                      [FastEnum(EnumsClassVisibility = Visibility.Public)]
-                      internal enum MyPublicEnum
-                      {
-                          Value
-                      }
-                      """;
+        string code = $$"""
+                        [FastEnum({{propertyName}} = Visibility.Public)]
+                        internal enum MyEnum { Value }
+                        """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id); //Enum visibility validation failed
-    }
-
-    /// <summary>This test ensure that am internal enum where the user overrides either the extensions class to be more visible</summary>
-    [Fact]
-    public void TestVisibleExtensionsClassOverride()
-    {
-        string code = """
-                      [FastEnum(ExtensionClassVisibility = Visibility.Public)]
-                      internal enum MyPublicEnum
-                      {
-                          Value
-                      }
-                      """;
-
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id); //Enum visibility validation failed
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
+        Assert.Empty(compilerDiagnostics);
+        Assert.Equal("FE001", Assert.Single(diagnostics).Id);
     }
 
     /// <summary>Ensures shared partial wrapper declarations use compatible visibility.</summary>

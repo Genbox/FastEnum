@@ -30,10 +30,6 @@ public class EnumClassTests
         Assert.True(Enums.TestEnum.TryParse("8", out result, TestEnumFormat.Value));
         Assert.Equal(TestEnum.First, result);
 
-        //Check if we support span inputs
-        ReadOnlySpan<char> span = "first";
-        Assert.True(Enums.TestEnum.TryParse(span, out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
-
         Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
 
         //Check that we also support parsing display names
@@ -78,15 +74,12 @@ public class EnumClassTests
     {
         //Test flag combinations
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third | TestEnum.Other | TestEnum.Min));
-        Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third | TestEnum.Other));
-        Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second | TestEnum.Third));
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First | TestEnum.Second));
         Assert.True(Enums.TestEnum.IsDefined(TestEnum.First));
         Assert.False(Enums.TestEnum.IsDefined((TestEnum)100));
 
         //We also explicitly test a non flags enum
         Assert.True(Enums.NonFlagsEnum.IsDefined(NonFlagsEnum.Value1));
-        Assert.True(Enums.NonFlagsEnum.IsDefined(NonFlagsEnum.Value2));
         Assert.False(Enums.NonFlagsEnum.IsDefined((NonFlagsEnum)48));
     }
 

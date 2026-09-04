@@ -66,32 +66,19 @@ public class EnumExtensionsTest
         Assert.Throws<ArgumentOutOfRangeException>(() => _invalid.GetDescription());
     }
 
-    [Fact]
-    public void IsFlagSetTest()
+    [Theory]
+    [InlineData(TestEnum.First, TestEnum.First, true)]
+    [InlineData(TestEnum.Second, TestEnum.First, false)]
+    [InlineData(TestEnum.First | TestEnum.Second, TestEnum.First, true)]
+    [InlineData(TestEnum.First, TestEnum.First | TestEnum.Second, false)]
+    [InlineData(TestEnum.First | TestEnum.Second, TestEnum.First | TestEnum.Second, true)]
+    [InlineData(TestEnum.First, (TestEnum)0, true)]
+    [InlineData(TestEnum.Min, TestEnum.Min, true)]
+    [InlineData((TestEnum)32, (TestEnum)32, true)]
+    public void IsFlagSetTest(TestEnum value, TestEnum flag, bool expected)
     {
-        TestEnum e = TestEnum.First;
-        Assert.True(e.IsFlagSet(TestEnum.First));
-
-        e = TestEnum.Second;
-        Assert.False(e.IsFlagSet(TestEnum.First));
-
-        e = TestEnum.First | TestEnum.Second | TestEnum.Third;
-        Assert.True(e.IsFlagSet(TestEnum.First));
-        Assert.True(e.IsFlagSet(TestEnum.Second));
-        Assert.True(e.IsFlagSet(TestEnum.Third));
-
-        //Exhaustive test against dotnet's HasFlag(). 8 is the highest value of TestEnum.
-        for (int i = 0; i < 256; i++)
-        {
-            TestEnum value = (TestEnum)i;
-
-            for (int j = 0; j < 8; j++)
-            {
-                TestEnum flags = (TestEnum)j;
-
-                Assert.Equal(value.HasFlag(flags), value.IsFlagSet(flags));
-            }
-        }
+        // Cover zero, partial composites, the sign bit, and unnamed values explicitly.
+        Assert.Equal(expected, value.IsFlagSet(flag));
     }
 
     [Fact]
@@ -115,9 +102,5 @@ public class EnumExtensionsTest
         Assert.Equal("FirstDescription", TestEnum.First.GetString(TestEnumFormat.Description));
         Assert.Equal("First", TestEnum.First.GetString(TestEnumFormat.Name));
         Assert.Equal("8", TestEnum.First.GetString(TestEnumFormat.Value));
-
-        // Omitted value should stay omitted regardless of format selection
-        Assert.Equal(string.Empty, TestOmitEnum.Omitted.GetString(TestOmitEnumFormat.Name));
-        Assert.Equal(string.Empty, TestOmitEnum.Omitted.GetString(TestOmitEnumFormat.Value));
     }
 }

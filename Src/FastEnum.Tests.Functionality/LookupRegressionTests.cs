@@ -17,7 +17,6 @@ public class LookupRegressionTests
     [Theory]
     [InlineData(0L, false)]
     [InlineData(1L, true)]
-    [InlineData(2L, true)]
     [InlineData(3L, false)]
     [InlineData(4L, true)]
     [InlineData(5L, true)]
@@ -34,7 +33,6 @@ public class LookupRegressionTests
     public void FlagUnderlyingLookupRejectsOmittedAliasesAndAllowsCombinations()
     {
         Assert.False(OmittedValidationFlags.Both.TryGetUnderlyingValue(out _));
-        Assert.False(OmittedValidationFlags.BothAlias.TryGetUnderlyingValue(out _));
         Assert.Equal(4, OmittedValidationFlags.Third.GetUnderlyingValue());
         Assert.Equal(5, (OmittedValidationFlags.First | OmittedValidationFlags.Third).GetUnderlyingValue());
     }

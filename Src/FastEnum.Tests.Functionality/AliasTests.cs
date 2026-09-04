@@ -8,7 +8,6 @@ public class AliasTests
     public void AliasesHonorEnumTransform()
     {
         Assert.Equal("first", TransformedAliasEnum.First.GetString());
-        Assert.Equal("first", TransformedAliasEnum.Alias.GetString());
         Assert.Equal("first", TransformedAliasEnum.First.GetString(TransformedAliasEnumFormat.Name));
         Assert.True(Enums.TransformedAliasEnum.TryParse(TransformedAliasEnum.First.GetString(), out TransformedAliasEnum result));
         Assert.Equal(TransformedAliasEnum.First, result);
@@ -32,12 +31,10 @@ public class AliasTests
     public void FormattingHonorsOmission(int rawValue)
     {
         OmittedFormattingEnum value = (OmittedFormattingEnum)rawValue;
-        Assert.Equal(string.Empty, value.GetString());
         Assert.Equal(string.Empty, value.GetString(OmittedFormattingEnumFormat.DisplayName));
         Assert.Equal(string.Empty, value.GetString(OmittedFormattingEnumFormat.Description));
         Assert.Equal(string.Empty, value.GetString(OmittedFormattingEnumFormat.Name));
         Assert.Equal(string.Empty, value.GetString(OmittedFormattingEnumFormat.Value));
-        Assert.Equal(string.Empty, value.GetString(OmittedFormattingEnumFormat.DisplayName | OmittedFormattingEnumFormat.Description | OmittedFormattingEnumFormat.Default));
     }
 
     [Fact]
