@@ -278,15 +278,15 @@ public static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::SortedEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::SortedEnum.One:
+                case global::SortedEnum.Two:
+                case global::SortedEnum.Three:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         /// <summary>Gets the display names defined for the enum members.</summary>

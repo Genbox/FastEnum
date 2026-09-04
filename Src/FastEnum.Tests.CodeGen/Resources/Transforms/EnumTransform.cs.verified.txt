@@ -140,15 +140,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum1 input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum1.First:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -364,15 +362,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum2 input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum2.First:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -588,15 +584,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum3 input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum3.First:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -812,15 +806,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum4 input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum4.First:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -1063,15 +1055,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum5 input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum5.Beta:
+                case global::MyEnum5.Alpha:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;

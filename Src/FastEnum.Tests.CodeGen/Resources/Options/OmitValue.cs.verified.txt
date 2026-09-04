@@ -393,23 +393,20 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::MyEnum input)
         {
-            _isDefinedValues ??= new int[] {
-                0,
-                2,
-                3,
-                4,
-                5,
-                6,
-                8,
-                9
-            };
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::MyEnum.Keep:
+                case global::MyEnum.OmitNameParse:
+                case global::MyEnum.OmitMemberValue:
+                case global::MyEnum.OmitUnderlying:
+                case global::MyEnum.OmitUnderlyingLookup:
+                case global::MyEnum.OmitDisplay:
+                case global::MyEnum.OmitString:
+                case global::MyEnum.KeepExplicitly:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         /// <summary>Gets the display names defined for the enum members.</summary>
@@ -423,7 +420,6 @@ internal static partial class Enums
         private static string[]? _names;
         private static global::MyEnum[]? _values;
         private static int[]? _underlyingValues;
-        private static int[]? _isDefinedValues;
 
     }
 }

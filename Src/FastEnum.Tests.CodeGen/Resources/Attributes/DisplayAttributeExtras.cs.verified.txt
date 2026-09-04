@@ -217,15 +217,14 @@ public static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::DisplayExtras input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::DisplayExtras.Value:
+                case global::DisplayExtras.ResourceKey:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         /// <summary>Gets the display names defined for the enum members.</summary>

@@ -140,15 +140,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::InternalContainer.Inner.Nested input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::InternalContainer.Inner.Nested.None:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -364,15 +362,13 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::PublicContainer.Restricted input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::PublicContainer.Restricted.None:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;

@@ -171,15 +171,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.NestedClass.ClassEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here.NestedClass.ClassEnum.First:
+                case global::Some.Namespace.Here.NestedClass.ClassEnum.Second:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -433,15 +432,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.NestedStruct.StructEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here.NestedStruct.StructEnum.First:
+                case global::Some.Namespace.Here.NestedStruct.StructEnum.Second:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -695,15 +693,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.NestedRecord.RecordEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here.NestedRecord.RecordEnum.First:
+                case global::Some.Namespace.Here.NestedRecord.RecordEnum.Second:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -957,15 +954,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First:
+                case global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -1219,15 +1215,14 @@ internal static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.INestedInterface.InterfaceEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First:
+                case global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;

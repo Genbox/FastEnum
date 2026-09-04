@@ -202,26 +202,44 @@ internal static class EnumClassCode
             if (spec.HasFlags)
                 return $"return {IsFlagDefined()};";
 
-            bool canReuseUnderlyingValues = spec.Members.All(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetUnderlyingValues) != true) && spec.Members.All(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.IsDefined) != true);
-            string[] values = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.IsDefined)).Select(x => FormatPrimitive(x.Value)).ToArray();
+            HashSet<object> handledValues = new HashSet<object>();
+            EnumMemberSpec[] members = spec.Members
+                                          .Where(x => IsIncluded(x, EnumOmitExclude.IsDefined) && handledValues.Add(x.Value))
+                                          .ToArray();
 
-            if (!canReuseUnderlyingValues && values.Length == 0)
+            if (members.Length == 0)
                 return "return false;";
 
-            string valuesExpression = canReuseUnderlyingValues
-                ? $"{underlyingType}[] _isDefinedValues = GetUnderlyingValues();"
-                : Assignment("_isDefinedValues", underlyingType, values);
-            string separator = canReuseUnderlyingValues ? "\n" : string.Empty;
+            // Bound the size of the generated switch for large enums.
+            if (members.Length > 128)
+            {
+                bool canReuseUnderlyingValues = spec.Members.All(x => IsIncluded(x, EnumOmitExclude.GetUnderlyingValues) && IsIncluded(x, EnumOmitExclude.IsDefined));
+                string valuesExpression = canReuseUnderlyingValues
+                    ? $"{underlyingType}[] values = GetUnderlyingValues();"
+                    : $"{underlyingType}[] values = {Assignment("_isDefinedValues", underlyingType, members.Select(x => FormatPrimitive(x.Value)))}";
+
+                return $$"""
+                         {{valuesExpression}}
+                                     for (int i = 0; i < values.Length; i++)
+                                     {
+                                         if (values[i] == ({{underlyingType}})input)
+                                             return true;
+                                     }
+
+                                     return false;
+                         """;
+            }
+
+            IEnumerable<string> cases = members.Select(x => $"                case {enumName}.{x.EmittedIdentifier}:");
 
             return $$"""
-                     {{valuesExpression}}{{separator}}
-                                 for (int i = 0; i < _isDefinedValues.Length; i++)
+                     switch (input)
                                  {
-                                     if (_isDefinedValues[i] == ({{underlyingType}})input)
+                     {{string.Join("\n", cases)}}
                                          return true;
+                                     default:
+                                         return false;
                                  }
-
-                                 return false;
                      """;
         }
 

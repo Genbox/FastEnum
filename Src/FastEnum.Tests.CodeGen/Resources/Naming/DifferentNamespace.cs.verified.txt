@@ -144,15 +144,13 @@ public static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here1.MyEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here1.MyEnum.Value:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
@@ -374,15 +372,13 @@ public static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here2.MyEnum input)
         {
-            int[] _isDefinedValues = GetUnderlyingValues();
-
-            for (int i = 0; i < _isDefinedValues.Length; i++)
+            switch (input)
             {
-                if (_isDefinedValues[i] == (int)input)
+                case global::Some.Namespace.Here2.MyEnum.Value:
                     return true;
+                default:
+                    return false;
             }
-
-            return false;
         }
 
         private static string[]? _names;
