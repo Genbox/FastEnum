@@ -6,7 +6,61 @@ namespace Genbox.FastEnum.Tests.CodeGen;
 
 public class ValidationTests
 {
-    /// <summary>This test ensure that a public enum in an internal class results in an error.</summary>
+    [Theory]
+    [InlineData("EnumsClassVisibility")]
+    [InlineData("ExtensionClassVisibility")]
+    public void TestPublicOverrideCannotExposeInternalAncestor(string propertyName)
+    {
+        string code = $$"""
+                        internal class Outer
+                        {
+                            public class Inner
+                            {
+                                [FastEnum({{propertyName}} = Visibility.Public)]
+                                public enum Nested { None }
+                            }
+                        }
+                        """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
+        Assert.Empty(compilerDiagnostics);
+        Assert.Equal("FE001", Assert.Single(diagnostics).Id);
+    }
+
+    [Theory]
+    [InlineData("internal", "public", "public", true)]
+    [InlineData("public", "private", "internal", false)]
+    [InlineData("public", "protected", "internal", false)]
+    [InlineData("public", "protected internal", "internal", true)]
+    [InlineData("public", "protected internal", "public", true)]
+    [InlineData("public", "public", "protected internal", true)]
+    [InlineData("public", "public", "public", true)]
+    [InlineData("internal", "public", "internal", true)]
+    public void TestAncestorVisibility(string outerAccess, string middleAccess, string enumAccess, bool supported)
+    {
+        string code = $$"""
+                        {{outerAccess}} class Outer
+                        {
+                            {{middleAccess}} class Middle
+                            {
+                                public class Inner
+                                {
+                                    [FastEnum]
+                                    {{enumAccess}} enum Nested { None }
+                                }
+                            }
+                        }
+                        """;
+
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
+        Assert.Empty(compilerDiagnostics);
+        if (supported)
+            Assert.Empty(diagnostics);
+        else
+            Assert.Equal("FE001", Assert.Single(diagnostics).Id);
+    }
+
+    /// <summary>A public enum in an internal class gets internal helpers.</summary>
     [Fact]
     public void TestLessVisibleClass()
     {
@@ -21,10 +75,11 @@ public class ValidationTests
                       }
                       """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
+        string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        Assert.Empty(codeGenDiag);
         Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id); //Enum visibility validation failed
+        Assert.Contains("internal static partial class MyPublicEnum1Extensions", output, StringComparison.Ordinal);
+        Assert.Contains("internal enum MyPublicEnum1Format", output, StringComparison.Ordinal);
     }
 
     /// <summary>This test ensure that am internal enum where the user overrides either the enums class to be more visible</summary>
@@ -177,7 +232,6 @@ public class ValidationTests
     [Theory]
     [InlineData("private")]
     [InlineData("protected")]
-    [InlineData("protected internal")]
     [InlineData("private protected")]
     public void TestUnsupportedEnumAccessibility(string accessibility)
     {

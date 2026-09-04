@@ -6,7 +6,7 @@ internal static class EnumFormatCode
     {
         FastEnumData options = spec.Data;
         string? namespaceName = options.EnumsClassNamespace ?? spec.Namespace;
-        bool isPublicEnum = spec.AccessChain[0] == Accessibility.Public;
+        bool isPublicEnum = spec.IsPubliclyAccessible;
         bool isEnumsClassPublic = options.EnumsClassVisibility == Visibility.Inherit ? isPublicEnum : options.EnumsClassVisibility == Visibility.Public;
         bool isExtensionClassPublic = options.ExtensionClassVisibility == Visibility.Inherit ? isPublicEnum : options.ExtensionClassVisibility == Visibility.Public;
 

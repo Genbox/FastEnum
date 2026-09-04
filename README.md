@@ -172,7 +172,7 @@ Controls the namespace containing the extension class. The default is the enum's
 
 #### ExtensionClassVisibility
 
-Use this to override the visibility of the generated extension class. It defaults to the enum's own visibility (`Visibility.Inherit`).
+Use this to override the visibility of the generated extension class. It defaults to the enum's effective visibility, including its containing types (`Visibility.Inherit`).
 
 ```csharp
 [FastEnum(ExtensionClassVisibility = Visibility.Internal)] // Generates an internal StatusExtensions class instead of public.
@@ -189,7 +189,7 @@ Controls the namespace containing the generated metadata helper and format enum.
 
 #### EnumsClassVisibility
 
-Use this to override the visibility of the generated `Enums` wrapper class. It defaults to the enum's own visibility (`Visibility.Inherit`).
+Use this to override the visibility of the generated `Enums` wrapper class. It defaults to the enum's effective visibility, including its containing types (`Visibility.Inherit`).
 
 ```csharp
 [FastEnum(EnumsClassVisibility = Visibility.Internal)] // Enums.Status will be internal.

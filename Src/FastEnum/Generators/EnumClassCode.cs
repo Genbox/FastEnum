@@ -11,7 +11,7 @@ internal static class EnumClassCode
         string className = spec.EmittedIdentifier;
         string wrapperName = options.EnumsClassName ?? "Enums";
         string enumName = spec.FullyQualifiedName;
-        string inheritedVisibility = spec.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string inheritedVisibility = spec.IsPubliclyAccessible ? "public" : "internal";
         string visibility = options.EnumsClassVisibility == Visibility.Inherit ? inheritedVisibility : options.EnumsClassVisibility.ToString().ToLowerInvariant();
         string wrapperVisibility = wrapperPublic ? "public" : "internal";
         string underlyingType = spec.UnderlyingType;

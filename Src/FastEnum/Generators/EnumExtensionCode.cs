@@ -9,7 +9,7 @@ internal static class EnumExtensionCode
         string? namespaceName = options.ExtensionClassNamespace ?? spec.Namespace;
         string extensionName = options.ExtensionClassName ?? $"{spec.Name}Extensions";
         string enumName = spec.FullyQualifiedName;
-        string inheritedVisibility = spec.AccessChain[0] == Accessibility.Public ? "public" : "internal";
+        string inheritedVisibility = spec.IsPubliclyAccessible ? "public" : "internal";
         string visibility = options.ExtensionClassVisibility == Visibility.Inherit ? inheritedVisibility : options.ExtensionClassVisibility.ToString().ToLowerInvariant();
         string underlyingType = spec.UnderlyingType;
         string? formatNamespace = options.EnumsClassNamespace ?? spec.Namespace;

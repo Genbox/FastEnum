@@ -113,7 +113,7 @@ public class EnumGenerator : IIncrementalGenerator
             string? extensionNamespace = esd.ExtensionClassNamespace ?? es.Namespace;
             string extensionName = esd.ExtensionClassName ?? $"{enumName}Extensions";
             string extensionFullName = JoinName(extensionNamespace, extensionName);
-            bool extensionPublic = esd.ExtensionClassVisibility == Visibility.Public || (esd.ExtensionClassVisibility == Visibility.Inherit && es.AccessChain[0] == Accessibility.Public);
+            bool extensionPublic = esd.ExtensionClassVisibility == Visibility.Public || (esd.ExtensionClassVisibility == Visibility.Inherit && es.IsPubliclyAccessible);
 
             // Validate every emitted type using semantic identifiers; Foo and @Foo name the same type.
             if ((!esd.DisableEnumsWrapper && !AddEmittedType(JoinName(enumNamespace, enumClassName), "wrapper", true, out message)) ||
@@ -173,9 +173,11 @@ public class EnumGenerator : IIncrementalGenerator
         //     private enum MyEnum { Value }
         // }
         //
-        // The generated Enums.MyEnum class cannot expose the enum because it is private. Disabling the Enums wrapper
-        // does not help because the resulting MyEnum class and generated extension methods still cannot expose it.
-        // We therefore only support internal and public enums, and a containing type cannot be less visible than its enum.
+        // The generated Enums.MyEnum class cannot access the enum because it is private. Disabling the Enums wrapper
+        // does not help because the resulting MyEnum class and generated extension methods still cannot access it.
+        // Namespace-level helpers can access public, internal, and protected internal enums only when every containing
+        // type is also accessible from the same assembly. A public enum inside an internal type is supported, but its
+        // inherited helper visibility is internal because the enum's effective accessibility is limited by its container.
         foreach (EnumSpec es in specs)
         {
             //The first part of the AccessChain is the enum's own accessibility
@@ -184,24 +186,24 @@ public class EnumGenerator : IIncrementalGenerator
             if (enumAccess == Accessibility.Private)
                 return Fail($"FastEnum is not supported on private enum: '{es.FullName}'", out message);
 
-            if (enumAccess != Accessibility.Internal && enumAccess != Accessibility.Public)
+            if (enumAccess != Accessibility.Internal && enumAccess != Accessibility.Public && enumAccess != Accessibility.ProtectedOrInternal)
                 return Fail($"Unsupported visibility '{enumAccess}' on '{es.FullName}'", out message);
 
-            //Now we need to satisfy C#'s invariant: parents must have equal or more visibility than it's children
-            if (es.AccessChain.Length > 1)
+            // Every containing type must be accessible to the generated helpers.
+            for (int i = 1; i < es.AccessChain.Length; i++)
             {
-                Accessibility parentAccess = es.AccessChain[1];
+                Accessibility parentAccess = es.AccessChain[i];
 
-                if (parentAccess < enumAccess)
-                    return Fail($"Parent class is less visible ({parentAccess}) than enum '{es.FullName} ({enumAccess}). That is not supported", out message);
+                if (parentAccess != Accessibility.Public && parentAccess != Accessibility.Internal && parentAccess != Accessibility.ProtectedOrInternal)
+                    return Fail($"Containing type visibility ({parentAccess}) prevents generated helpers from accessing enum '{es.FullName}'", out message);
             }
 
             FastEnumData data = es.Data;
 
-            if (data.EnumsClassVisibility != Visibility.Inherit && enumAccess <= Accessibility.Internal && data.EnumsClassVisibility == Visibility.Public)
+            if (!es.IsPubliclyAccessible && data.EnumsClassVisibility == Visibility.Public)
                 return Fail($"Your visibility override ({data.EnumsClassVisibility}) on the enums class must be less or equal to the visibility on the enum '{es.FullName} ({enumAccess})", out message);
 
-            if (data.ExtensionClassVisibility != Visibility.Inherit && enumAccess <= Accessibility.Internal && data.ExtensionClassVisibility == Visibility.Public)
+            if (!es.IsPubliclyAccessible && data.ExtensionClassVisibility == Visibility.Public)
                 return Fail($"Your visibility override ({data.ExtensionClassVisibility}) on the extensions class must be less or equal to the visibility on the enum '{es.FullName} ({enumAccess})", out message);
         }
 
@@ -231,7 +233,7 @@ public class EnumGenerator : IIncrementalGenerator
             string wrapper = JoinName(data.EnumsClassNamespace ?? spec.Namespace, data.EnumsClassName ?? "Enums");
             return !data.DisableEnumsWrapper &&
                    wrapper == targetWrapper &&
-                   (data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.AccessChain[0] == Accessibility.Public));
+                   (data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.IsPubliclyAccessible));
         });
     }
 
@@ -358,12 +360,12 @@ public class EnumGenerator : IIncrementalGenerator
 
         List<Accessibility> accessChain = new List<Accessibility>();
 
-        ISymbol? curSym = symbol;
+        INamedTypeSymbol? curSym = symbol;
 
         while (curSym != null)
         {
             accessChain.Add(curSym.DeclaredAccessibility);
-            curSym = curSym.ContainingSymbol;
+            curSym = curSym.ContainingType;
         }
 
         string enumName = NormalizeIdentifier(fastEnumData.EnumNameOverride ?? symbol.Name);

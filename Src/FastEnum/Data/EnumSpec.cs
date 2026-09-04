@@ -31,6 +31,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
     public string FullyQualifiedName { get; }
     public string? Namespace { get; }
     public Accessibility[] AccessChain { get; }
+    public bool IsPubliclyAccessible => Array.TrueForAll(AccessChain, x => x == Accessibility.Public);
     public bool HasGenericContainingType { get; }
     public bool HasDisplay { get; }
     public bool HasDescription { get; }
