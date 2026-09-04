@@ -8,6 +8,21 @@ namespace Genbox.FastEnum.Tests.CodeGen;
 public class LargeEnumTests
 {
     [Theory]
+    [InlineData("sbyte", -128)]
+    [InlineData("byte", 0)]
+    [InlineData("short", -128)]
+    [InlineData("ushort", 0)]
+    [InlineData("int", -128)]
+    [InlineData("uint", 0)]
+    [InlineData("long", -128)]
+    [InlineData("ulong", 0)]
+    public void HashLookupCompilesForEveryUnderlyingType(string underlyingType, int firstValue)
+    {
+        string members = string.Join(",\n", Enumerable.Range(0, 129).Select(i => $"Value{i} = {firstValue + i}"));
+        TestHelper.GetGeneratedOutput<EnumGenerator>($"[FastEnum] public enum LargeEnum : {underlyingType} {{ {members} }}");
+    }
+
+    [Theory]
     [InlineData(false)]
     [InlineData(true)]
     public void LargeEnumWithOmissionsCompiles(bool disableCache)

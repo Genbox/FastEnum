@@ -13,4 +13,13 @@ public class GetNamesBenchmark
 
     [Benchmark]
     public IReadOnlyList<string> EnumsNetGetNames() => EnumsNET.Enums.GetNames<TestEnum>();
+
+    [Benchmark]
+    public string[] EnumGetNamesLargeEnum() => Enum.GetNames<LargeEnum>();
+
+    [Benchmark]
+    public string[] FastEnumGetNamesLargeEnum() => Enums.LargeEnum.GetMemberNames();
+
+    [Benchmark]
+    public IReadOnlyList<string> EnumsNetGetNamesLargeEnum() => EnumsNET.Enums.GetNames<LargeEnum>();
 }

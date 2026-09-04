@@ -24,4 +24,22 @@ public class TryParseBenchmark
 
     [Benchmark]
     public TestEnum EnumsNetTryParseDisplayName() => EnumsNET.Enums.TryParse("2nd", false, out TestEnum result, EnumFormat.DisplayName) ? result : default;
+
+    [Benchmark]
+    public LargeEnum EnumTryParseLargeEnum() => Enum.TryParse("Value1023", false, out LargeEnum result) ? result : default;
+
+    [Benchmark]
+    public LargeEnum FastEnumTryParseLargeEnum() => Enums.LargeEnum.TryParse("Value1023", out LargeEnum result) ? result : default;
+
+    [Benchmark]
+    public LargeEnum EnumsNetTryParseLargeEnum() => EnumsNET.Enums.TryParse("Value1023", false, out LargeEnum result) ? result : default;
+
+    [Benchmark]
+    public LargeEnum ReflectionTryParseDisplayNameLargeEnum() => EnumHelper<LargeEnum>.TryParseByDisplayName("Last value", false, out LargeEnum result) ? result : default;
+
+    [Benchmark]
+    public LargeEnum FastEnumTryParseDisplayNameLargeEnum() => Enums.LargeEnum.TryParse("Last value", out LargeEnum result, LargeEnumFormat.DisplayName) ? result : default;
+
+    [Benchmark]
+    public LargeEnum EnumsNetTryParseDisplayNameLargeEnum() => EnumsNET.Enums.TryParse("Last value", false, out LargeEnum result, EnumFormat.DisplayName) ? result : default;
 }

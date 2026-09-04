@@ -13,4 +13,13 @@ public class EnumLengthBenchmark
 
     [Benchmark]
     public int EnumsNetLength() => EnumsNET.Enums.GetMemberCount(typeof(TestEnum));
+
+    [Benchmark]
+    public int EnumLengthLargeEnum() => Enum.GetNames(typeof(LargeEnum)).Length;
+
+    [Benchmark]
+    public int FastEnumLengthLargeEnum() => Enums.LargeEnum.MemberCount;
+
+    [Benchmark]
+    public int EnumsNetLengthLargeEnum() => EnumsNET.Enums.GetMemberCount(typeof(LargeEnum));
 }

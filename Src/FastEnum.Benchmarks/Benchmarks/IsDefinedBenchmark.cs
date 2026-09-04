@@ -8,6 +8,7 @@ namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 public class IsDefinedBenchmark
 {
     private static readonly TestEnum _enum = TestEnum.Second;
+    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
     private static readonly TestFlagsEnum _flagsEnum = TestFlagsEnum.One;
 
     [Benchmark(Baseline = true)]
@@ -27,4 +28,13 @@ public class IsDefinedBenchmark
 
     [Benchmark]
     public bool EnumsNetIsDefinedFlags() => EnumsNET.Enums.IsDefined(_flagsEnum);
+
+    [Benchmark]
+    public bool EnumIsDefinedLargeEnum() => Enum.IsDefined(typeof(LargeEnum), _largeEnum);
+
+    [Benchmark]
+    public bool FastEnumIsDefinedLargeEnum() => Enums.LargeEnum.IsDefined(_largeEnum);
+
+    [Benchmark]
+    public bool EnumsNetIsDefinedLargeEnum() => EnumsNET.Enums.IsDefined(_largeEnum);
 }

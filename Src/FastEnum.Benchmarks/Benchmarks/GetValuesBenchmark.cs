@@ -13,4 +13,13 @@ public class GetValuesBenchmark
 
     [Benchmark]
     public IReadOnlyList<TestEnum> EnumsNetGetValues() => EnumsNET.Enums.GetValues<TestEnum>();
+
+    [Benchmark]
+    public LargeEnum[] EnumGetValuesLargeEnum() => Enum.GetValues<LargeEnum>();
+
+    [Benchmark]
+    public LargeEnum[] FastEnumGetValuesLargeEnum() => Enums.LargeEnum.GetMemberValues();
+
+    [Benchmark]
+    public IReadOnlyList<LargeEnum> EnumsNetGetValuesLargeEnum() => EnumsNET.Enums.GetValues<LargeEnum>();
 }

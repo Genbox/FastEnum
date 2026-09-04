@@ -8,6 +8,7 @@ namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 public class GetUnderlyingValueBenchmark
 {
     private static readonly TestEnum _enum = TestEnum.Second;
+    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
 
     [Benchmark(Baseline = true)]
     public int EnumGetValues() => (int)_enum;
@@ -17,4 +18,13 @@ public class GetUnderlyingValueBenchmark
 
     [Benchmark]
     public int EnumsNetGetValues() => (int)EnumsNET.Enums.GetUnderlyingValue(_enum);
+
+    [Benchmark]
+    public int EnumGetValuesLargeEnum() => (int)_largeEnum;
+
+    [Benchmark]
+    public int FastEnumGetValuesLargeEnum() => _largeEnum.GetUnderlyingValue();
+
+    [Benchmark]
+    public int EnumsNetGetValuesLargeEnum() => (int)EnumsNET.Enums.GetUnderlyingValue(_largeEnum);
 }

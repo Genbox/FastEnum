@@ -1,12 +1,13 @@
 /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
 /// <param name = "input">The enum value to test.</param>
 /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
+[global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
 public static bool IsDefined(global::LargeEnum input)
 {
-    int[] values = GetUnderlyingValues();
-    for (int i = 0; i < values.Length; i++)
+    int bucket = unchecked((int)((ulong)(int)input >> 1)) & 1023;
+    for (int index = _IsDefinedCache.Buckets[bucket]; index >= 0; index = _IsDefinedCache.Next[index])
     {
-        if (values[i] == (int)input)
+        if (_IsDefinedCache.Values[index] == (int)input)
             return true;
     }
 

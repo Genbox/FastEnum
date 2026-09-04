@@ -24,6 +24,7 @@ internal static class EnumClassCode
         string underlyingValues = Assignment("_underlyingValues", underlyingType, GetUnderlyingValues());
         string tryParse = TryParse(false);
         string tryParseSpan = TryParse(true);
+        bool hashIsDefined = false;
         string isDefined = IsDefined();
         string displayNames = MetadataMethod(spec.HasDisplay, "display names", "DisplayNames", "_displayNames", x => x.DisplayData?.Name, transform?.SortDisplayNames ?? EnumOrder.None, EnumOmitExclude.TryGetDisplayName);
         string descriptions = MetadataMethod(spec.HasDescription, "descriptions", "Descriptions", "_descriptions", x => x.DisplayData?.Description, transform?.SortDescriptions ?? EnumOrder.None, EnumOmitExclude.TryGetDescription);
@@ -72,7 +73,7 @@ internal static class EnumClassCode
                          /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
                          /// <param name="input">The enum value to test.</param>
                          /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
-                         public static bool IsDefined({{enumName}} input)
+                         {{(hashIsDefined ? "[global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]\n        " : null)}}public static bool IsDefined({{enumName}} input)
                          {
                              {{isDefined}}
                          }{{displayNames}}{{descriptions}}{{generatedFields}}
@@ -172,6 +173,41 @@ internal static class EnumClassCode
                                  if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
                                  {
                                  """;
+                if (!isSpan && !options.DisableCache && members.Where(x => getText(x) != null).Skip(128).Any())
+                {
+                    HashSet<string> handledTexts = new HashSet<string>(StringComparer.Ordinal);
+                    string entries = string.Join(",\n", members.Where(x => getText(x) is string text && handledTexts.Add(text))
+                                                              .Select(x => $"{{ \"{EscapeString(getText(x)!)}\", {enumName}.{x.EmittedIdentifier} }}"));
+                    // Separate initialization from the hot path and keep other comparisons in declaration order.
+                    fields.Add(IndentFollowingLines($$"""
+                        private static class _{{format}}ParseCache
+                        {
+                            internal static readonly global::System.Collections.Generic.Dictionary<string, {{enumName}}> Values = new global::System.Collections.Generic.Dictionary<string, {{enumName}}>(global::System.StringComparer.Ordinal)
+                            {
+                                {{IndentFollowingLines(entries, 2)}}
+                            };
+                        }
+
+                        private static bool TryParse{{format}}Slow(string value, out {{enumName}} result, global::System.StringComparison comparison)
+                        {
+                            {{IndentFollowingLines(string.Concat(GetChecks()).Trim(), 1)}}
+                            result = default;
+                            return false;
+                        }
+                        """, 2));
+                    return $$"""
+                        {{start}}
+                            if (comparison == global::System.StringComparison.Ordinal && value != null)
+                            {
+                                if (_{{format}}ParseCache.Values.TryGetValue(value, out result))
+                                    return true;
+                            }
+                            else if (TryParse{{format}}Slow(value!, out result, comparison))
+                                return true;
+                        }
+                        """;
+                }
+
                 return $"{start}{IndentFollowingLines(string.Concat(GetChecks()), 1)}\n}}";
 
                 IEnumerable<string> GetChecks()
@@ -213,17 +249,24 @@ internal static class EnumClassCode
             // Bound the size of the generated switch for large enums.
             if (members.Length > 128)
             {
-                bool canReuseUnderlyingValues = spec.Members.All(x => IsIncluded(x, EnumOmitExclude.GetUnderlyingValues) && IsIncluded(x, EnumOmitExclude.IsDefined));
-                string valuesExpression = canReuseUnderlyingValues
-                    ? $"{underlyingType}[] values = GetUnderlyingValues();"
-                    : $"{underlyingType}[] values = {Assignment("_isDefinedValues", underlyingType, members.Select(x => FormatPrimitive(x.Value)))}";
+                if (!options.DisableCache)
+                    return HashIsDefined(members);
+
+                string[] values = members.OrderBy(ValueKey).Select(x => FormatPrimitive(x.Value)).ToArray();
+                string valuesExpression = Assignment("_isDefinedValues", underlyingType, values);
 
                 return $$"""
-                         {{valuesExpression}}
-                                     for (int i = 0; i < values.Length; i++)
+                         {{underlyingType}}[] values = {{valuesExpression}}
+                                     for (int low = 0, high = values.Length - 1; low <= high;)
                                      {
-                                         if (values[i] == ({{underlyingType}})input)
+                                         int middle = low + ((high - low) >> 1);
+                                         {{underlyingType}} candidate = values[middle];
+                                         if (candidate == ({{underlyingType}})input)
                                              return true;
+                                         if (candidate < ({{underlyingType}})input)
+                                             low = middle + 1;
+                                         else
+                                             high = middle - 1;
                                      }
 
                                      return false;
@@ -240,6 +283,37 @@ internal static class EnumClassCode
                                      default:
                                          return false;
                                  }
+                     """;
+        }
+
+        string HashIsDefined(EnumMemberSpec[] members)
+        {
+            hashIsDefined = true;
+            EnumHashTable table = EnumHashTable.Create(members.Select(x => ToUInt64(x.Value)).ToArray());
+            string values = string.Join(", ", members.Select(x => FormatPrimitive(x.Value)));
+            string buckets = string.Join(", ", table.Buckets.Select(x => x.ToString(CultureInfo.InvariantCulture)));
+            string next = string.Join(", ", table.Next.Select(x => x.ToString(CultureInfo.InvariantCulture)));
+            fields.Add(IndentFollowingLines($$"""
+                private static class _IsDefinedCache
+                {
+                    internal static readonly {{underlyingType}}[] Values = new {{underlyingType}}[] { {{values}} };
+                    internal static readonly int[] Buckets = new int[] { {{buckets}} };
+                    internal static readonly int[] Next = new int[] { {{next}} };
+                }
+                """, 2));
+
+            string hash = table.Shift == 0
+                ? "unchecked((int)input)"
+                : $"unchecked((int)((ulong)({underlyingType})input >> {table.Shift}))";
+            return $$"""
+                     int bucket = {{hash}} & {{table.Buckets.Length - 1}};
+                                 for (int index = _IsDefinedCache.Buckets[bucket]; index >= 0; index = _IsDefinedCache.Next[index])
+                                 {
+                                     if (_IsDefinedCache.Values[index] == ({{underlyingType}})input)
+                                         return true;
+                                 }
+
+                                 return false;
                      """;
         }
 

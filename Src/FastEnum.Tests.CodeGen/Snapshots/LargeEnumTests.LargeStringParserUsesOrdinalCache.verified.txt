@@ -1,0 +1,33 @@
+/// <summary>Attempts to parse a string into an enum value.</summary>
+/// <param name = "value">The string to parse.</param>
+/// <param name = "result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+/// <param name = "format">The formats to consider while parsing.</param>
+/// <param name = "comparison">The string comparison to use.</param>
+/// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
+public static bool TryParse(string value, out global::LargeEnum result, global::LargeEnumFormat format = global::LargeEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+{
+    if ((format & global::LargeEnumFormat.Name) == global::LargeEnumFormat.Name)
+    {
+        if (comparison == global::System.StringComparison.Ordinal && value != null)
+        {
+            if (_NameParseCache.Values.TryGetValue(value, out result))
+                return true;
+        }
+        else if (TryParseNameSlow(value!, out result, comparison))
+            return true;
+    }
+
+    if ((format & global::LargeEnumFormat.Value) == global::LargeEnumFormat.Value)
+    {
+        if (comparison == global::System.StringComparison.Ordinal && value != null)
+        {
+            if (_ValueParseCache.Values.TryGetValue(value, out result))
+                return true;
+        }
+        else if (TryParseValueSlow(value!, out result, comparison))
+            return true;
+    }
+
+    result = default;
+    return false;
+}

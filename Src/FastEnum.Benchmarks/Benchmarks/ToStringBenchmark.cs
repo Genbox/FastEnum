@@ -9,6 +9,7 @@ namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 public class ToStringBenchmark
 {
     private static readonly TestEnum _enum = TestEnum.Second;
+    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
 
     [Benchmark(Baseline = true)]
     public string EnumToString() => _enum.ToString();
@@ -27,4 +28,22 @@ public class ToStringBenchmark
 
     [Benchmark]
     public string ReflectionGetDisplayName() => EnumHelper<TestEnum>.GetDisplayName(_enum);
+
+    [Benchmark]
+    public string EnumToStringLargeEnum() => _largeEnum.ToString();
+
+    [Benchmark]
+    public string FastEnumToStringLargeEnum() => _largeEnum.GetString();
+
+    [Benchmark]
+    public string EnumsNetToStringLargeEnum() => _largeEnum.AsString();
+
+    [Benchmark]
+    public string FastEnumGetDisplayNameLargeEnum() => _largeEnum.GetDisplayName();
+
+    [Benchmark]
+    public string? EnumsNetGetDisplayNameLargeEnum() => _largeEnum.AsString(EnumFormat.DisplayName);
+
+    [Benchmark]
+    public string ReflectionGetDisplayNameLargeEnum() => EnumHelper<LargeEnum>.GetDisplayName(_largeEnum);
 }
