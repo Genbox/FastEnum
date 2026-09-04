@@ -1,0 +1,1 @@
+error FE001: Validation failed with message: Invalid C# identifier 'Bad Name' in EnumsClassName

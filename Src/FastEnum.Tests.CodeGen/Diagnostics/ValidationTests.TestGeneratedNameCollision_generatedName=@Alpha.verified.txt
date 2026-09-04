@@ -1,0 +1,1 @@
+error FE001: Validation failed with message: Generated enum helper collides with generated enum helper: Shared.Enums.Alpha. Use a FastEnum name or namespace override to resolve the conflict

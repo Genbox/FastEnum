@@ -1,0 +1,1 @@
+error FE001: Validation failed with message: FastEnum is not supported on enum 'GenericContainer<T>.MyEnum' inside a generic containing type

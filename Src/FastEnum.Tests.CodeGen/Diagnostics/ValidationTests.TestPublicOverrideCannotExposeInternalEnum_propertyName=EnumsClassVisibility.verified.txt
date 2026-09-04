@@ -1,0 +1,1 @@
+error FE001: Validation failed with message: Your visibility override (Public) on the enums class must be less or equal to the visibility on the enum 'MyEnum (Internal)

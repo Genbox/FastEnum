@@ -9,7 +9,7 @@ public class ValidationTests
     [Theory]
     [InlineData("EnumsClassVisibility")]
     [InlineData("ExtensionClassVisibility")]
-    public void TestPublicOverrideCannotExposeInternalAncestor(string propertyName)
+    public async Task TestPublicOverrideCannotExposeInternalAncestor(string propertyName)
     {
         string code = $$"""
                         internal class Outer
@@ -22,9 +22,7 @@ public class ValidationTests
                         }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
-        Assert.Empty(compilerDiagnostics);
-        Assert.Equal("FE001", Assert.Single(diagnostics).Id);
+        await VerifyValidationError(code).UseParameters(propertyName);
     }
 
     [Theory]
@@ -86,16 +84,14 @@ public class ValidationTests
     [Theory]
     [InlineData("EnumsClassVisibility")]
     [InlineData("ExtensionClassVisibility")]
-    public void TestPublicOverrideCannotExposeInternalEnum(string propertyName)
+    public async Task TestPublicOverrideCannotExposeInternalEnum(string propertyName)
     {
         string code = $$"""
                         [FastEnum({{propertyName}} = Visibility.Public)]
                         internal enum MyEnum { Value }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
-        Assert.Empty(compilerDiagnostics);
-        Assert.Equal("FE001", Assert.Single(diagnostics).Id);
+        await VerifyValidationError(code).UseParameters(propertyName);
     }
 
     /// <summary>Ensures shared partial wrapper declarations use compatible visibility.</summary>
@@ -148,7 +144,7 @@ public class ValidationTests
 
     /// <summary>Ensures shared partial extension declarations use compatible visibility.</summary>
     [Fact]
-    public void TestSharedExtensionClassVisibility()
+    public async Task TestSharedExtensionClassVisibility()
     {
         string code = """
                       [FastEnum(ExtensionClassName = "SharedExtensions")]
@@ -164,10 +160,7 @@ public class ValidationTests
                       }
                       """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id);
+        await VerifyValidationError(code);
     }
 
     /// <summary>Ensures a format enum is visible wherever a generated public API exposes it.</summary>
@@ -189,7 +182,7 @@ public class ValidationTests
 
     /// <summary>Ensures enums inside generic containing types produce a validation diagnostic.</summary>
     [Fact]
-    public void TestGenericContainingType()
+    public async Task TestGenericContainingType()
     {
         string code = """
                       public class GenericContainer<T>
@@ -202,10 +195,7 @@ public class ValidationTests
                       }
                       """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id);
+        await VerifyValidationError(code);
     }
 
     /// <summary>Ensures unsupported nested enum accessibilities produce a validation diagnostic.</summary>
@@ -213,7 +203,7 @@ public class ValidationTests
     [InlineData("private")]
     [InlineData("protected")]
     [InlineData("private protected")]
-    public void TestUnsupportedEnumAccessibility(string accessibility)
+    public async Task TestUnsupportedEnumAccessibility(string accessibility)
     {
         string code = $$"""
                         public class Container
@@ -226,17 +216,14 @@ public class ValidationTests
                         }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id);
+        await VerifyValidationError(code).UseParameters(accessibility);
     }
 
     /// <summary>Ensures generated type-name collisions produce a validation diagnostic.</summary>
     [Theory]
     [InlineData("Alpha")]
     [InlineData("@Alpha")]
-    public void TestGeneratedNameCollision(string generatedName)
+    public async Task TestGeneratedNameCollision(string generatedName)
     {
         string code = $$"""
                         namespace First
@@ -258,10 +245,7 @@ public class ValidationTests
                         }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id);
+        await VerifyValidationError(code).UseParameters(generatedName);
     }
 
     /// <summary>Ensures escaped enum and member identifiers are emitted correctly.</summary>
@@ -276,9 +260,7 @@ public class ValidationTests
                       }
                       """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Assert.Empty(codeGenDiag);
-        Assert.Empty(compilerDiag);
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code);
     }
 
     [Theory]
@@ -287,7 +269,7 @@ public class ValidationTests
     [InlineData("ExtensionClassName", "1BadName")]
     [InlineData("EnumsClassNamespace", "Good..Bad")]
     [InlineData("ExtensionClassNamespace", "Good.Bad-Name")]
-    public void TestInvalidOverrides(string propertyName, string value)
+    public async Task TestInvalidOverrides(string propertyName, string value)
     {
         string code = $$"""
                         [FastEnum({{propertyName}} = "{{value}}")]
@@ -297,9 +279,15 @@ public class ValidationTests
                         }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Diagnostic res = Assert.Single(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Equal("FE001", res.Id);
+        await VerifyValidationError(code).UseParameters(propertyName, value);
+    }
+
+    private static SettingsTask VerifyValidationError(string code)
+    {
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
+        Assert.Empty(compilerDiagnostics);
+        Diagnostic diagnostic = Assert.Single(diagnostics);
+        Assert.Equal("FE001", diagnostic.Id);
+        return Verify(diagnostic.ToString()).UseDirectory("Diagnostics");
     }
 }

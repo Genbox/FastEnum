@@ -1,0 +1,1 @@
+error FE001: Validation failed with message: Generated extension class has conflicting visibility: SharedExtensions. Use matching ExtensionClassVisibility values or separate extension classes
