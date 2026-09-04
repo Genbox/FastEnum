@@ -22,7 +22,8 @@ internal static class EnumClassCode
         string memberNames = Assignment("_names", "string", GetMemberNames());
         string memberValues = Assignment("_values", enumName, GetMemberValues());
         string underlyingValues = Assignment("_underlyingValues", underlyingType, GetUnderlyingValues());
-        string tryParse = TryParse();
+        string tryParse = TryParse(false);
+        string tryParseSpan = TryParse(true);
         string isDefined = IsDefined();
         string displayNames = MetadataMethod(spec.HasDisplay, "display names", "DisplayNames", "_displayNames", x => x.DisplayData?.Name, transform?.SortDisplayNames ?? EnumOrder.None, EnumOmitExclude.TryGetDisplayName);
         string descriptions = MetadataMethod(spec.HasDescription, "descriptions", "Descriptions", "_descriptions", x => x.DisplayData?.Description, transform?.SortDescriptions ?? EnumOrder.None, EnumOmitExclude.TryGetDescription);
@@ -90,7 +91,7 @@ internal static class EnumClassCode
                 /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
                 public static bool TryParse({{valueType}} value, out {{enumName}} result, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                 {
-                    {{tryParse}}
+                    {{(valueType == "string" ? tryParse : tryParseSpan)}}
                     result = default;
                     return false;
                 }
@@ -145,7 +146,7 @@ internal static class EnumClassCode
                 .Select(x => $"({enumName}.{x.EmittedIdentifier}, \"{EscapeString(getText(x)!)}\")");
         }
 
-        string TryParse()
+        string TryParse(bool isSpan)
         {
             EnumMemberSpec[] members = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.TryParse)).ToArray();
             if (members.Length == 0)
@@ -188,7 +189,7 @@ internal static class EnumClassCode
             }
 
             string ParseCheck(EnumMemberSpec member, string text) => $$"""
-                                                                       if (value.Equals("{{EscapeString(text)}}", comparison))
+                                                                       if ({{(isSpan ? $"global::System.MemoryExtensions.Equals(value, \"{EscapeString(text)}\", comparison)" : $"value.Equals(\"{EscapeString(text)}\", comparison)")}})
                                                                        {
                                                                            result = {{enumName}}.{{member.EmittedIdentifier}};
                                                                            return true;

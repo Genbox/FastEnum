@@ -59,6 +59,20 @@ public class EnumClassTests
         Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
 
+    [Theory]
+    [InlineData("First", TestEnumFormat.Name, StringComparison.Ordinal, true)]
+    [InlineData("first", TestEnumFormat.Name, StringComparison.Ordinal, false)]
+    [InlineData("first", TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase, true)]
+    [InlineData("8", TestEnumFormat.Value, StringComparison.Ordinal, true)]
+    [InlineData("FirstDisplayName", TestEnumFormat.DisplayName, StringComparison.Ordinal, true)]
+    [InlineData("FirstDescription", TestEnumFormat.Description, StringComparison.Ordinal, true)]
+    [InlineData("missing", TestEnumFormat.Default, StringComparison.Ordinal, false)]
+    public void SpanParsingHonorsFormatsAndComparison(string text, TestEnumFormat format, StringComparison comparison, bool expected)
+    {
+        Assert.Equal(expected, Enums.TestEnum.TryParse(text.AsSpan(), out TestEnum result, format, comparison));
+        Assert.Equal(expected ? TestEnum.First : default, result);
+    }
+
     [Fact]
     public void IsDefinedTest()
     {

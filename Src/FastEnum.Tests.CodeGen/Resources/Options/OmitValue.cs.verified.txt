@@ -227,49 +227,49 @@ internal static partial class Enums
         {
             if ((format & global::MyEnumFormat.Name) == global::MyEnumFormat.Name)
             {
-                if (value.Equals("Keep", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "Keep", comparison))
                 {
                     result = global::MyEnum.Keep;
                     return true;
                 }
 
-                if (value.Equals("OmitMemberValue", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitMemberValue", comparison))
                 {
                     result = global::MyEnum.OmitMemberValue;
                     return true;
                 }
 
-                if (value.Equals("OmitUnderlying", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitUnderlying", comparison))
                 {
                     result = global::MyEnum.OmitUnderlying;
                     return true;
                 }
 
-                if (value.Equals("OmitUnderlyingLookup", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitUnderlyingLookup", comparison))
                 {
                     result = global::MyEnum.OmitUnderlyingLookup;
                     return true;
                 }
 
-                if (value.Equals("OmitDisplay", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitDisplay", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
                 }
 
-                if (value.Equals("OmitIsDefined", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitIsDefined", comparison))
                 {
                     result = global::MyEnum.OmitIsDefined;
                     return true;
                 }
 
-                if (value.Equals("OmitString", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "OmitString", comparison))
                 {
                     result = global::MyEnum.OmitString;
                     return true;
                 }
 
-                if (value.Equals("KeepExplicitly", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "KeepExplicitly", comparison))
                 {
                     result = global::MyEnum.KeepExplicitly;
                     return true;
@@ -277,49 +277,49 @@ internal static partial class Enums
             }
             if ((format & global::MyEnumFormat.Value) == global::MyEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
                 {
                     result = global::MyEnum.Keep;
                     return true;
                 }
 
-                if (value.Equals("3", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "3", comparison))
                 {
                     result = global::MyEnum.OmitMemberValue;
                     return true;
                 }
 
-                if (value.Equals("4", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "4", comparison))
                 {
                     result = global::MyEnum.OmitUnderlying;
                     return true;
                 }
 
-                if (value.Equals("5", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "5", comparison))
                 {
                     result = global::MyEnum.OmitUnderlyingLookup;
                     return true;
                 }
 
-                if (value.Equals("6", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "6", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
                 }
 
-                if (value.Equals("7", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "7", comparison))
                 {
                     result = global::MyEnum.OmitIsDefined;
                     return true;
                 }
 
-                if (value.Equals("8", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "8", comparison))
                 {
                     result = global::MyEnum.OmitString;
                     return true;
                 }
 
-                if (value.Equals("9", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "9", comparison))
                 {
                     result = global::MyEnum.KeepExplicitly;
                     return true;
@@ -331,7 +331,7 @@ internal static partial class Enums
 
 
 
-                if (value.Equals("Disp", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "Disp", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
@@ -346,7 +346,7 @@ internal static partial class Enums
 
 
 
-                if (value.Equals("Desc", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "Desc", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;

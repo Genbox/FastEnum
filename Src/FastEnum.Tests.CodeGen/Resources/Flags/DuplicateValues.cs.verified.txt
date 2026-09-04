@@ -137,25 +137,25 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ProfileFormat.Name) == global::Some.Namespace.Here.ProfileFormat.Name)
             {
-                if (value.Equals("Unknown", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "Unknown", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.Unknown;
                     return true;
                 }
 
-                if (value.Equals("WindowsLegacy", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "WindowsLegacy", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                     return true;
                 }
 
-                if (value.Equals("WindowsServer2022", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "WindowsServer2022", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                     return true;
                 }
 
-                if (value.Equals("NewestServer", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "NewestServer", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.NewestServer;
                     return true;
@@ -163,25 +163,25 @@ public static partial class Enums
             }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Value) == global::Some.Namespace.Here.ProfileFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.Unknown;
                     return true;
                 }
 
-                if (value.Equals("1", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                     return true;
                 }
 
-                if (value.Equals("256", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "256", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                     return true;
                 }
 
-                if (value.Equals("256", comparison))
+                if (global::System.MemoryExtensions.Equals(value, "256", comparison))
                 {
                     result = global::Some.Namespace.Here.Profile.NewestServer;
                     return true;

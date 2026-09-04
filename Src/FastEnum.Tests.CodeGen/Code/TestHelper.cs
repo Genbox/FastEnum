@@ -29,14 +29,14 @@ internal static class TestHelper
         return res;
     }
 
-    public static string GetGeneratedOutput<T>(string source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag) where T : IIncrementalGenerator, new()
+    public static string GetGeneratedOutput<T>(string source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag, CSharpParseOptions? parseOptions = null) where T : IIncrementalGenerator, new()
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
         //Add a few headers by default
         source = GetHeader() + "\n" + source;
 
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, cancellationToken: cancellationToken);
+        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, cancellationToken: cancellationToken);
         IEnumerable<PortableExecutableReference> refs = AppDomain.CurrentDomain.GetAssemblies()
                                                                  .Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location))
                                                                  .Select(x => MetadataReference.CreateFromFile(x.Location))
@@ -54,7 +54,7 @@ internal static class TestHelper
         T generator = new T();
         IEnumerable<ISourceGenerator> generators = [generator.AsSourceGenerator()];
 
-        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generators);
+        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generators, parseOptions: parseOptions);
 
         driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out codeGenDiag, cancellationToken);
         compilerDiag = outputCompilation.GetDiagnostics(cancellationToken).Where(x => !_ignore.Contains(x.Id));
