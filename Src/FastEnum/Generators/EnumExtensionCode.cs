@@ -18,6 +18,8 @@ internal static class EnumExtensionCode
         HashSet<object> values = new HashSet<object>();
         bool containsDuplicateValue = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
                                           .Any(x => !values.Add(x.Value));
+        values.Clear();
+        bool hasAliases = spec.Members.Any(x => !values.Add(x.Value));
 
         return $$"""
                  {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
@@ -159,6 +161,12 @@ internal static class EnumExtensionCode
             {
                 foreach (EnumMemberSpec em in spec.Members)
                 {
+                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
+                    {
+                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return string.Empty;";
+                        continue;
+                    }
+
                     string? value = getValue(em);
 
                     if (value != null)
@@ -186,10 +194,10 @@ internal static class EnumExtensionCode
 
         string GetString()
         {
-            if (containsDuplicateValue)
+            if (hasAliases)
             {
                 // If there are no omissions or transforms, we can just return the value.
-                if (Array.TrueForAll(spec.Members, x => x.OmitValueData == null && x.TransformValueData == null))
+                if (spec.TransformData == null && Array.TrueForAll(spec.Members, x => x.OmitValueData == null && x.TransformValueData == null))
                     return "return value.ToString();";
 
                 return $"""
@@ -272,13 +280,15 @@ internal static class EnumExtensionCode
 
         IEnumerable<string> GetMetadataCases(Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion, string resultName)
         {
+            HashSet<object> handledValues = new HashSet<object>();
+
             foreach (EnumMemberSpec em in spec.Members)
             {
                 if (em.OmitValueData?.Exclude.HasFlag(exclusion) == true)
                     continue;
 
                 string? text = getText(em);
-                if (text == null)
+                if (text == null || !handledValues.Add(em.Value))
                     continue;
 
                 yield return $"""

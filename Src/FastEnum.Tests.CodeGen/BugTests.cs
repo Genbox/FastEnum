@@ -7,6 +7,49 @@ namespace Genbox.FastEnum.Tests.CodeGen;
 /// </summary>
 public class BugTests
 {
+    [Theory]
+    [InlineData(false, "TryGetUnderlyingValue")]
+    [InlineData(true, "TryGetUnderlyingValue")]
+    [InlineData(false, "All")]
+    [InlineData(true, "All")]
+    public void OmittedAliasCompiles(bool flags, string exclusion)
+    {
+        string code = $$"""
+                        [FastEnum]
+                        {{(flags ? "[Flags]" : "")}}
+                        public enum AliasEnum
+                        {
+                            None = 0,
+                            First = 1,
+                            [EnumOmitValue(Exclude = EnumOmitExclude.{{exclusion}})]
+                            Alias = First
+                        }
+                        """;
+
+        Assert.NotEmpty(TestHelper.GetGeneratedOutput<EnumGenerator>(code));
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void AliasMetadataCompiles(bool flags)
+    {
+        string code = $$"""
+                        [FastEnum]
+                        {{(flags ? "[Flags]" : "")}}
+                        public enum AliasEnum
+                        {
+                            None = 0,
+                            [Display(Name = "First", Description = "First description")]
+                            First = 1,
+                            [Display(Name = "Alias", Description = "Alias description")]
+                            Alias = First
+                        }
+                        """;
+
+        Assert.NotEmpty(TestHelper.GetGeneratedOutput<EnumGenerator>(code));
+    }
+
     [Fact]
     public void TestUlongBug()
     {
