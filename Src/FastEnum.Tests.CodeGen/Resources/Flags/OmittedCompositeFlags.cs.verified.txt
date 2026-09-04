@@ -198,7 +198,7 @@ public static partial class Enums
         /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefined(global::Some.Namespace.Here.MyEnum input)
         {
-            return unchecked(((int)3UL & (int)input) == (int)input);
+            return input != global::Some.Namespace.Here.MyEnum.Both && unchecked(((int)3UL & (int)input) == (int)input);
         }
 
         private static string[]? _names;

@@ -5,3 +5,6 @@ public enum MyPublicEnum
 {
     First
 }
+
+[FastEnum(EnumsClassVisibility = Visibility.Internal)]
+public enum PublicExtensionEnum { None }

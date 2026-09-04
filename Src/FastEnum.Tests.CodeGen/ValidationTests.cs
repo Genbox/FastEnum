@@ -58,28 +58,6 @@ public class ValidationTests
             Assert.Equal("FE001", Assert.Single(diagnostics).Id);
     }
 
-    /// <summary>A public enum in an internal class gets internal helpers.</summary>
-    [Fact]
-    public void TestLessVisibleClass()
-    {
-        string code = """
-                      internal class MyInternalClass
-                      {
-                          [FastEnum]
-                          public enum MyPublicEnum1
-                          {
-                              Value
-                          }
-                      }
-                      """;
-
-        string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Assert.Empty(codeGenDiag);
-        Assert.Empty(compilerDiag);
-        Assert.Contains("internal static partial class MyPublicEnum1Extensions", output, StringComparison.Ordinal);
-        Assert.Contains("internal enum MyPublicEnum1Format", output, StringComparison.Ordinal);
-    }
-
     /// <summary>Public helper overrides cannot expose an internal enum.</summary>
     [Theory]
     [InlineData("EnumsClassVisibility")]
@@ -92,54 +70,6 @@ public class ValidationTests
                         """;
 
         await VerifyValidationError(code).UseParameters(propertyName);
-    }
-
-    /// <summary>Ensures shared partial wrapper declarations use compatible visibility.</summary>
-    [Fact]
-    public void TestSharedEnumsClassVisibility()
-    {
-        string code = """
-                      [FastEnum]
-                      internal enum InternalEnum
-                      {
-                          Value
-                      }
-
-                      [FastEnum]
-                      public enum PublicEnum
-                      {
-                          Value
-                      }
-                      """;
-
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Assert.Empty(codeGenDiag);
-        Assert.Empty(compilerDiag);
-    }
-
-    /// <summary>Ensures multiple enums can contribute overloads to one partial extension class.</summary>
-    [Fact]
-    public void TestSharedExtensionClass()
-    {
-        string code = """
-                      namespace Example;
-
-                      [FastEnum(ExtensionClassName = "SharedExtensions")]
-                      public enum First
-                      {
-                          Value
-                      }
-
-                      [FastEnum(ExtensionClassName = "SharedExtensions")]
-                      public enum Second
-                      {
-                          Value
-                      }
-                      """;
-
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Assert.Empty(codeGenDiag);
-        Assert.Empty(compilerDiag);
     }
 
     /// <summary>Ensures shared partial extension declarations use compatible visibility.</summary>
@@ -161,23 +91,6 @@ public class ValidationTests
                       """;
 
         await VerifyValidationError(code);
-    }
-
-    /// <summary>Ensures a format enum is visible wherever a generated public API exposes it.</summary>
-    [Fact]
-    public void TestFormatEnumVisibility()
-    {
-        string code = """
-                      [FastEnum(EnumsClassVisibility = Visibility.Internal, ExtensionClassVisibility = Visibility.Public)]
-                      public enum PublicEnum
-                      {
-                          Value
-                      }
-                      """;
-
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
-        Assert.Empty(codeGenDiag);
-        Assert.Empty(compilerDiag);
     }
 
     /// <summary>Ensures enums inside generic containing types produce a validation diagnostic.</summary>

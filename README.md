@@ -18,7 +18,7 @@ A source generator to generate common methods for your enum types at compile-tim
 * Support for flag enums, including composite values, negative values, duplicate aliases, transformed names and per-member omissions.
 * Support for preset, regex, case-pattern and per-member name transformations, plus independent metadata sorting.
 * Support for fully or selectively skipping enum values with `[EnumOmitValue]`.
-* Support for public and internal enums, including empty enums and enums in the global namespace or non-generic containing types.
+* Support for public, internal, and accessible protected internal enums, including empty enums and enums in the global namespace or non-generic containing types.
 * Support for every C# enum underlying type, explicit/negative values and duplicate values.
 * Support for string and span parsing by name, value, display name or description with configurable `StringComparison`.
 * Support for duplicate enum names in different namespaces and escaped C# identifiers.
@@ -96,6 +96,10 @@ Underlying values:
 | Enum extensions | `GetString()`, `GetUnderlyingValue()`, `IsFlagSet()`        | Operate on a specific enum value.       |
 | Metadata helper | `Enums.Color.TryParse()`, `GetMemberNames()`, `IsDefined()` | Parse values and inspect the enum type. |
 
+`MemberCount` and `IsFlagEnum` describe the enum. `GetMemberNames()`, `GetMemberValues()`, and `GetUnderlyingValues()` return its included members.
+
+`GetString(ColorFormat)` selects `Name`, invariant numeric `Value`, or available `DisplayName`/`Description` metadata. Formats can be combined; `Default` is `Name | Value`. Formatting prefers display name, description, name, then value, and falls back to `Enum.ToString()` when none matches. `None` uses that fallback directly.
+
 ### Values via attributes
 
 #### DisplayAttribute
@@ -165,6 +169,8 @@ Composite value: 5
 #### ExtensionClassName
 
 The generated extension class is `partial`. Set this to the name of your own partial extension class to combine generated and user-authored methods. The default is `<EnumName>Extensions`.
+
+Multiple enums can share an extension class when their effective extension-class visibility matches. Shared `Enums` wrappers become public if any generated helper requires it.
 
 #### ExtensionClassNamespace
 
@@ -339,6 +345,8 @@ Green
 `[EnumOmitValue]` options:
 
 * `Exclude` is a flag enum controlling which generated APIs omit the member. Defaults to `EnumOmitExclude.All` when not specified.
+
+Targets are `GetMemberNames`, `GetMemberValues`, `GetUnderlyingValues`, `TryGetUnderlyingValue`, `TryParse`, `TryGetDisplayName`, `TryGetDescription`, `IsDefined`, and `GetString`; combine them with `|`, or use `All`/`None`.
 
 ```csharp
 [FastEnum]

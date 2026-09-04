@@ -1,4 +1,4 @@
-// Internal enum should produce internal wrappers/extensions
+// A shared public wrapper preserves internal helpers/extensions for the internal enum.
 
 namespace Some.Namespace.Here;
 
@@ -9,3 +9,6 @@ internal enum MyEnum
     Second,
     Third
 }
+
+[FastEnum]
+public enum PublicEnum { None }

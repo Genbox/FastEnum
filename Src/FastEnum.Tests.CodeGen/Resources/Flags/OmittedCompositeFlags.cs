@@ -8,6 +8,6 @@ public enum MyEnum
 {
     First = 1,
     Second = 2,
-    [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue)]
+    [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue | EnumOmitExclude.IsDefined)]
     Both = First | Second
 }
