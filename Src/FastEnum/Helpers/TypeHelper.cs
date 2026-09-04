@@ -23,10 +23,10 @@ internal static class TypeHelper
 
         foreach (KeyValuePair<string, TypedConstant> pair in data)
         {
-            if (pair.Value.Value == null)
+            // Data models may intentionally map only a subset of an attribute's properties.
+            if (pair.Value.Value == null || !indexed.TryGetValue(pair.Key, out PropertyInfo? prop))
                 continue;
 
-            PropertyInfo prop = indexed[pair.Key];
             prop.SetValue(instance, pair.Value.Value);
         }
 
