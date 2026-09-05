@@ -1,16 +1,4 @@
-namespace Genbox.FastEnum.Tests.Functionality.Code;
-
-[FastEnum]
-internal enum UnderlyingAliasEnum
-{
-    None = 0,
-    [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue)]
-    Omitted = 1,
-    First = Omitted,
-    Second = Omitted,
-    [EnumOmitValue(Exclude = EnumOmitExclude.TryGetUnderlyingValue)]
-    Excluded = 2
-}
+﻿namespace Genbox.FastEnum.Tests.Functionality.Code;
 
 [FastEnum]
 [Flags]
@@ -31,14 +19,4 @@ internal enum OmittedValidationFlags : long
     Sign = long.MinValue,
     [EnumOmitValue(Exclude = EnumOmitExclude.IsDefined)]
     SignedFirst = Sign | First
-}
-
-[FastEnum]
-[Flags]
-internal enum FullyOmittedFlags
-{
-    [EnumOmitValue]
-    None = 0,
-    [EnumOmitValue]
-    First = 1
 }

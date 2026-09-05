@@ -1,15 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Genbox.FastEnum.Tests.Functionality.Code;
-
-[FastEnum]
-[EnumTransform(Preset = EnumTransform.LowerCase)]
-internal enum TransformedAliasEnum
-{
-    None = 0,
-    First = 1,
-    Alias = First
-}
 
 [FastEnum]
 internal enum AliasEnum
@@ -29,18 +20,4 @@ internal enum AliasEnum
     MissingMetadata = 3,
     [Display(Name = "Available name", Description = "Available description")]
     AvailableMetadata = MissingMetadata
-}
-
-[FastEnum]
-internal enum OmittedFormattingEnum
-{
-    None = 0,
-    [EnumOmitValue]
-    [Display(Name = "Hidden name", Description = "Hidden description")]
-    OmitAll = 1,
-    [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]
-    [Display(Name = "Retained name", Description = "Retained description")]
-    OmitString = 2,
-    [EnumOmitValue(Exclude = EnumOmitExclude.GetString)]
-    WithoutMetadata = 3
 }
