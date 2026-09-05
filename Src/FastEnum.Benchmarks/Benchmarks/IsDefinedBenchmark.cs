@@ -1,40 +1,22 @@
-using System.Diagnostics.CodeAnalysis;
 using Genbox.FastEnum.Benchmarks.Code;
 
 namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 
-[SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "Compiler will tamper with results if const")]
 [BenchmarkCategory("IsDefined")]
 public class IsDefinedBenchmark
 {
-    private static readonly TestEnum _enum = TestEnum.Second;
-    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
-    private static readonly TestFlagsEnum _flagsEnum = TestFlagsEnum.One;
+    [Params(TestEnum.First, TestEnum.Third, (TestEnum)(-1))]
+    public TestEnum Value { get; set; }
 
     [Benchmark(Baseline = true)]
-    public bool EnumIsDefined() => Enum.IsDefined(typeof(TestEnum), _enum);
+    public bool EnumIsDefined() => Enum.IsDefined(Value);
 
     [Benchmark]
-    public bool FastEnumIsDefined() => Enums.TestEnum.IsDefined(_enum);
+    public bool EnumIsDefinedNonGeneric() => Enum.IsDefined(typeof(TestEnum), Value);
 
     [Benchmark]
-    public bool EnumsNetIsDefined() => EnumsNET.Enums.IsDefined(_enum);
+    public bool FastEnumIsDefined() => Enums.TestEnum.IsDefined(Value);
 
     [Benchmark]
-    public bool EnumIsDefinedFlags() => Enum.IsDefined(typeof(TestFlagsEnum), _flagsEnum);
-
-    [Benchmark]
-    public bool FastEnumIsDefinedFlags() => Enums.TestFlagsEnum.IsDefined(_flagsEnum);
-
-    [Benchmark]
-    public bool EnumsNetIsDefinedFlags() => EnumsNET.Enums.IsDefined(_flagsEnum);
-
-    [Benchmark]
-    public bool EnumIsDefinedLargeEnum() => Enum.IsDefined(typeof(LargeEnum), _largeEnum);
-
-    [Benchmark]
-    public bool FastEnumIsDefinedLargeEnum() => Enums.LargeEnum.IsDefined(_largeEnum);
-
-    [Benchmark]
-    public bool EnumsNetIsDefinedLargeEnum() => EnumsNET.Enums.IsDefined(_largeEnum);
+    public bool EnumsNetIsDefined() => EnumsNET.Enums.IsDefined(Value);
 }

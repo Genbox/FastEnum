@@ -1,21 +1,20 @@
-using System.Diagnostics.CodeAnalysis;
 using EnumsNET;
 using Genbox.FastEnum.Benchmarks.Code;
 
 namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 
-[SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "Compiler will tamper with results if const")]
 [BenchmarkCategory("Flags")]
 public class FlagBenchmarks
 {
-    private static readonly TestFlagsEnum _flags = TestFlagsEnum.One | TestFlagsEnum.Two;
+    [Params(TestFlagsEnum.None, TestFlagsEnum.One, TestFlagsEnum.One | TestFlagsEnum.Two)]
+    public TestFlagsEnum Value { get; set; }
 
     [Benchmark(Baseline = true)]
-    public bool EnumHasFlag() => _flags.HasFlag(TestFlagsEnum.One);
+    public bool EnumHasFlag() => Value.HasFlag(TestFlagsEnum.One);
 
     [Benchmark]
-    public bool FastEnumHasFlag() => _flags.IsFlagSet(TestFlagsEnum.One);
+    public bool FastEnumHasFlag() => Value.IsFlagSet(TestFlagsEnum.One);
 
     [Benchmark]
-    public bool EnumsNetHasFlag() => _flags.HasAnyFlags(TestFlagsEnum.One);
+    public bool EnumsNetHasFlag() => Value.HasAnyFlags(TestFlagsEnum.One);
 }

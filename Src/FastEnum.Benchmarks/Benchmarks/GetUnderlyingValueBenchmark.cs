@@ -1,30 +1,31 @@
-using System.Diagnostics.CodeAnalysis;
 using Genbox.FastEnum.Benchmarks.Code;
 
 namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 
-[SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "Compiler will tamper with results if const")]
 [BenchmarkCategory("Underlying values")]
 public class GetUnderlyingValueBenchmark
 {
-    private static readonly TestEnum _enum = TestEnum.Second;
-    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
+    [Params(TestEnum.First, TestEnum.Third)]
+    public TestEnum Value { get; set; }
+
+    [Params((LargeEnum)0, LargeEnum.Value1023)]
+    public LargeEnum LargeValue { get; set; }
 
     [Benchmark(Baseline = true)]
-    public int EnumGetValues() => (int)_enum;
+    public int EnumGetValues() => (int)Value;
 
     [Benchmark]
-    public int FastEnumGetValues() => _enum.GetUnderlyingValue();
+    public int FastEnumGetValues() => Value.GetUnderlyingValue();
 
     [Benchmark]
-    public int EnumsNetGetValues() => (int)EnumsNET.Enums.GetUnderlyingValue(_enum);
+    public int EnumsNetGetValues() => (int)EnumsNET.Enums.GetUnderlyingValue(Value);
 
     [Benchmark]
-    public int EnumGetValuesLargeEnum() => (int)_largeEnum;
+    public int EnumGetValuesLargeEnum() => (int)LargeValue;
 
     [Benchmark]
-    public int FastEnumGetValuesLargeEnum() => _largeEnum.GetUnderlyingValue();
+    public int FastEnumGetValuesLargeEnum() => LargeValue.GetUnderlyingValue();
 
     [Benchmark]
-    public int EnumsNetGetValuesLargeEnum() => (int)EnumsNET.Enums.GetUnderlyingValue(_largeEnum);
+    public int EnumsNetGetValuesLargeEnum() => (int)EnumsNET.Enums.GetUnderlyingValue(LargeValue);
 }

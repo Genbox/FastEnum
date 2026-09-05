@@ -1,49 +1,51 @@
-using System.Diagnostics.CodeAnalysis;
 using EnumsNET;
 using Genbox.FastEnum.Benchmarks.Code;
 
 namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 
-[SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "Compiler will tamper with results if const")]
 [BenchmarkCategory("ToString")]
 public class ToStringBenchmark
 {
-    private static readonly TestEnum _enum = TestEnum.Second;
-    private static readonly LargeEnum _largeEnum = LargeEnum.Value1023;
+    // These members have display metadata, which the display-name benchmarks require.
+    [Params(TestEnum.Second)]
+    public TestEnum Value { get; set; }
+
+    [Params(LargeEnum.Value1023)]
+    public LargeEnum LargeValue { get; set; }
 
     [Benchmark(Baseline = true)]
-    public string EnumToString() => _enum.ToString();
+    public string EnumToString() => Value.ToString();
 
     [Benchmark]
-    public string FastEnumToString() => _enum.GetString();
+    public string FastEnumToString() => Value.GetString();
 
     [Benchmark]
-    public string EnumsNetToString() => _enum.AsString();
+    public string EnumsNetToString() => Value.AsString();
 
     [Benchmark]
-    public string FastEnumGetDisplayName() => _enum.GetDisplayName();
+    public string FastEnumGetDisplayName() => Value.GetDisplayName();
 
     [Benchmark]
-    public string? EnumsNetGetDisplayName() => _enum.AsString(EnumFormat.DisplayName);
+    public string? EnumsNetGetDisplayName() => Value.AsString(EnumFormat.DisplayName);
 
     [Benchmark]
-    public string ReflectionGetDisplayName() => EnumHelper<TestEnum>.GetDisplayName(_enum);
+    public string ReflectionGetDisplayName() => EnumHelper<TestEnum>.GetDisplayName(Value);
 
     [Benchmark]
-    public string EnumToStringLargeEnum() => _largeEnum.ToString();
+    public string EnumToStringLargeEnum() => LargeValue.ToString();
 
     [Benchmark]
-    public string FastEnumToStringLargeEnum() => _largeEnum.GetString();
+    public string FastEnumToStringLargeEnum() => LargeValue.GetString();
 
     [Benchmark]
-    public string EnumsNetToStringLargeEnum() => _largeEnum.AsString();
+    public string EnumsNetToStringLargeEnum() => LargeValue.AsString();
 
     [Benchmark]
-    public string FastEnumGetDisplayNameLargeEnum() => _largeEnum.GetDisplayName();
+    public string FastEnumGetDisplayNameLargeEnum() => LargeValue.GetDisplayName();
 
     [Benchmark]
-    public string? EnumsNetGetDisplayNameLargeEnum() => _largeEnum.AsString(EnumFormat.DisplayName);
+    public string? EnumsNetGetDisplayNameLargeEnum() => LargeValue.AsString(EnumFormat.DisplayName);
 
     [Benchmark]
-    public string ReflectionGetDisplayNameLargeEnum() => EnumHelper<LargeEnum>.GetDisplayName(_largeEnum);
+    public string ReflectionGetDisplayNameLargeEnum() => EnumHelper<LargeEnum>.GetDisplayName(LargeValue);
 }

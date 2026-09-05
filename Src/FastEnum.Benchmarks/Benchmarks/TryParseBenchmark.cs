@@ -1,4 +1,3 @@
-using EnumsNET;
 using Genbox.FastEnum.Benchmarks.Code;
 using Enums = Genbox.FastEnum.Benchmarks.Code.Enums;
 
@@ -7,39 +6,26 @@ namespace Genbox.FastEnum.Benchmarks.Benchmarks;
 [BenchmarkCategory("TryParse")]
 public class TryParseBenchmark
 {
+    [Params("First", "Third", "Missing", "third")]
+    public string Input { get; set; } = null!;
+
+    [Params(false, true)]
+    public bool IgnoreCase { get; set; }
+
+    private StringComparison Comparison => IgnoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
     [Benchmark(Baseline = true)]
-    public TestEnum EnumTryParse() => Enum.TryParse("Second", false, out TestEnum result) ? result : default;
+    public bool EnumTryParse() => Enum.TryParse<TestEnum>(Input, IgnoreCase, out _);
 
     [Benchmark]
-    public TestEnum FastEnumTryParse() => Enums.TestEnum.TryParse("Second", out TestEnum result) ? result : default;
+    public bool FastEnumTryParse() => Enums.TestEnum.TryParse(Input, out _, comparison: Comparison);
 
     [Benchmark]
-    public TestEnum EnumsNetTryParse() => EnumsNET.Enums.TryParse("Second", false, out TestEnum result) ? result : default;
+    public bool EnumsNetTryParse() => EnumsNET.Enums.TryParse<TestEnum>(Input, IgnoreCase, out _);
 
     [Benchmark]
-    public TestEnum ReflectionTryParseDisplayName() => EnumHelper<TestEnum>.TryParseByDisplayName("2nd", false, out TestEnum result) ? result : default;
+    public bool EnumTryParseSpan() => Enum.TryParse<TestEnum>(Input.AsSpan(), IgnoreCase, out _);
 
     [Benchmark]
-    public TestEnum FastEnumTryParseDisplayName() => Enums.TestEnum.TryParse("2nd", out TestEnum result, TestEnumFormat.DisplayName) ? result : default;
-
-    [Benchmark]
-    public TestEnum EnumsNetTryParseDisplayName() => EnumsNET.Enums.TryParse("2nd", false, out TestEnum result, EnumFormat.DisplayName) ? result : default;
-
-    [Benchmark]
-    public LargeEnum EnumTryParseLargeEnum() => Enum.TryParse("Value1023", false, out LargeEnum result) ? result : default;
-
-    [Benchmark]
-    public LargeEnum FastEnumTryParseLargeEnum() => Enums.LargeEnum.TryParse("Value1023", out LargeEnum result) ? result : default;
-
-    [Benchmark]
-    public LargeEnum EnumsNetTryParseLargeEnum() => EnumsNET.Enums.TryParse("Value1023", false, out LargeEnum result) ? result : default;
-
-    [Benchmark]
-    public LargeEnum ReflectionTryParseDisplayNameLargeEnum() => EnumHelper<LargeEnum>.TryParseByDisplayName("Last value", false, out LargeEnum result) ? result : default;
-
-    [Benchmark]
-    public LargeEnum FastEnumTryParseDisplayNameLargeEnum() => Enums.LargeEnum.TryParse("Last value", out LargeEnum result, LargeEnumFormat.DisplayName) ? result : default;
-
-    [Benchmark]
-    public LargeEnum EnumsNetTryParseDisplayNameLargeEnum() => EnumsNET.Enums.TryParse("Last value", false, out LargeEnum result, EnumFormat.DisplayName) ? result : default;
+    public bool FastEnumTryParseSpan() => Enums.TestEnum.TryParse(Input.AsSpan(), out _, comparison: Comparison);
 }
