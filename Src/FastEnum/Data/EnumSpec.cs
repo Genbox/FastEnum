@@ -41,9 +41,9 @@ internal class EnumSpec : IEquatable<EnumSpec>
     public EnumTransformData? TransformData { get; }
     public EnumMemberSpec[] Members { get; }
 
-    public bool Equals(EnumSpec other)
+    public bool Equals(EnumSpec? other)
     {
-        return Name == other.Name &&
+        return other != null && Name == other.Name &&
                EmittedIdentifier == other.EmittedIdentifier &&
                FullName == other.FullName &&
                FullyQualifiedName == other.FullyQualifiedName &&
@@ -59,7 +59,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
                Equals(TransformData, other.TransformData);
     }
 
-    public override bool Equals(object? obj) => obj != null && Equals((EnumSpec)obj);
+    public override bool Equals(object? obj) => obj is EnumSpec other && Equals(other);
 
     public override int GetHashCode()
     {
