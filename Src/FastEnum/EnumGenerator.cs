@@ -28,7 +28,9 @@ public class EnumGenerator : IIncrementalGenerator
         IncrementalValueProvider<ImmutableArray<EnumSpec>> sp = context.SyntaxProvider
                                                                        .ForAttributeWithMetadataName(FastEnumAttr, static (node, _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0, Transform)
                                                                        .Where(x => x != null)
-                                                                       .Collect()!;
+                                                                       .WithTrackingName("EnumSpecs")
+                                                                       .Collect()
+                                                                       .WithTrackingName("CollectedEnums")!;
 
         context.RegisterSourceOutput(sp, (spc, specs) =>
         {

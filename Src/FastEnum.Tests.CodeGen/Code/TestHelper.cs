@@ -37,19 +37,7 @@ internal static class TestHelper
         source = GetHeader() + "\n" + source;
 
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, cancellationToken: cancellationToken);
-        IEnumerable<PortableExecutableReference> refs = AppDomain.CurrentDomain.GetAssemblies()
-                                                                 .Where(x => !x.IsDynamic && !string.IsNullOrWhiteSpace(x.Location))
-                                                                 .Select(x => MetadataReference.CreateFromFile(x.Location))
-                                                                 .Concat([
-                                                                     MetadataReference.CreateFromFile(typeof(T).Assembly.Location),
-                                                                     MetadataReference.CreateFromFile(typeof(DisplayAttribute).Assembly.Location),
-                                                                     MetadataReference.CreateFromFile(typeof(FlagsAttribute).Assembly.Location)
-                                                                 ]);
-
-        CSharpCompilation compilation = CSharpCompilation.Create("generator",
-            [syntaxTree],
-            refs,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        CSharpCompilation compilation = CreateCompilation([syntaxTree]);
 
         T generator = new T();
         IEnumerable<ISourceGenerator> generators = [generator.AsSourceGenerator()];
@@ -72,5 +60,21 @@ internal static class TestHelper
     private static string GetHeader()
     {
         return _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.cs"));
+    }
+
+    // Runtime references keep unit tests independent of assembly load order. Target-framework
+    // compatibility is checked separately by Scripts/Test-Package.ps1 using SDK reference packs.
+    internal static CSharpCompilation CreateCompilation(IEnumerable<SyntaxTree> syntaxTrees)
+    {
+        string platformAssemblies = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")
+                                    ?? throw new InvalidOperationException("Runtime assembly references are unavailable.");
+        IEnumerable<PortableExecutableReference> references = platformAssemblies.Split(Path.PathSeparator)
+            .Append(typeof(EnumGenerator).Assembly.Location)
+            .Append(typeof(DisplayAttribute).Assembly.Location)
+            .Distinct(StringComparer.Ordinal)
+            .Select(path => MetadataReference.CreateFromFile(path));
+
+        return CSharpCompilation.Create("generator", syntaxTrees, references,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
     }
 }
