@@ -55,6 +55,7 @@
   <Folder Name="/_Scripts/">
     <File Path="Scripts/Build.ps1" />
     <File Path="Scripts/Common.ps1" />
+    <File Path="Scripts/Get-BenchmarkTable.ps1" />
     <File Path="Scripts/Publish.ps1" />
   </Folder>
   <Project Path="Src/FastEnum.Benchmarks/FastEnum.Benchmarks.csproj" />

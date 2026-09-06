@@ -407,83 +407,36 @@ and `Enums.MyEnum.IsDefined(MyEnum.Value1 | MyEnum.Value3)` both work.
 
 Here are benchmarks for calling different methods in .NET versus using FastEnum or [Enums.NET](https://github.com/TylerBrinkley/Enums.NET). Enums.NET is a high-performance library for working with enum values.
 
-Results were produced with BenchmarkDotNet 0.15.8 on .NET 10.0.11 using an Intel Core i7-12700K. For measurements distinguishable from empty-method overhead, FastEnum is about 9-1,200x faster than the corresponding .NET or reflection APIs and 1.2-7.2x faster than Enums.NET. Measurements close to zero may be indistinguishable from the empty-method overhead.
+#### Common operations
 
-| Method                                 |            Mean |         Error |         StdDev |          Median |
-|----------------------------------------|----------------:|--------------:|---------------:|----------------:|
-| EnumHasFlag                            |       0.0028 ns |     0.0019 ns |      0.0017 ns |       0.0028 ns |
-| FastEnumHasFlag                        |       0.0033 ns |     0.0028 ns |      0.0023 ns |       0.0038 ns |
-| EnumsNetHasFlag                        |       0.0015 ns |     0.0049 ns |      0.0044 ns |       0.0000 ns |
-|                                        |                 |               |                |                 |
-| EnumIsDefined                          |      11.3809 ns |     0.2514 ns |      0.5249 ns |      11.2634 ns |
-| FastEnumIsDefined                      |       0.0000 ns |     0.0000 ns |      0.0000 ns |       0.0000 ns |
-| EnumsNetIsDefined                      |       0.1360 ns |     0.0188 ns |      0.0157 ns |       0.1362 ns |
-| EnumIsDefinedFlags                     |      10.4597 ns |     0.2145 ns |      0.3868 ns |      10.3931 ns |
-| FastEnumIsDefinedFlags                 |       0.0335 ns |     0.0194 ns |      0.0172 ns |       0.0371 ns |
-| EnumsNetIsDefinedFlags                 |       0.0265 ns |     0.0245 ns |      0.0318 ns |       0.0089 ns |
-|                                        |                 |               |                |                 |
-| EnumLength                             |       9.1790 ns |     0.2088 ns |      0.4670 ns |       9.0306 ns |
-| FastEnumLength                         |       0.0086 ns |     0.0048 ns |      0.0040 ns |       0.0074 ns |
-| EnumsNetLength                         |       1.3818 ns |     0.0131 ns |      0.0116 ns |       1.3847 ns |
-|                                        |                 |               |                |                 |
-| EnumGetNames                           |      11.4278 ns |     0.2603 ns |      0.3196 ns |      11.3700 ns |
-| FastEnumGetNames                       |       0.5697 ns |     0.0296 ns |      0.0262 ns |       0.5662 ns |
-| EnumsNetGetNames                       |       0.8771 ns |     0.0422 ns |      0.0374 ns |       0.8855 ns |
-|                                        |                 |               |                |                 |
-| EnumToString                           |       6.2842 ns |     0.1541 ns |      0.2444 ns |       6.1861 ns |
-| FastEnumToString                       |       0.4599 ns |     0.0259 ns |      0.0242 ns |       0.4596 ns |
-| EnumsNetToString                       |       0.9274 ns |     0.0604 ns |      0.0993 ns |       0.9182 ns |
-|                                        |                 |               |                |                 |
-| ReflectionGetDisplayName               |     508.2034 ns |     9.7851 ns |     24.7281 ns |     497.2392 ns |
-| FastEnumGetDisplayName                 |       0.4649 ns |     0.0207 ns |      0.0173 ns |       0.4602 ns |
-| EnumsNetGetDisplayName                 |       3.1151 ns |     0.0628 ns |      0.0524 ns |       3.1055 ns |
-|                                        |                 |               |                |                 |
-| EnumTryParse                           |      11.2563 ns |     0.2212 ns |      0.1847 ns |      11.2343 ns |
-| FastEnumTryParse                       |       0.0000 ns |     0.0000 ns |      0.0000 ns |       0.0000 ns |
-| EnumsNetTryParse                       |       5.2431 ns |     0.1274 ns |      0.1516 ns |       5.2066 ns |
-|                                        |                 |               |                |                 |
-| ReflectionTryParseDisplayName          |     756.3817 ns |    14.5033 ns |     39.4573 ns |     741.5761 ns |
-| FastEnumTryParseDisplayName            |       0.0017 ns |     0.0054 ns |      0.0045 ns |       0.0000 ns |
-| EnumsNetTryParseDisplayName            |       7.9300 ns |     0.1603 ns |      0.2931 ns |       7.8997 ns |
-|                                        |                 |               |                |                 |
-| EnumGetValues                          |       0.0278 ns |     0.0157 ns |      0.0139 ns |       0.0252 ns |
-| FastEnumGetValues                      |       0.0047 ns |     0.0100 ns |      0.0094 ns |       0.0000 ns |
-| EnumsNetGetValues                      |       0.0119 ns |     0.0183 ns |      0.0203 ns |       0.0000 ns |
-|                                        |                 |               |                |                 |
-| EnumGetValues                          |      17.7787 ns |     0.1652 ns |      0.1380 ns |      17.7083 ns |
-| FastEnumGetValues                      |       0.6865 ns |     0.0561 ns |      0.1323 ns |       0.6460 ns |
-| EnumsNetGetValues                      |       0.6081 ns |     0.0390 ns |      0.0365 ns |       0.5991 ns |
-|                                        |                 |               |                |                 |
-| EnumIsDefinedLargeEnum                 |      18.9906 ns |     0.0684 ns |      0.0534 ns |      18.9888 ns |
-| FastEnumIsDefinedLargeEnum             |       0.1241 ns |     0.0134 ns |      0.0112 ns |       0.1234 ns |
-| EnumsNetIsDefinedLargeEnum             |       0.1110 ns |     0.0059 ns |      0.0046 ns |       0.1112 ns |
-|                                        |                 |               |                |                 |
-| EnumLengthLargeEnum                    |     443.3940 ns |    12.8209 ns |     37.8028 ns |     436.0332 ns |
-| FastEnumLengthLargeEnum                |       0.0186 ns |     0.0189 ns |      0.0185 ns |       0.0156 ns |
-| EnumsNetLengthLargeEnum                |       1.1838 ns |     0.0245 ns |      0.0204 ns |       1.1799 ns |
-|                                        |                 |               |                |                 |
-| EnumGetNamesLargeEnum                  |     431.3348 ns |     8.0160 ns |     11.7497 ns |     427.4168 ns |
-| FastEnumGetNamesLargeEnum              |       1.1398 ns |     0.0634 ns |      0.0623 ns |       1.1230 ns |
-| EnumsNetGetNamesLargeEnum              |       0.7173 ns |     0.0558 ns |      0.0902 ns |       0.6992 ns |
-|                                        |                 |               |                |                 |
-| EnumToStringLargeEnum                  |      19.3085 ns |     0.4218 ns |      0.5484 ns |      19.3017 ns |
-| FastEnumToStringLargeEnum              |       6.7678 ns |     0.0403 ns |      0.0377 ns |       6.7600 ns |
-| EnumsNetToStringLargeEnum              |       0.8277 ns |     0.0421 ns |      0.0373 ns |       0.8085 ns |
-| FastEnumGetDisplayNameLargeEnum        |       0.4668 ns |     0.0297 ns |      0.0278 ns |       0.4561 ns |
-| EnumsNetGetDisplayNameLargeEnum        |       2.6696 ns |     0.0354 ns |      0.0331 ns |       2.6686 ns |
-| ReflectionGetDisplayNameLargeEnum      |     549.0822 ns |    10.9259 ns |     19.1358 ns |     540.0147 ns |
-|                                        |                 |               |                |                 |
-| EnumTryParseLargeEnum                  |   2,468.7719 ns |    25.3011 ns |     23.6666 ns |   2,467.2106 ns |
-| FastEnumTryParseLargeEnum              |       2.7647 ns |     0.0636 ns |      0.0564 ns |       2.7693 ns |
-| EnumsNetTryParseLargeEnum              |       6.7580 ns |     0.1547 ns |      0.1519 ns |       6.7152 ns |
-| ReflectionTryParseDisplayNameLargeEnum | 192,173.4413 ns | 7,290.0294 ns | 21,033.4032 ns | 182,611.4624 ns |
-| FastEnumTryParseDisplayNameLargeEnum   |       4.9957 ns |     0.3116 ns |      0.9188 ns |       4.3862 ns |
-| EnumsNetTryParseDisplayNameLargeEnum   |      11.2140 ns |     0.0777 ns |      0.0606 ns |      11.2271 ns |
-|                                        |                 |               |                |                 |
-| EnumGetValuesLargeEnum                 |       0.0000 ns |     0.0000 ns |      0.0000 ns |       0.0000 ns |
-| FastEnumGetValuesLargeEnum             |       5.0796 ns |     0.2452 ns |      0.7231 ns |       5.1458 ns |
-| EnumsNetGetValuesLargeEnum             |       0.0111 ns |     0.0195 ns |      0.0182 ns |       0.0000 ns |
-|                                        |                 |               |                |                 |
-| EnumGetValuesLargeEnum                 |     185.1160 ns |     3.6635 ns |      5.9159 ns |     183.9072 ns |
-| FastEnumGetValuesLargeEnum             |       1.0278 ns |     0.0609 ns |      0.1350 ns |       0.9884 ns |
-| EnumsNetGetValuesLargeEnum             |       0.9190 ns |     0.0370 ns |      0.0346 ns |       0.9232 ns |
+| Operation       | Enum size  | FastEnum |      .NET | Enums.NET |
+|-----------------|------------|---------:|----------:|----------:|
+| Get names       | Small enum |  0.57 ns |  10.00 ns |   0.83 ns |
+| Get names       | Large enum |  1.04 ns | 379.99 ns |   0.84 ns |
+| Get values      | Small enum |  0.62 ns |  12.05 ns |   0.64 ns |
+| Get values      | Large enum |  0.65 ns | 160.60 ns |   0.61 ns |
+| ToString        | Small enum |  0.85 ns |   5.77 ns |   0.86 ns |
+| ToString        | Large enum |  6.75 ns |  17.40 ns |   0.85 ns |
+| IsDefined, hit  | Small enum |  0.00 ns |   0.11 ns |   0.11 ns |
+| IsDefined, hit  | Large enum |  0.12 ns |   7.98 ns |   0.11 ns |
+| IsDefined, miss | Small enum |  0.00 ns |   0.13 ns |   0.12 ns |
+| IsDefined, miss | Large enum |  0.14 ns |   8.14 ns |   0.11 ns |
+
+#### Parsing
+
+Exact matches and misses are case-sensitive. Ignore-case rows use a lowercase name. The large-enum hit is the last member (Value1023).
+
+| Input / scenario    | Enum size  |     FastEnum |        .NET |    Enums.NET |
+|---------------------|------------|-------------:|------------:|-------------:|
+| String, hit         | Small enum |      4.05 ns |    12.53 ns |      6.68 ns |
+| String, miss        | Small enum |      6.10 ns |    11.95 ns |      9.47 ns |
+| String, ignore case | Small enum |      5.60 ns |    15.07 ns |      8.12 ns |
+| Span, hit           | Small enum |      5.07 ns |    12.52 ns | Not measured |
+| Span, miss          | Small enum |      7.86 ns |    10.06 ns | Not measured |
+| Span, ignore case   | Small enum |      6.90 ns |    12.99 ns | Not measured |
+| String, hit         | Large enum |      3.06 ns | 2,364.06 ns |      9.12 ns |
+| String, miss        | Large enum |      5.40 ns | 2,458.26 ns |      7.94 ns |
+| String, ignore case | Large enum |  1,728.37 ns | 2,552.43 ns |     17.99 ns |
+| Span, hit           | Large enum |  6,678.79 ns | 2,170.81 ns | Not measured |
+| Span, miss          | Large enum | 14,496.06 ns | 2,301.40 ns | Not measured |
+| Span, ignore case   | Large enum |  6,842.16 ns | 2,535.38 ns | Not measured |
