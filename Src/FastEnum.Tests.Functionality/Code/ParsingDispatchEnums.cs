@@ -152,6 +152,10 @@ internal enum DispatchLargeEnum
     Item127 = 127,
     Item128 = 128,
     Item129 = 129,
+    [EnumTransformValue(ValueOverride = "coop")]
+    CultureWord = 1000,
+    [EnumTransformValue(ValueOverride = "co-op")]
+    CultureHyphen = 1001,
 }
 
 [FastEnum(DisableCache = true)]
@@ -287,4 +291,8 @@ internal enum UncachedDispatchLargeEnum
     Item127 = 127,
     Item128 = 128,
     Item129 = 129,
+    [EnumTransformValue(ValueOverride = "coop")]
+    CultureWord = 1000,
+    [EnumTransformValue(ValueOverride = "co-op")]
+    CultureHyphen = 1001,
 }

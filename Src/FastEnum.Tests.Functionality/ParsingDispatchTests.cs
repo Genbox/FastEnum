@@ -81,10 +81,40 @@ public class ParsingDispatchTests
 
         foreach (string input in new[] { "", "Missing", "Item130", "Item00", "Xtem129", "Item129x", "-1", "130" })
         {
-            Assert.False(Enums.DispatchLargeEnum.TryParse(input, out _, comparison: comparison));
-            Assert.False(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out _, comparison: comparison));
-            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input, out _, comparison: comparison));
-            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out _, comparison: comparison));
+            Assert.False(Enums.DispatchLargeEnum.TryParse(input, out var value, comparison: comparison));
+            Assert.Equal(default, value);
+            Assert.False(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out value, comparison: comparison));
+            Assert.Equal(default, value);
+            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input, out var uncachedValue, comparison: comparison));
+            Assert.Equal(default, uncachedValue);
+            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out uncachedValue, comparison: comparison));
+            Assert.Equal(default, uncachedValue);
+        }
+    }
+
+    [Theory]
+#pragma warning disable RS0030 // Exercise every supported culture comparison in the large-parser fallback.
+    [InlineData(StringComparison.InvariantCulture)]
+    [InlineData(StringComparison.InvariantCultureIgnoreCase)]
+#pragma warning restore RS0030
+    [InlineData(StringComparison.CurrentCulture)]
+    [InlineData(StringComparison.CurrentCultureIgnoreCase)]
+    public void LargeCultureFallbackWorksWithAndWithoutCaches(StringComparison comparison)
+    {
+        (string Text, int Value)[] candidates = [("Item129", 129), ("coop", 1000), ("co-op", 1001)];
+        foreach (string input in new[] { "Item129", "ITEM129", "coop", "COOP", "co\u00adop", "co-op", "CO-OP", "missing" })
+        {
+            int index = Array.FindIndex(candidates, candidate => string.Equals(input, candidate.Text, comparison));
+            bool expected = index >= 0;
+            int expectedValue = expected ? candidates[index].Value : 0;
+            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input, out var value, DispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expectedValue, (int)value);
+            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out var spanValue, DispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expectedValue, (int)spanValue);
+            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input, out var uncachedValue, UncachedDispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expectedValue, (int)uncachedValue);
+            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out var uncachedSpanValue, UncachedDispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expectedValue, (int)uncachedSpanValue);
         }
     }
 }
