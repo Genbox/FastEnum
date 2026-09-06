@@ -49,30 +49,35 @@ internal static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::MyEnum result, global::MyEnumFormat format = global::MyEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::MyEnum result, global::MyEnumFormat format = global::MyEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::MyEnumFormat.Name) == global::MyEnumFormat.Name)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::MyEnumFormat.Value) == global::MyEnumFormat.Value)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::MyEnumFormat.DisplayName) == global::MyEnumFormat.DisplayName)
@@ -81,7 +86,7 @@ internal static partial class Enums
 
 
 
-                if (value!.Equals("Disp", comparison))
+                if (value.Equals("Disp", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
@@ -96,7 +101,7 @@ internal static partial class Enums
 
 
 
-                if (value!.Equals("Desc", comparison))
+                if (value.Equals("Desc", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
@@ -112,7 +117,7 @@ internal static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -120,22 +125,22 @@ internal static partial class Enums
         {
             if ((format & global::MyEnumFormat.Name) == global::MyEnumFormat.Name)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::MyEnumFormat.Value) == global::MyEnumFormat.Value)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::MyEnumFormat.DisplayName) == global::MyEnumFormat.DisplayName)
@@ -192,9 +197,13 @@ internal static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::MyEnum Parse(string value, global::MyEnumFormat format = global::MyEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::MyEnum result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
@@ -277,14 +286,14 @@ internal static partial class Enums
             switch (value.Length)
             {
                 case 4:
-                    if (value!.Equals("Keep", comparison))
+                    if (value.Equals("Keep", comparison))
                     {
                         result = global::MyEnum.Keep;
                         return true;
                     }
                     return false;
                 case 15:
-                    if (value!.Equals("OmitMemberValue", comparison))
+                    if (value.Equals("OmitMemberValue", comparison))
                     {
                         result = global::MyEnum.OmitMemberValue;
                         return true;
@@ -294,14 +303,14 @@ internal static partial class Enums
                     switch ((int)char.ToUpperInvariant(value[0]))
                     {
                         case 79:
-                            if (value!.Equals("OmitUnderlying", comparison))
+                            if (value.Equals("OmitUnderlying", comparison))
                             {
                                 result = global::MyEnum.OmitUnderlying;
                                 return true;
                             }
                             return false;
                         case 75:
-                            if (value!.Equals("KeepExplicitly", comparison))
+                            if (value.Equals("KeepExplicitly", comparison))
                             {
                                 result = global::MyEnum.KeepExplicitly;
                                 return true;
@@ -311,28 +320,28 @@ internal static partial class Enums
                             return false;
                     }
                 case 20:
-                    if (value!.Equals("OmitUnderlyingLookup", comparison))
+                    if (value.Equals("OmitUnderlyingLookup", comparison))
                     {
                         result = global::MyEnum.OmitUnderlyingLookup;
                         return true;
                     }
                     return false;
                 case 11:
-                    if (value!.Equals("OmitDisplay", comparison))
+                    if (value.Equals("OmitDisplay", comparison))
                     {
                         result = global::MyEnum.OmitDisplay;
                         return true;
                     }
                     return false;
                 case 13:
-                    if (value!.Equals("OmitIsDefined", comparison))
+                    if (value.Equals("OmitIsDefined", comparison))
                     {
                         result = global::MyEnum.OmitIsDefined;
                         return true;
                     }
                     return false;
                 case 10:
-                    if (value!.Equals("OmitString", comparison))
+                    if (value.Equals("OmitString", comparison))
                     {
                         result = global::MyEnum.OmitString;
                         return true;
@@ -344,49 +353,49 @@ internal static partial class Enums
         }
         private static bool TryParseNameCulture(string value, out global::MyEnum result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("Keep", comparison))
+            if (value.Equals("Keep", comparison))
             {
                 result = global::MyEnum.Keep;
                 return true;
             }
 
-            if (value!.Equals("OmitMemberValue", comparison))
+            if (value.Equals("OmitMemberValue", comparison))
             {
                 result = global::MyEnum.OmitMemberValue;
                 return true;
             }
 
-            if (value!.Equals("OmitUnderlying", comparison))
+            if (value.Equals("OmitUnderlying", comparison))
             {
                 result = global::MyEnum.OmitUnderlying;
                 return true;
             }
 
-            if (value!.Equals("OmitUnderlyingLookup", comparison))
+            if (value.Equals("OmitUnderlyingLookup", comparison))
             {
                 result = global::MyEnum.OmitUnderlyingLookup;
                 return true;
             }
 
-            if (value!.Equals("OmitDisplay", comparison))
+            if (value.Equals("OmitDisplay", comparison))
             {
                 result = global::MyEnum.OmitDisplay;
                 return true;
             }
 
-            if (value!.Equals("OmitIsDefined", comparison))
+            if (value.Equals("OmitIsDefined", comparison))
             {
                 result = global::MyEnum.OmitIsDefined;
                 return true;
             }
 
-            if (value!.Equals("OmitString", comparison))
+            if (value.Equals("OmitString", comparison))
             {
                 result = global::MyEnum.OmitString;
                 return true;
             }
 
-            if (value!.Equals("KeepExplicitly", comparison))
+            if (value.Equals("KeepExplicitly", comparison))
             {
                 result = global::MyEnum.KeepExplicitly;
                 return true;
@@ -403,56 +412,56 @@ internal static partial class Enums
                     switch ((int)value[0])
                     {
                         case 48:
-                            if (value!.Equals("0", comparison))
+                            if (value.Equals("0", comparison))
                             {
                                 result = global::MyEnum.Keep;
                                 return true;
                             }
                             return false;
                         case 51:
-                            if (value!.Equals("3", comparison))
+                            if (value.Equals("3", comparison))
                             {
                                 result = global::MyEnum.OmitMemberValue;
                                 return true;
                             }
                             return false;
                         case 52:
-                            if (value!.Equals("4", comparison))
+                            if (value.Equals("4", comparison))
                             {
                                 result = global::MyEnum.OmitUnderlying;
                                 return true;
                             }
                             return false;
                         case 53:
-                            if (value!.Equals("5", comparison))
+                            if (value.Equals("5", comparison))
                             {
                                 result = global::MyEnum.OmitUnderlyingLookup;
                                 return true;
                             }
                             return false;
                         case 54:
-                            if (value!.Equals("6", comparison))
+                            if (value.Equals("6", comparison))
                             {
                                 result = global::MyEnum.OmitDisplay;
                                 return true;
                             }
                             return false;
                         case 55:
-                            if (value!.Equals("7", comparison))
+                            if (value.Equals("7", comparison))
                             {
                                 result = global::MyEnum.OmitIsDefined;
                                 return true;
                             }
                             return false;
                         case 56:
-                            if (value!.Equals("8", comparison))
+                            if (value.Equals("8", comparison))
                             {
                                 result = global::MyEnum.OmitString;
                                 return true;
                             }
                             return false;
                         case 57:
-                            if (value!.Equals("9", comparison))
+                            if (value.Equals("9", comparison))
                             {
                                 result = global::MyEnum.KeepExplicitly;
                                 return true;
@@ -467,49 +476,49 @@ internal static partial class Enums
         }
         private static bool TryParseValueCulture(string value, out global::MyEnum result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("0", comparison))
+            if (value.Equals("0", comparison))
             {
                 result = global::MyEnum.Keep;
                 return true;
             }
 
-            if (value!.Equals("3", comparison))
+            if (value.Equals("3", comparison))
             {
                 result = global::MyEnum.OmitMemberValue;
                 return true;
             }
 
-            if (value!.Equals("4", comparison))
+            if (value.Equals("4", comparison))
             {
                 result = global::MyEnum.OmitUnderlying;
                 return true;
             }
 
-            if (value!.Equals("5", comparison))
+            if (value.Equals("5", comparison))
             {
                 result = global::MyEnum.OmitUnderlyingLookup;
                 return true;
             }
 
-            if (value!.Equals("6", comparison))
+            if (value.Equals("6", comparison))
             {
                 result = global::MyEnum.OmitDisplay;
                 return true;
             }
 
-            if (value!.Equals("7", comparison))
+            if (value.Equals("7", comparison))
             {
                 result = global::MyEnum.OmitIsDefined;
                 return true;
             }
 
-            if (value!.Equals("8", comparison))
+            if (value.Equals("8", comparison))
             {
                 result = global::MyEnum.OmitString;
                 return true;
             }
 
-            if (value!.Equals("9", comparison))
+            if (value.Equals("9", comparison))
             {
                 result = global::MyEnum.KeepExplicitly;
                 return true;

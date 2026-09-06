@@ -49,50 +49,55 @@ public static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::Aliases result, global::AliasesFormat format = global::AliasesFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::Aliases result, global::AliasesFormat format = global::AliasesFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::AliasesFormat.Name) == global::AliasesFormat.Name)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.Value) == global::AliasesFormat.Value)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.DisplayName) == global::AliasesFormat.DisplayName)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseDisplayNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseDisplayNameCulture(value!, out result, comparison))
+                else if (TryParseDisplayNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.Description) == global::AliasesFormat.Description)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseDescriptionOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseDescriptionCulture(value!, out result, comparison))
+                else if (TryParseDescriptionCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -102,7 +107,7 @@ public static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -110,42 +115,42 @@ public static partial class Enums
         {
             if ((format & global::AliasesFormat.Name) == global::AliasesFormat.Name)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.Value) == global::AliasesFormat.Value)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.DisplayName) == global::AliasesFormat.DisplayName)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseDisplayNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseDisplayNameCulture(value!, out result, comparison))
+                else if (TryParseDisplayNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::AliasesFormat.Description) == global::AliasesFormat.Description)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseDescriptionOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseDescriptionCulture(value!, out result, comparison))
+                else if (TryParseDescriptionCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -172,9 +177,13 @@ public static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::Aliases Parse(string value, global::AliasesFormat format = global::AliasesFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::Aliases result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
@@ -239,28 +248,28 @@ public static partial class Enums
             switch (value.Length)
             {
                 case 4:
-                    if (value!.Equals("none", comparison))
+                    if (value.Equals("none", comparison))
                     {
                         result = global::Aliases.None;
                         return true;
                     }
                     return false;
                 case 7:
-                    if (value!.Equals("omitted", comparison))
+                    if (value.Equals("omitted", comparison))
                     {
                         result = global::Aliases.Omitted;
                         return true;
                     }
                     return false;
                 case 5:
-                    if (value!.Equals("first", comparison))
+                    if (value.Equals("first", comparison))
                     {
                         result = global::Aliases.First;
                         return true;
                     }
                     return false;
                 case 6:
-                    if (value!.Equals("second", comparison))
+                    if (value.Equals("second", comparison))
                     {
                         result = global::Aliases.Second;
                         return true;
@@ -272,25 +281,25 @@ public static partial class Enums
         }
         private static bool TryParseNameCulture(string value, out global::Aliases result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("none", comparison))
+            if (value.Equals("none", comparison))
             {
                 result = global::Aliases.None;
                 return true;
             }
 
-            if (value!.Equals("omitted", comparison))
+            if (value.Equals("omitted", comparison))
             {
                 result = global::Aliases.Omitted;
                 return true;
             }
 
-            if (value!.Equals("first", comparison))
+            if (value.Equals("first", comparison))
             {
                 result = global::Aliases.First;
                 return true;
             }
 
-            if (value!.Equals("second", comparison))
+            if (value.Equals("second", comparison))
             {
                 result = global::Aliases.Second;
                 return true;
@@ -307,24 +316,24 @@ public static partial class Enums
                     switch ((int)value[0])
                     {
                         case 48:
-                            if (value!.Equals("0", comparison))
+                            if (value.Equals("0", comparison))
                             {
                                 result = global::Aliases.None;
                                 return true;
                             }
                             return false;
                         case 49:
-                            if (value!.Equals("1", comparison))
+                            if (value.Equals("1", comparison))
                             {
                                 result = global::Aliases.Omitted;
                                 return true;
                             }
-                            if (value!.Equals("1", comparison))
+                            if (value.Equals("1", comparison))
                             {
                                 result = global::Aliases.First;
                                 return true;
                             }
-                            if (value!.Equals("1", comparison))
+                            if (value.Equals("1", comparison))
                             {
                                 result = global::Aliases.Second;
                                 return true;
@@ -339,25 +348,25 @@ public static partial class Enums
         }
         private static bool TryParseValueCulture(string value, out global::Aliases result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("0", comparison))
+            if (value.Equals("0", comparison))
             {
                 result = global::Aliases.None;
                 return true;
             }
 
-            if (value!.Equals("1", comparison))
+            if (value.Equals("1", comparison))
             {
                 result = global::Aliases.Omitted;
                 return true;
             }
 
-            if (value!.Equals("1", comparison))
+            if (value.Equals("1", comparison))
             {
                 result = global::Aliases.First;
                 return true;
             }
 
-            if (value!.Equals("1", comparison))
+            if (value.Equals("1", comparison))
             {
                 result = global::Aliases.Second;
                 return true;
@@ -371,14 +380,14 @@ public static partial class Enums
             switch (value.Length)
             {
                 case 5:
-                    if (value!.Equals("First", comparison))
+                    if (value.Equals("First", comparison))
                     {
                         result = global::Aliases.First;
                         return true;
                     }
                     return false;
                 case 6:
-                    if (value!.Equals("Second", comparison))
+                    if (value.Equals("Second", comparison))
                     {
                         result = global::Aliases.Second;
                         return true;
@@ -390,13 +399,13 @@ public static partial class Enums
         }
         private static bool TryParseDisplayNameCulture(string value, out global::Aliases result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("First", comparison))
+            if (value.Equals("First", comparison))
             {
                 result = global::Aliases.First;
                 return true;
             }
 
-            if (value!.Equals("Second", comparison))
+            if (value.Equals("Second", comparison))
             {
                 result = global::Aliases.Second;
                 return true;
@@ -410,14 +419,14 @@ public static partial class Enums
             switch (value.Length)
             {
                 case 17:
-                    if (value!.Equals("First description", comparison))
+                    if (value.Equals("First description", comparison))
                     {
                         result = global::Aliases.First;
                         return true;
                     }
                     return false;
                 case 18:
-                    if (value!.Equals("Second description", comparison))
+                    if (value.Equals("Second description", comparison))
                     {
                         result = global::Aliases.Second;
                         return true;
@@ -429,13 +438,13 @@ public static partial class Enums
         }
         private static bool TryParseDescriptionCulture(string value, out global::Aliases result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("First description", comparison))
+            if (value.Equals("First description", comparison))
             {
                 result = global::Aliases.First;
                 return true;
             }
 
-            if (value!.Equals("Second description", comparison))
+            if (value.Equals("Second description", comparison))
             {
                 result = global::Aliases.Second;
                 return true;

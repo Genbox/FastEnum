@@ -63,7 +63,7 @@ internal static class EnumClassCode
                          /// <returns>An array containing the underlying values.</returns>
                          public static {{underlyingType}}[] GetUnderlyingValues() => {{underlyingValues}}
 
-                         {{TryParseMethod("string", "string")}}
+                         {{TryParseMethod("string?", "string")}}
 
                  #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
                          {{TryParseMethod("global::System.ReadOnlySpan<char>", "character span")}}
@@ -87,35 +87,58 @@ internal static class EnumClassCode
         string TryParseMethod(string valueType, string label) => IndentFollowingLines($$"""
                                                                                         /// <summary>Attempts to parse a {{label}} into an enum value.</summary>
                                                                                         /// <param name="value">The {{label}} to parse.</param>
-                                                                                        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+                                                                                        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
                                                                                         /// <param name="format">The formats to consider while parsing.</param>
                                                                                         /// <param name="comparison">The string comparison to use.</param>
                                                                                         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
                                                                                         public static bool TryParse({{valueType}} value, out {{enumName}} result, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
                                                                                         {
-                                                                                            {{(valueType == "string" ? tryParse : tryParseSpan)}}
+                                                                                            {{(valueType == "string?" ? tryParse : tryParseSpan)}}
                                                                                             result = default;
                                                                                             return false;
                                                                                         }
                                                                                         """,
             2);
 
-        string ParseMethod(string valueType, string label, string errorValue) => IndentFollowingLines($$"""
-                                                                                                        /// <summary>Parses a {{label}} into an enum value.</summary>
-                                                                                                        /// <param name="value">The {{label}} to parse.</param>
-                                                                                                        /// <param name="format">The formats to consider while parsing.</param>
-                                                                                                        /// <param name="comparison">The string comparison to use.</param>
-                                                                                                        /// <returns>The parsed enum value.</returns>
-                                                                                                        /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
-                                                                                                        public static {{enumName}} Parse({{valueType}} value, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
-                                                                                                        {
-                                                                                                            if (!TryParse(value, out {{enumName}} result, format, comparison))
-                                                                                                                throw new global::System.ArgumentOutOfRangeException($"Invalid value: {{errorValue}}");
+        string ParseMethod(string valueType, string label, string errorValue)
+        {
+            string body = $$"""
+                            if (!TryParse(value, out {{enumName}} result, format, comparison))
+                                throw new global::System.ArgumentOutOfRangeException($"Invalid value: {{errorValue}}");
 
-                                                                                                            return result;
-                                                                                                        }
-                                                                                                        """,
-            2);
+                            return result;
+                            """;
+            string exceptions = """
+                                /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
+                                """;
+
+            if (valueType == "string")
+            {
+                body = $$"""
+                         if (value is null)
+                             throw new global::System.ArgumentNullException(nameof(value));
+
+                         {{body}}
+                         """;
+                exceptions = $$"""
+                               /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
+                               {{exceptions}}
+                               """;
+            }
+
+            return IndentFollowingLines($$"""
+                                          /// <summary>Parses a {{label}} into an enum value.</summary>
+                                          /// <param name="value">The {{label}} to parse.</param>
+                                          /// <param name="format">The formats to consider while parsing.</param>
+                                          /// <param name="comparison">The string comparison to use.</param>
+                                          /// <returns>The parsed enum value.</returns>
+                                          {{exceptions}}
+                                          public static {{enumName}} Parse({{valueType}} value, {{enumFormat}} format = {{enumFormat}}.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+                                          {
+                                              {{IndentFollowingLines(body, 1)}}
+                                          }
+                                          """, 2);
+        }
 
         IEnumerable<string> GetMemberNames() => GetMembers(transform?.SortMemberNames ?? EnumOrder.None, EnumOmitExclude.GetMemberNames, m => TransformHelper.TransformName(spec, m), m => FormatStringLiteral(TransformHelper.TransformName(spec, m)));
 
@@ -145,10 +168,21 @@ internal static class EnumClassCode
         string TryParse(bool isSpan)
         {
             EnumMemberSpec[] members = spec.Members.Where(x => IsIncluded(x, EnumOmitExclude.TryParse)).ToArray();
-            if (members.Length == 0)
-                return string.Empty;
+            string blocks = members.Length == 0 ? string.Empty : string.Join("\n", GetBlocks());
 
-            return IndentFollowingLines(string.Join("\n", GetBlocks()), 1);
+            if (!isSpan)
+            {
+                blocks = $$"""
+                           if (value is null)
+                           {
+                               result = default;
+                               return false;
+                           }
+                           {{blocks}}
+                           """;
+            }
+
+            return IndentFollowingLines(blocks, 1);
 
             IEnumerable<string> GetBlocks()
             {
@@ -216,9 +250,9 @@ internal static class EnumClassCode
                     string dictionaryEntries = string.Join(",\n", textEntries.Where(entry => handledTexts.Add(entry.Text)).Select(entry => $$"""{ {{FormatStringLiteral(entry.Text)}}, {{enumName}}.{{entry.Member.EmittedIdentifier}} }"""));
                     string slowBody = useTree
                         ? $$"""
-                            if (comparison == global::System.StringComparison.OrdinalIgnoreCase && value != null)
+                            if (comparison == global::System.StringComparison.OrdinalIgnoreCase)
                                 return {{fastMethod}}(value, out result, comparison);
-                            return TryParse{{format}}Culture(value!, out result, comparison);
+                            return TryParse{{format}}Culture(value, out result, comparison);
                             """
                         : $$"""
                             {{string.Concat(GetChecks()).Trim()}}
@@ -243,12 +277,12 @@ internal static class EnumClassCode
                                                       """, 2));
                     return $$"""
                              {{start}}
-                                 if (comparison == global::System.StringComparison.Ordinal && value != null)
+                                 if (comparison == global::System.StringComparison.Ordinal)
                                  {
                                      if (_{{format}}ParseCache.Values.TryGetValue(value, out result))
                                          return true;
                                  }
-                                 else if (TryParse{{format}}Slow(value!, out result, comparison))
+                                 else if (TryParse{{format}}Slow(value, out result, comparison))
                                      return true;
                              }
                              """;
@@ -256,15 +290,14 @@ internal static class EnumClassCode
 
                 if (useTree)
                 {
-                    string notNull = isSpan ? string.Empty : "value != null && ";
                     return $$"""
                              {{start}}
-                                 if ({{notNull}}(comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                                 if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                                  {
                                      if ({{fastMethod}}(value, out result, comparison))
                                          return true;
                                  }
-                                 else if (TryParse{{format}}Culture(value!, out result, comparison))
+                                 else if (TryParse{{format}}Culture(value, out result, comparison))
                                      return true;
                              }
                              """;
@@ -291,7 +324,7 @@ internal static class EnumClassCode
                 string literal = FormatStringLiteral(text);
                 string comparison = isSpan
                     ? $"global::System.MemoryExtensions.Equals(value, {literal}, comparison)"
-                    : $"value!.Equals({literal}, comparison)";
+                    : $"value.Equals({literal}, comparison)";
                 return $$"""
                          if ({{comparison}})
                          {

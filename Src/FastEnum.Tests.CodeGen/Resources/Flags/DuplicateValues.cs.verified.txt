@@ -49,30 +49,35 @@ public static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::Some.Namespace.Here.Profile result, global::Some.Namespace.Here.ProfileFormat format = global::Some.Namespace.Here.ProfileFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::Some.Namespace.Here.Profile result, global::Some.Namespace.Here.ProfileFormat format = global::Some.Namespace.Here.ProfileFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Name) == global::Some.Namespace.Here.ProfileFormat.Name)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Value) == global::Some.Namespace.Here.ProfileFormat.Value)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -82,7 +87,7 @@ public static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -90,22 +95,22 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ProfileFormat.Name) == global::Some.Namespace.Here.ProfileFormat.Name)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Value) == global::Some.Namespace.Here.ProfileFormat.Value)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -132,9 +137,13 @@ public static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::Some.Namespace.Here.Profile Parse(string value, global::Some.Namespace.Here.ProfileFormat format = global::Some.Namespace.Here.ProfileFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::Some.Namespace.Here.Profile result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
@@ -186,28 +195,28 @@ public static partial class Enums
             switch (value.Length)
             {
                 case 7:
-                    if (value!.Equals("Unknown", comparison))
+                    if (value.Equals("Unknown", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.Unknown;
                         return true;
                     }
                     return false;
                 case 13:
-                    if (value!.Equals("WindowsLegacy", comparison))
+                    if (value.Equals("WindowsLegacy", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                         return true;
                     }
                     return false;
                 case 17:
-                    if (value!.Equals("WindowsServer2022", comparison))
+                    if (value.Equals("WindowsServer2022", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                         return true;
                     }
                     return false;
                 case 12:
-                    if (value!.Equals("NewestServer", comparison))
+                    if (value.Equals("NewestServer", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.NewestServer;
                         return true;
@@ -219,25 +228,25 @@ public static partial class Enums
         }
         private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("Unknown", comparison))
+            if (value.Equals("Unknown", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.Unknown;
                 return true;
             }
 
-            if (value!.Equals("WindowsLegacy", comparison))
+            if (value.Equals("WindowsLegacy", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                 return true;
             }
 
-            if (value!.Equals("WindowsServer2022", comparison))
+            if (value.Equals("WindowsServer2022", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                 return true;
             }
 
-            if (value!.Equals("NewestServer", comparison))
+            if (value.Equals("NewestServer", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.NewestServer;
                 return true;
@@ -254,14 +263,14 @@ public static partial class Enums
                     switch ((int)value[0])
                     {
                         case 48:
-                            if (value!.Equals("0", comparison))
+                            if (value.Equals("0", comparison))
                             {
                                 result = global::Some.Namespace.Here.Profile.Unknown;
                                 return true;
                             }
                             return false;
                         case 49:
-                            if (value!.Equals("1", comparison))
+                            if (value.Equals("1", comparison))
                             {
                                 result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                                 return true;
@@ -271,12 +280,12 @@ public static partial class Enums
                             return false;
                     }
                 case 3:
-                    if (value!.Equals("256", comparison))
+                    if (value.Equals("256", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                         return true;
                     }
-                    if (value!.Equals("256", comparison))
+                    if (value.Equals("256", comparison))
                     {
                         result = global::Some.Namespace.Here.Profile.NewestServer;
                         return true;
@@ -288,25 +297,25 @@ public static partial class Enums
         }
         private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("0", comparison))
+            if (value.Equals("0", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.Unknown;
                 return true;
             }
 
-            if (value!.Equals("1", comparison))
+            if (value.Equals("1", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.WindowsLegacy;
                 return true;
             }
 
-            if (value!.Equals("256", comparison))
+            if (value.Equals("256", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.WindowsServer2022;
                 return true;
             }
 
-            if (value!.Equals("256", comparison))
+            if (value.Equals("256", comparison))
             {
                 result = global::Some.Namespace.Here.Profile.NewestServer;
                 return true;

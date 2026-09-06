@@ -45,15 +45,20 @@ internal static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::MyPublicEnum result, global::MyPublicEnumFormat format = global::MyPublicEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::MyPublicEnum result, global::MyPublicEnumFormat format = global::MyPublicEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::MyPublicEnumFormat.Name) == global::MyPublicEnumFormat.Name)
             {
-                if (value!.Equals("First", comparison))
+                if (value.Equals("First", comparison))
                 {
                     result = global::MyPublicEnum.First;
                     return true;
@@ -61,7 +66,7 @@ internal static partial class Enums
             }
             if ((format & global::MyPublicEnumFormat.Value) == global::MyPublicEnumFormat.Value)
             {
-                if (value!.Equals("0", comparison))
+                if (value.Equals("0", comparison))
                 {
                     result = global::MyPublicEnum.First;
                     return true;
@@ -74,7 +79,7 @@ internal static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -120,9 +125,13 @@ internal static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::MyPublicEnum Parse(string value, global::MyPublicEnumFormat format = global::MyPublicEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::MyPublicEnum result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
@@ -288,15 +297,20 @@ internal static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::PublicExtensionEnum result, global::PublicExtensionEnumFormat format = global::PublicExtensionEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::PublicExtensionEnum result, global::PublicExtensionEnumFormat format = global::PublicExtensionEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::PublicExtensionEnumFormat.Name) == global::PublicExtensionEnumFormat.Name)
             {
-                if (value!.Equals("None", comparison))
+                if (value.Equals("None", comparison))
                 {
                     result = global::PublicExtensionEnum.None;
                     return true;
@@ -304,7 +318,7 @@ internal static partial class Enums
             }
             if ((format & global::PublicExtensionEnumFormat.Value) == global::PublicExtensionEnumFormat.Value)
             {
-                if (value!.Equals("0", comparison))
+                if (value.Equals("0", comparison))
                 {
                     result = global::PublicExtensionEnum.None;
                     return true;
@@ -317,7 +331,7 @@ internal static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -363,9 +377,13 @@ internal static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::PublicExtensionEnum Parse(string value, global::PublicExtensionEnumFormat format = global::PublicExtensionEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::PublicExtensionEnum result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 

@@ -45,30 +45,35 @@ public static partial class Enums
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
-        public static bool TryParse(string value, out global::CasePatternEnum result, global::CasePatternEnumFormat format = global::CasePatternEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
+        public static bool TryParse(string? value, out global::CasePatternEnum result, global::CasePatternEnumFormat format = global::CasePatternEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+            {
+                result = default;
+                return false;
+            }
             if ((format & global::CasePatternEnumFormat.Name) == global::CasePatternEnumFormat.Name)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::CasePatternEnumFormat.Value) == global::CasePatternEnumFormat.Value)
             {
-                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -78,7 +83,7 @@ public static partial class Enums
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
         /// <summary>Attempts to parse a character span into an enum value.</summary>
         /// <param name="value">The character span to parse.</param>
-        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded.</param>
+        /// <param name="result">When this method returns, contains the parsed enum value if parsing succeeded; otherwise, the default enum value.</param>
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns><see langword="true"/> if parsing succeeded; otherwise, <see langword="false"/>.</returns>
@@ -86,22 +91,22 @@ public static partial class Enums
         {
             if ((format & global::CasePatternEnumFormat.Name) == global::CasePatternEnumFormat.Name)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseNameOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseNameCulture(value!, out result, comparison))
+                else if (TryParseNameCulture(value, out result, comparison))
                     return true;
             }
             if ((format & global::CasePatternEnumFormat.Value) == global::CasePatternEnumFormat.Value)
             {
-                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                if (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase)
                 {
                     if (TryParseValueOrdinal(value, out result, comparison))
                         return true;
                 }
-                else if (TryParseValueCulture(value!, out result, comparison))
+                else if (TryParseValueCulture(value, out result, comparison))
                     return true;
             }
             result = default;
@@ -128,9 +133,13 @@ public static partial class Enums
         /// <param name="format">The formats to consider while parsing.</param>
         /// <param name="comparison">The string comparison to use.</param>
         /// <returns>The parsed enum value.</returns>
+        /// <exception cref="global::System.ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="global::System.ArgumentOutOfRangeException"><paramref name="value"/> does not represent a valid enum value.</exception>
         public static global::CasePatternEnum Parse(string value, global::CasePatternEnumFormat format = global::CasePatternEnumFormat.Default, global::System.StringComparison comparison = global::System.StringComparison.Ordinal)
         {
+            if (value is null)
+                throw new global::System.ArgumentNullException(nameof(value));
+
             if (!TryParse(value, out global::CasePatternEnum result, format, comparison))
                 throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
@@ -184,14 +193,14 @@ public static partial class Enums
                     switch ((int)char.ToUpperInvariant(value[0]))
                     {
                         case 78:
-                            if (value!.Equals("NE", comparison))
+                            if (value.Equals("NE", comparison))
                             {
                                 result = global::CasePatternEnum.One;
                                 return true;
                             }
                             return false;
                         case 87:
-                            if (value!.Equals("WO", comparison))
+                            if (value.Equals("WO", comparison))
                             {
                                 result = global::CasePatternEnum.Two;
                                 return true;
@@ -206,13 +215,13 @@ public static partial class Enums
         }
         private static bool TryParseNameCulture(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("NE", comparison))
+            if (value.Equals("NE", comparison))
             {
                 result = global::CasePatternEnum.One;
                 return true;
             }
 
-            if (value!.Equals("WO", comparison))
+            if (value.Equals("WO", comparison))
             {
                 result = global::CasePatternEnum.Two;
                 return true;
@@ -229,14 +238,14 @@ public static partial class Enums
                     switch ((int)value[0])
                     {
                         case 48:
-                            if (value!.Equals("0", comparison))
+                            if (value.Equals("0", comparison))
                             {
                                 result = global::CasePatternEnum.One;
                                 return true;
                             }
                             return false;
                         case 49:
-                            if (value!.Equals("1", comparison))
+                            if (value.Equals("1", comparison))
                             {
                                 result = global::CasePatternEnum.Two;
                                 return true;
@@ -251,13 +260,13 @@ public static partial class Enums
         }
         private static bool TryParseValueCulture(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
         {
-            if (value!.Equals("0", comparison))
+            if (value.Equals("0", comparison))
             {
                 result = global::CasePatternEnum.One;
                 return true;
             }
 
-            if (value!.Equals("1", comparison))
+            if (value.Equals("1", comparison))
             {
                 result = global::CasePatternEnum.Two;
                 return true;

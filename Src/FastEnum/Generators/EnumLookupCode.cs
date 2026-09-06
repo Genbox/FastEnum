@@ -52,14 +52,14 @@ internal static class EnumLookupCode
         string key = table.Shift == 0 ? "unchecked((int)input)" : $"unchecked((int)((ulong)input >> {table.Shift}))";
 
         return AddLookupHolder($$"""
-                     int bucket = {{key}} & {{table.Buckets.Length - 1}};
-                     for (int index = _buckets[bucket]; index >= 0; index = _next[index])
-                     {
-                         if (_values[index] == input)
-                             return {{found}};
-                     }
-                     return {{missing}};
-                     """);
+                                 int bucket = {{key}} & {{table.Buckets.Length - 1}};
+                                 for (int index = _buckets[bucket]; index >= 0; index = _next[index])
+                                 {
+                                     if (_values[index] == input)
+                                         return {{found}};
+                                 }
+                                 return {{missing}};
+                                 """);
 
         string CreateDenseLookup(ulong minimumValue)
         {
@@ -81,9 +81,9 @@ internal static class EnumLookupCode
             IEnumerable<string> orderedResults = members.OrderBy(member => (IComparable)member.Value).Select(result);
             AddArray("string", "_results", orderedResults);
             return AddLookupHolder($$"""
-                         {{indexType}} index = unchecked(({{indexType}})input - {{minimumLiteral}});
-                         return index < ({{indexType}})_results.Length ? _results[(int)index] : {{missing}};
-                         """);
+                                     {{indexType}} index = unchecked(({{indexType}})input - {{minimumLiteral}});
+                                     return index < ({{indexType}})_results.Length ? _results[(int)index] : {{missing}};
+                                     """);
         }
 
         string AddLookupHolder(string body)

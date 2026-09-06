@@ -29,6 +29,23 @@ public class GeneratedCodeTests
     }
 
     [Fact]
+    public void TryParseAcceptsNullableInputWithoutWarnings()
+    {
+        const string code = """
+                            #nullable enable
+                            [FastEnum]
+                            public enum NullableInput { First }
+
+                            public static class Probe
+                            {
+                                public static bool Run(string? input) => Enums.NullableInput.TryParse(input, out _);
+                            }
+                            """;
+
+        TestHelper.GetGeneratedOutput(code);
+    }
+
+    [Fact]
     public void AttributeContainsNameAndVersion()
     {
         const string code = """

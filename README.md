@@ -392,6 +392,8 @@ Green
 
 #### Parse/TryParse methods
 
+The string overload of `TryParse` accepts `null`, returns `false`, and sets the result to `default`. The string overload of `Parse` throws `ArgumentNullException` for `null`.
+
 FastEnum has some additional features compared to .NET's `Enum.Parse<T>()` and `Enum.TryParse<T>()`:
 
 * Supports [StringComparison](https://learn.microsoft.com/en-us/dotnet/api/system.stringcomparison?view=net-7.0), defaulting to ordinal comparison.
