@@ -57,31 +57,23 @@ public static partial class @struct
         {
             if ((format & global::@namespace.Generated.classFormat.Name) == global::@namespace.Generated.classFormat.Name)
             {
-                if (value.Equals("class", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::@namespace.@event.@class;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("namespace", comparison))
-                {
-                    result = global::@namespace.@event.@namespace;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::@namespace.Generated.classFormat.Value) == global::@namespace.Generated.classFormat.Value)
             {
-                if (value.Equals("1", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::@namespace.@event.@class;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("2", comparison))
-                {
-                    result = global::@namespace.@event.@namespace;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -98,31 +90,23 @@ public static partial class @struct
         {
             if ((format & global::@namespace.Generated.classFormat.Name) == global::@namespace.Generated.classFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "class", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::@namespace.@event.@class;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "namespace", comparison))
-                {
-                    result = global::@namespace.@event.@namespace;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::@namespace.Generated.classFormat.Value) == global::@namespace.Generated.classFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::@namespace.@event.@class;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "2", comparison))
-                {
-                    result = global::@namespace.@event.@namespace;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -195,6 +179,182 @@ public static partial class @struct
                 2
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("class", comparison))
+                    {
+                        result = global::@namespace.@event.@class;
+                        return true;
+                    }
+                    return false;
+                case 9:
+                    if (value!.Equals("namespace", comparison))
+                    {
+                        result = global::@namespace.@event.@namespace;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("class", comparison))
+            {
+                result = global::@namespace.@event.@class;
+                return true;
+            }
+
+            if (value!.Equals("namespace", comparison))
+            {
+                result = global::@namespace.@event.@namespace;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::@namespace.@event.@class;
+                                return true;
+                            }
+                            return false;
+                        case 50:
+                            if (value!.Equals("2", comparison))
+                            {
+                                result = global::@namespace.@event.@namespace;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("1", comparison))
+            {
+                result = global::@namespace.@event.@class;
+                return true;
+            }
+
+            if (value!.Equals("2", comparison))
+            {
+                result = global::@namespace.@event.@namespace;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "class", comparison))
+                    {
+                        result = global::@namespace.@event.@class;
+                        return true;
+                    }
+                    return false;
+                case 9:
+                    if (global::System.MemoryExtensions.Equals(value, "namespace", comparison))
+                    {
+                        result = global::@namespace.@event.@namespace;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "class", comparison))
+            {
+                result = global::@namespace.@event.@class;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "namespace", comparison))
+            {
+                result = global::@namespace.@event.@namespace;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::@namespace.@event.@class;
+                                return true;
+                            }
+                            return false;
+                        case 50:
+                            if (global::System.MemoryExtensions.Equals(value, "2", comparison))
+                            {
+                                result = global::@namespace.@event.@namespace;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::@namespace.@event result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::@namespace.@event.@class;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "2", comparison))
+            {
+                result = global::@namespace.@event.@namespace;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

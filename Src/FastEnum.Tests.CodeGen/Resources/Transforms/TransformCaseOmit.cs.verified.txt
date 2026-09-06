@@ -53,31 +53,23 @@ public static partial class Enums
         {
             if ((format & global::CasePatternEnumFormat.Name) == global::CasePatternEnumFormat.Name)
             {
-                if (value.Equals("NE", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::CasePatternEnum.One;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("WO", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::CasePatternEnumFormat.Value) == global::CasePatternEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::CasePatternEnum.One;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -94,31 +86,23 @@ public static partial class Enums
         {
             if ((format & global::CasePatternEnumFormat.Name) == global::CasePatternEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "NE", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::CasePatternEnum.One;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "WO", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::CasePatternEnumFormat.Value) == global::CasePatternEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::CasePatternEnum.One;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::CasePatternEnum.Two;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -191,6 +175,194 @@ public static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 2:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 78:
+                            if (value!.Equals("NE", comparison))
+                            {
+                                result = global::CasePatternEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 87:
+                            if (value!.Equals("WO", comparison))
+                            {
+                                result = global::CasePatternEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("NE", comparison))
+            {
+                result = global::CasePatternEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("WO", comparison))
+            {
+                result = global::CasePatternEnum.Two;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::CasePatternEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::CasePatternEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::CasePatternEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::CasePatternEnum.Two;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 2:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 78:
+                            if (global::System.MemoryExtensions.Equals(value, "NE", comparison))
+                            {
+                                result = global::CasePatternEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 87:
+                            if (global::System.MemoryExtensions.Equals(value, "WO", comparison))
+                            {
+                                result = global::CasePatternEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "NE", comparison))
+            {
+                result = global::CasePatternEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "WO", comparison))
+            {
+                result = global::CasePatternEnum.Two;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::CasePatternEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::CasePatternEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::CasePatternEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::CasePatternEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::CasePatternEnum.Two;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

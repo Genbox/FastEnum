@@ -55,7 +55,7 @@ namespace Enums;
         {
             if ((format & global::Enums.MyEnumFormat.Name) == global::Enums.MyEnumFormat.Name)
             {
-                if (value.Equals("Value", comparison))
+                if (value!.Equals("Value", comparison))
                 {
                     result = global::MyEnum.Value;
                     return true;
@@ -63,7 +63,7 @@ namespace Enums;
             }
             if ((format & global::Enums.MyEnumFormat.Value) == global::Enums.MyEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyEnum.Value;
                     return true;

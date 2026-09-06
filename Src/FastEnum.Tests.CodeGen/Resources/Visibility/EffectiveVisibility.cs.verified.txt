@@ -53,7 +53,7 @@ internal static partial class Enums
         {
             if ((format & global::NestedFormat.Name) == global::NestedFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value!.Equals("None", comparison))
                 {
                     result = global::InternalContainer.Inner.Nested.None;
                     return true;
@@ -61,7 +61,7 @@ internal static partial class Enums
             }
             if ((format & global::NestedFormat.Value) == global::NestedFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::InternalContainer.Inner.Nested.None;
                     return true;
@@ -296,7 +296,7 @@ internal static partial class Enums
         {
             if ((format & global::RestrictedFormat.Name) == global::RestrictedFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value!.Equals("None", comparison))
                 {
                     result = global::PublicContainer.Restricted.None;
                     return true;
@@ -304,7 +304,7 @@ internal static partial class Enums
             }
             if ((format & global::RestrictedFormat.Value) == global::RestrictedFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::PublicContainer.Restricted.None;
                     return true;

@@ -53,7 +53,7 @@ public static partial class Enums
         {
             if ((format & global::FirstFormat.Name) == global::FirstFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value!.Equals("None", comparison))
                 {
                     result = global::First.None;
                     return true;
@@ -61,7 +61,7 @@ public static partial class Enums
             }
             if ((format & global::FirstFormat.Value) == global::FirstFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::First.None;
                     return true;
@@ -296,7 +296,7 @@ public static partial class Enums
         {
             if ((format & global::SecondFormat.Name) == global::SecondFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value!.Equals("None", comparison))
                 {
                     result = global::Second.None;
                     return true;
@@ -304,7 +304,7 @@ public static partial class Enums
             }
             if ((format & global::SecondFormat.Value) == global::SecondFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::Second.None;
                     return true;

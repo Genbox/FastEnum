@@ -57,103 +57,23 @@ internal static partial class Enums
         {
             if ((format & global::MyEnumFormat.Name) == global::MyEnumFormat.Name)
             {
-                if (value.Equals("Keep", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum.Keep;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("OmitMemberValue", comparison))
-                {
-                    result = global::MyEnum.OmitMemberValue;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("OmitUnderlying", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlying;
-                    return true;
-                }
-
-                if (value.Equals("OmitUnderlyingLookup", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlyingLookup;
-                    return true;
-                }
-
-                if (value.Equals("OmitDisplay", comparison))
-                {
-                    result = global::MyEnum.OmitDisplay;
-                    return true;
-                }
-
-                if (value.Equals("OmitIsDefined", comparison))
-                {
-                    result = global::MyEnum.OmitIsDefined;
-                    return true;
-                }
-
-                if (value.Equals("OmitString", comparison))
-                {
-                    result = global::MyEnum.OmitString;
-                    return true;
-                }
-
-                if (value.Equals("KeepExplicitly", comparison))
-                {
-                    result = global::MyEnum.KeepExplicitly;
-                    return true;
-                }
             }
             if ((format & global::MyEnumFormat.Value) == global::MyEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum.Keep;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("3", comparison))
-                {
-                    result = global::MyEnum.OmitMemberValue;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("4", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlying;
-                    return true;
-                }
-
-                if (value.Equals("5", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlyingLookup;
-                    return true;
-                }
-
-                if (value.Equals("6", comparison))
-                {
-                    result = global::MyEnum.OmitDisplay;
-                    return true;
-                }
-
-                if (value.Equals("7", comparison))
-                {
-                    result = global::MyEnum.OmitIsDefined;
-                    return true;
-                }
-
-                if (value.Equals("8", comparison))
-                {
-                    result = global::MyEnum.OmitString;
-                    return true;
-                }
-
-                if (value.Equals("9", comparison))
-                {
-                    result = global::MyEnum.KeepExplicitly;
-                    return true;
-                }
             }
             if ((format & global::MyEnumFormat.DisplayName) == global::MyEnumFormat.DisplayName)
             {
@@ -161,7 +81,7 @@ internal static partial class Enums
 
 
 
-                if (value.Equals("Disp", comparison))
+                if (value!.Equals("Disp", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
@@ -176,7 +96,7 @@ internal static partial class Enums
 
 
 
-                if (value.Equals("Desc", comparison))
+                if (value!.Equals("Desc", comparison))
                 {
                     result = global::MyEnum.OmitDisplay;
                     return true;
@@ -200,103 +120,23 @@ internal static partial class Enums
         {
             if ((format & global::MyEnumFormat.Name) == global::MyEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "Keep", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum.Keep;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitMemberValue", comparison))
-                {
-                    result = global::MyEnum.OmitMemberValue;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitUnderlying", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlying;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitUnderlyingLookup", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlyingLookup;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitDisplay", comparison))
-                {
-                    result = global::MyEnum.OmitDisplay;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitIsDefined", comparison))
-                {
-                    result = global::MyEnum.OmitIsDefined;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "OmitString", comparison))
-                {
-                    result = global::MyEnum.OmitString;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "KeepExplicitly", comparison))
-                {
-                    result = global::MyEnum.KeepExplicitly;
-                    return true;
-                }
             }
             if ((format & global::MyEnumFormat.Value) == global::MyEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum.Keep;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "3", comparison))
-                {
-                    result = global::MyEnum.OmitMemberValue;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "4", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlying;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "5", comparison))
-                {
-                    result = global::MyEnum.OmitUnderlyingLookup;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "6", comparison))
-                {
-                    result = global::MyEnum.OmitDisplay;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "7", comparison))
-                {
-                    result = global::MyEnum.OmitIsDefined;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "8", comparison))
-                {
-                    result = global::MyEnum.OmitString;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "9", comparison))
-                {
-                    result = global::MyEnum.KeepExplicitly;
-                    return true;
-                }
             }
             if ((format & global::MyEnumFormat.DisplayName) == global::MyEnumFormat.DisplayName)
             {
@@ -431,6 +271,506 @@ internal static partial class Enums
                 9
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("Keep", comparison))
+                    {
+                        result = global::MyEnum.Keep;
+                        return true;
+                    }
+                    return false;
+                case 15:
+                    if (value!.Equals("OmitMemberValue", comparison))
+                    {
+                        result = global::MyEnum.OmitMemberValue;
+                        return true;
+                    }
+                    return false;
+                case 14:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 79:
+                            if (value!.Equals("OmitUnderlying", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlying;
+                                return true;
+                            }
+                            return false;
+                        case 75:
+                            if (value!.Equals("KeepExplicitly", comparison))
+                            {
+                                result = global::MyEnum.KeepExplicitly;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 20:
+                    if (value!.Equals("OmitUnderlyingLookup", comparison))
+                    {
+                        result = global::MyEnum.OmitUnderlyingLookup;
+                        return true;
+                    }
+                    return false;
+                case 11:
+                    if (value!.Equals("OmitDisplay", comparison))
+                    {
+                        result = global::MyEnum.OmitDisplay;
+                        return true;
+                    }
+                    return false;
+                case 13:
+                    if (value!.Equals("OmitIsDefined", comparison))
+                    {
+                        result = global::MyEnum.OmitIsDefined;
+                        return true;
+                    }
+                    return false;
+                case 10:
+                    if (value!.Equals("OmitString", comparison))
+                    {
+                        result = global::MyEnum.OmitString;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("Keep", comparison))
+            {
+                result = global::MyEnum.Keep;
+                return true;
+            }
+
+            if (value!.Equals("OmitMemberValue", comparison))
+            {
+                result = global::MyEnum.OmitMemberValue;
+                return true;
+            }
+
+            if (value!.Equals("OmitUnderlying", comparison))
+            {
+                result = global::MyEnum.OmitUnderlying;
+                return true;
+            }
+
+            if (value!.Equals("OmitUnderlyingLookup", comparison))
+            {
+                result = global::MyEnum.OmitUnderlyingLookup;
+                return true;
+            }
+
+            if (value!.Equals("OmitDisplay", comparison))
+            {
+                result = global::MyEnum.OmitDisplay;
+                return true;
+            }
+
+            if (value!.Equals("OmitIsDefined", comparison))
+            {
+                result = global::MyEnum.OmitIsDefined;
+                return true;
+            }
+
+            if (value!.Equals("OmitString", comparison))
+            {
+                result = global::MyEnum.OmitString;
+                return true;
+            }
+
+            if (value!.Equals("KeepExplicitly", comparison))
+            {
+                result = global::MyEnum.KeepExplicitly;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::MyEnum.Keep;
+                                return true;
+                            }
+                            return false;
+                        case 51:
+                            if (value!.Equals("3", comparison))
+                            {
+                                result = global::MyEnum.OmitMemberValue;
+                                return true;
+                            }
+                            return false;
+                        case 52:
+                            if (value!.Equals("4", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlying;
+                                return true;
+                            }
+                            return false;
+                        case 53:
+                            if (value!.Equals("5", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlyingLookup;
+                                return true;
+                            }
+                            return false;
+                        case 54:
+                            if (value!.Equals("6", comparison))
+                            {
+                                result = global::MyEnum.OmitDisplay;
+                                return true;
+                            }
+                            return false;
+                        case 55:
+                            if (value!.Equals("7", comparison))
+                            {
+                                result = global::MyEnum.OmitIsDefined;
+                                return true;
+                            }
+                            return false;
+                        case 56:
+                            if (value!.Equals("8", comparison))
+                            {
+                                result = global::MyEnum.OmitString;
+                                return true;
+                            }
+                            return false;
+                        case 57:
+                            if (value!.Equals("9", comparison))
+                            {
+                                result = global::MyEnum.KeepExplicitly;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::MyEnum.Keep;
+                return true;
+            }
+
+            if (value!.Equals("3", comparison))
+            {
+                result = global::MyEnum.OmitMemberValue;
+                return true;
+            }
+
+            if (value!.Equals("4", comparison))
+            {
+                result = global::MyEnum.OmitUnderlying;
+                return true;
+            }
+
+            if (value!.Equals("5", comparison))
+            {
+                result = global::MyEnum.OmitUnderlyingLookup;
+                return true;
+            }
+
+            if (value!.Equals("6", comparison))
+            {
+                result = global::MyEnum.OmitDisplay;
+                return true;
+            }
+
+            if (value!.Equals("7", comparison))
+            {
+                result = global::MyEnum.OmitIsDefined;
+                return true;
+            }
+
+            if (value!.Equals("8", comparison))
+            {
+                result = global::MyEnum.OmitString;
+                return true;
+            }
+
+            if (value!.Equals("9", comparison))
+            {
+                result = global::MyEnum.KeepExplicitly;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "Keep", comparison))
+                    {
+                        result = global::MyEnum.Keep;
+                        return true;
+                    }
+                    return false;
+                case 15:
+                    if (global::System.MemoryExtensions.Equals(value, "OmitMemberValue", comparison))
+                    {
+                        result = global::MyEnum.OmitMemberValue;
+                        return true;
+                    }
+                    return false;
+                case 14:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 79:
+                            if (global::System.MemoryExtensions.Equals(value, "OmitUnderlying", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlying;
+                                return true;
+                            }
+                            return false;
+                        case 75:
+                            if (global::System.MemoryExtensions.Equals(value, "KeepExplicitly", comparison))
+                            {
+                                result = global::MyEnum.KeepExplicitly;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 20:
+                    if (global::System.MemoryExtensions.Equals(value, "OmitUnderlyingLookup", comparison))
+                    {
+                        result = global::MyEnum.OmitUnderlyingLookup;
+                        return true;
+                    }
+                    return false;
+                case 11:
+                    if (global::System.MemoryExtensions.Equals(value, "OmitDisplay", comparison))
+                    {
+                        result = global::MyEnum.OmitDisplay;
+                        return true;
+                    }
+                    return false;
+                case 13:
+                    if (global::System.MemoryExtensions.Equals(value, "OmitIsDefined", comparison))
+                    {
+                        result = global::MyEnum.OmitIsDefined;
+                        return true;
+                    }
+                    return false;
+                case 10:
+                    if (global::System.MemoryExtensions.Equals(value, "OmitString", comparison))
+                    {
+                        result = global::MyEnum.OmitString;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "Keep", comparison))
+            {
+                result = global::MyEnum.Keep;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitMemberValue", comparison))
+            {
+                result = global::MyEnum.OmitMemberValue;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitUnderlying", comparison))
+            {
+                result = global::MyEnum.OmitUnderlying;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitUnderlyingLookup", comparison))
+            {
+                result = global::MyEnum.OmitUnderlyingLookup;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitDisplay", comparison))
+            {
+                result = global::MyEnum.OmitDisplay;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitIsDefined", comparison))
+            {
+                result = global::MyEnum.OmitIsDefined;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "OmitString", comparison))
+            {
+                result = global::MyEnum.OmitString;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "KeepExplicitly", comparison))
+            {
+                result = global::MyEnum.KeepExplicitly;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::MyEnum.Keep;
+                                return true;
+                            }
+                            return false;
+                        case 51:
+                            if (global::System.MemoryExtensions.Equals(value, "3", comparison))
+                            {
+                                result = global::MyEnum.OmitMemberValue;
+                                return true;
+                            }
+                            return false;
+                        case 52:
+                            if (global::System.MemoryExtensions.Equals(value, "4", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlying;
+                                return true;
+                            }
+                            return false;
+                        case 53:
+                            if (global::System.MemoryExtensions.Equals(value, "5", comparison))
+                            {
+                                result = global::MyEnum.OmitUnderlyingLookup;
+                                return true;
+                            }
+                            return false;
+                        case 54:
+                            if (global::System.MemoryExtensions.Equals(value, "6", comparison))
+                            {
+                                result = global::MyEnum.OmitDisplay;
+                                return true;
+                            }
+                            return false;
+                        case 55:
+                            if (global::System.MemoryExtensions.Equals(value, "7", comparison))
+                            {
+                                result = global::MyEnum.OmitIsDefined;
+                                return true;
+                            }
+                            return false;
+                        case 56:
+                            if (global::System.MemoryExtensions.Equals(value, "8", comparison))
+                            {
+                                result = global::MyEnum.OmitString;
+                                return true;
+                            }
+                            return false;
+                        case 57:
+                            if (global::System.MemoryExtensions.Equals(value, "9", comparison))
+                            {
+                                result = global::MyEnum.KeepExplicitly;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::MyEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::MyEnum.Keep;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "3", comparison))
+            {
+                result = global::MyEnum.OmitMemberValue;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "4", comparison))
+            {
+                result = global::MyEnum.OmitUnderlying;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "5", comparison))
+            {
+                result = global::MyEnum.OmitUnderlyingLookup;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "6", comparison))
+            {
+                result = global::MyEnum.OmitDisplay;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "7", comparison))
+            {
+                result = global::MyEnum.OmitIsDefined;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "8", comparison))
+            {
+                result = global::MyEnum.OmitString;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "9", comparison))
+            {
+                result = global::MyEnum.KeepExplicitly;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

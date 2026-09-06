@@ -57,31 +57,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ByteEnumFormat.Name) == global::Some.Namespace.Here.ByteEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ByteEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ByteEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ByteEnumFormat.Value) == global::Some.Namespace.Here.ByteEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ByteEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("255", comparison))
-                {
-                    result = global::Some.Namespace.Here.ByteEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -98,31 +90,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ByteEnumFormat.Name) == global::Some.Namespace.Here.ByteEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ByteEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ByteEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ByteEnumFormat.Value) == global::Some.Namespace.Here.ByteEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ByteEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "255", comparison))
-                {
-                    result = global::Some.Namespace.Here.ByteEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -190,6 +174,170 @@ public static partial class Enums
                 255
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 3:
+                    if (value!.Equals("255", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("255", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 3:
+                    if (global::System.MemoryExtensions.Equals(value, "255", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ByteEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "255", comparison))
+            {
+                result = global::Some.Namespace.Here.ByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -333,31 +481,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.SByteEnumFormat.Name) == global::Some.Namespace.Here.SByteEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.SByteEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.SByteEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.SByteEnumFormat.Value) == global::Some.Namespace.Here.SByteEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.SByteEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("-128", comparison))
-                {
-                    result = global::Some.Namespace.Here.SByteEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -374,31 +514,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.SByteEnumFormat.Name) == global::Some.Namespace.Here.SByteEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.SByteEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.SByteEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.SByteEnumFormat.Value) == global::Some.Namespace.Here.SByteEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.SByteEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "-128", comparison))
-                {
-                    result = global::Some.Namespace.Here.SByteEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -466,6 +598,170 @@ public static partial class Enums
                 -128
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 4:
+                    if (value!.Equals("-128", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("-128", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "-128", comparison))
+                    {
+                        result = global::Some.Namespace.Here.SByteEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.SByteEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "-128", comparison))
+            {
+                result = global::Some.Namespace.Here.SByteEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -609,31 +905,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ShortEnumFormat.Name) == global::Some.Namespace.Here.ShortEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ShortEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ShortEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ShortEnumFormat.Value) == global::Some.Namespace.Here.ShortEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ShortEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("-32768", comparison))
-                {
-                    result = global::Some.Namespace.Here.ShortEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -650,31 +938,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ShortEnumFormat.Name) == global::Some.Namespace.Here.ShortEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ShortEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ShortEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ShortEnumFormat.Value) == global::Some.Namespace.Here.ShortEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ShortEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "-32768", comparison))
-                {
-                    result = global::Some.Namespace.Here.ShortEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -742,6 +1022,170 @@ public static partial class Enums
                 -32768
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("-32768", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("-32768", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "-32768", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ShortEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "-32768", comparison))
+            {
+                result = global::Some.Namespace.Here.ShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -885,31 +1329,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.UShortEnumFormat.Name) == global::Some.Namespace.Here.UShortEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UShortEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.UShortEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.UShortEnumFormat.Value) == global::Some.Namespace.Here.UShortEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UShortEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("65535", comparison))
-                {
-                    result = global::Some.Namespace.Here.UShortEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -926,31 +1362,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.UShortEnumFormat.Name) == global::Some.Namespace.Here.UShortEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UShortEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.UShortEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.UShortEnumFormat.Value) == global::Some.Namespace.Here.UShortEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UShortEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "65535", comparison))
-                {
-                    result = global::Some.Namespace.Here.UShortEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1018,6 +1446,170 @@ public static partial class Enums
                 65535
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("65535", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("65535", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "65535", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UShortEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UShortEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "65535", comparison))
+            {
+                result = global::Some.Namespace.Here.UShortEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -1161,31 +1753,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.IntEnumFormat.Name) == global::Some.Namespace.Here.IntEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.IntEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.IntEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.IntEnumFormat.Value) == global::Some.Namespace.Here.IntEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.IntEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("-2147483648", comparison))
-                {
-                    result = global::Some.Namespace.Here.IntEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1202,31 +1786,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.IntEnumFormat.Name) == global::Some.Namespace.Here.IntEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.IntEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.IntEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.IntEnumFormat.Value) == global::Some.Namespace.Here.IntEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.IntEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "-2147483648", comparison))
-                {
-                    result = global::Some.Namespace.Here.IntEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1294,6 +1870,170 @@ public static partial class Enums
                 -2147483648
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 11:
+                    if (value!.Equals("-2147483648", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("-2147483648", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 11:
+                    if (global::System.MemoryExtensions.Equals(value, "-2147483648", comparison))
+                    {
+                        result = global::Some.Namespace.Here.IntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.IntEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "-2147483648", comparison))
+            {
+                result = global::Some.Namespace.Here.IntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -1437,31 +2177,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.UIntEnumFormat.Name) == global::Some.Namespace.Here.UIntEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UIntEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.UIntEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.UIntEnumFormat.Value) == global::Some.Namespace.Here.UIntEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UIntEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("4294967295", comparison))
-                {
-                    result = global::Some.Namespace.Here.UIntEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1478,31 +2210,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.UIntEnumFormat.Name) == global::Some.Namespace.Here.UIntEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UIntEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.UIntEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.UIntEnumFormat.Value) == global::Some.Namespace.Here.UIntEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.UIntEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "4294967295", comparison))
-                {
-                    result = global::Some.Namespace.Here.UIntEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1570,6 +2294,170 @@ public static partial class Enums
                 4294967295U
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 10:
+                    if (value!.Equals("4294967295", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("4294967295", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 10:
+                    if (global::System.MemoryExtensions.Equals(value, "4294967295", comparison))
+                    {
+                        result = global::Some.Namespace.Here.UIntEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.UIntEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "4294967295", comparison))
+            {
+                result = global::Some.Namespace.Here.UIntEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -1713,31 +2601,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.LongEnumFormat.Name) == global::Some.Namespace.Here.LongEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.LongEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.LongEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.LongEnumFormat.Value) == global::Some.Namespace.Here.LongEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.LongEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("-9223372036854775808", comparison))
-                {
-                    result = global::Some.Namespace.Here.LongEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1754,31 +2634,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.LongEnumFormat.Name) == global::Some.Namespace.Here.LongEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.LongEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.LongEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.LongEnumFormat.Value) == global::Some.Namespace.Here.LongEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.LongEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "-9223372036854775808", comparison))
-                {
-                    result = global::Some.Namespace.Here.LongEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1846,6 +2718,170 @@ public static partial class Enums
                 -9223372036854775808L
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 20:
+                    if (value!.Equals("-9223372036854775808", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("-9223372036854775808", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 20:
+                    if (global::System.MemoryExtensions.Equals(value, "-9223372036854775808", comparison))
+                    {
+                        result = global::Some.Namespace.Here.LongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.LongEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "-9223372036854775808", comparison))
+            {
+                result = global::Some.Namespace.Here.LongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -1989,31 +3025,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ULongEnumFormat.Name) == global::Some.Namespace.Here.ULongEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ULongEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ULongEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ULongEnumFormat.Value) == global::Some.Namespace.Here.ULongEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ULongEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("18446744073709551615", comparison))
-                {
-                    result = global::Some.Namespace.Here.ULongEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -2030,31 +3058,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ULongEnumFormat.Name) == global::Some.Namespace.Here.ULongEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ULongEnum.None;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
-                {
-                    result = global::Some.Namespace.Here.ULongEnum.Value;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ULongEnumFormat.Value) == global::Some.Namespace.Here.ULongEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.ULongEnum.None;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "18446744073709551615", comparison))
-                {
-                    result = global::Some.Namespace.Here.ULongEnum.Value;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -2122,6 +3142,170 @@ public static partial class Enums
                 18446744073709551615UL
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("None", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (value!.Equals("0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 20:
+                    if (value!.Equals("18446744073709551615", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.None;
+                return true;
+            }
+
+            if (value!.Equals("18446744073709551615", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "None", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Value", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.None;
+                        return true;
+                    }
+                    return false;
+                case 20:
+                    if (global::System.MemoryExtensions.Equals(value, "18446744073709551615", comparison))
+                    {
+                        result = global::Some.Namespace.Here.ULongEnum.Value;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.ULongEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.None;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "18446744073709551615", comparison))
+            {
+                result = global::Some.Namespace.Here.ULongEnum.Value;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

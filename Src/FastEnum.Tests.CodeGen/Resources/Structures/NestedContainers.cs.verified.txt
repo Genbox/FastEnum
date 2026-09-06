@@ -57,31 +57,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ClassEnumFormat.Name) == global::Some.Namespace.Here.ClassEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ClassEnumFormat.Value) == global::Some.Namespace.Here.ClassEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -98,31 +90,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ClassEnumFormat.Name) == global::Some.Namespace.Here.ClassEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ClassEnumFormat.Value) == global::Some.Namespace.Here.ClassEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -195,6 +179,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedClass.ClassEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedClass.ClassEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -337,31 +497,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.StructEnumFormat.Name) == global::Some.Namespace.Here.StructEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.StructEnumFormat.Value) == global::Some.Namespace.Here.StructEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -378,31 +530,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.StructEnumFormat.Name) == global::Some.Namespace.Here.StructEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.StructEnumFormat.Value) == global::Some.Namespace.Here.StructEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -475,6 +619,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedStruct.StructEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedStruct.StructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -617,31 +937,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.RecordEnumFormat.Name) == global::Some.Namespace.Here.RecordEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.RecordEnumFormat.Value) == global::Some.Namespace.Here.RecordEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -658,31 +970,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.RecordEnumFormat.Name) == global::Some.Namespace.Here.RecordEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.RecordEnumFormat.Value) == global::Some.Namespace.Here.RecordEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -755,6 +1059,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecord.RecordEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecord.RecordEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -897,31 +1377,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.RecordStructEnumFormat.Name) == global::Some.Namespace.Here.RecordStructEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.RecordStructEnumFormat.Value) == global::Some.Namespace.Here.RecordStructEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -938,31 +1410,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.RecordStructEnumFormat.Name) == global::Some.Namespace.Here.RecordStructEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.RecordStructEnumFormat.Value) == global::Some.Namespace.Here.RecordStructEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1035,6 +1499,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.NestedRecordStruct.RecordStructEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
@@ -1177,31 +1817,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.InterfaceEnumFormat.Name) == global::Some.Namespace.Here.InterfaceEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.InterfaceEnumFormat.Value) == global::Some.Namespace.Here.InterfaceEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1218,31 +1850,23 @@ internal static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.InterfaceEnumFormat.Name) == global::Some.Namespace.Here.InterfaceEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
-                {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.InterfaceEnumFormat.Value) == global::Some.Namespace.Here.InterfaceEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1315,6 +1939,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (value!.Equals("First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("First", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                    {
+                        result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                        return true;
+                    }
+                    return false;
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.INestedInterface.InterfaceEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.First;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.INestedInterface.InterfaceEnum.Second;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

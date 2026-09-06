@@ -57,83 +57,43 @@ public static partial class Enums
         {
             if ((format & global::SortedEnumFormat.Name) == global::SortedEnumFormat.Name)
             {
-                if (value.Equals("One", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Two", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("Three", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.Value) == global::SortedEnumFormat.Value)
             {
-                if (value.Equals("2", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("3", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.DisplayName) == global::SortedEnumFormat.DisplayName)
             {
-                if (value.Equals("Bravo", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseDisplayNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Alpha", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseDisplayNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("Charlie", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.Description) == global::SortedEnumFormat.Description)
             {
-                if (value.Equals("Second", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseDescriptionOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("First", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseDescriptionCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("Third", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             result = default;
             return false;
@@ -150,83 +110,43 @@ public static partial class Enums
         {
             if ((format & global::SortedEnumFormat.Name) == global::SortedEnumFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "One", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Two", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "Three", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.Value) == global::SortedEnumFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "2", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "3", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.DisplayName) == global::SortedEnumFormat.DisplayName)
             {
-                if (global::System.MemoryExtensions.Equals(value, "Bravo", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseDisplayNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseDisplayNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "Charlie", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             if ((format & global::SortedEnumFormat.Description) == global::SortedEnumFormat.Description)
             {
-                if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::SortedEnum.One;
-                    return true;
+                    if (TryParseDescriptionOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "First", comparison))
-                {
-                    result = global::SortedEnum.Two;
+                else if (TryParseDescriptionCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "Third", comparison))
-                {
-                    result = global::SortedEnum.Three;
-                    return true;
-                }
             }
             result = default;
             return false;
@@ -311,6 +231,486 @@ public static partial class Enums
                 3
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 3:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 79:
+                            if (value!.Equals("One", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 84:
+                            if (value!.Equals("Two", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 5:
+                    if (value!.Equals("Three", comparison))
+                    {
+                        result = global::SortedEnum.Three;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("One", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("Two", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (value!.Equals("Three", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 50:
+                            if (value!.Equals("2", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        case 51:
+                            if (value!.Equals("3", comparison))
+                            {
+                                result = global::SortedEnum.Three;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("2", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (value!.Equals("3", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseDisplayNameOrdinal(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 66:
+                            if (value!.Equals("Bravo", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 65:
+                            if (value!.Equals("Alpha", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 7:
+                    if (value!.Equals("Charlie", comparison))
+                    {
+                        result = global::SortedEnum.Three;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseDisplayNameCulture(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("Bravo", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("Alpha", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (value!.Equals("Charlie", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseDescriptionOrdinal(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 6:
+                    if (value!.Equals("Second", comparison))
+                    {
+                        result = global::SortedEnum.One;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 70:
+                            if (value!.Equals("First", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        case 84:
+                            if (value!.Equals("Third", comparison))
+                            {
+                                result = global::SortedEnum.Three;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseDescriptionCulture(string value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("Second", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (value!.Equals("First", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (value!.Equals("Third", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 3:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 79:
+                            if (global::System.MemoryExtensions.Equals(value, "One", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 84:
+                            if (global::System.MemoryExtensions.Equals(value, "Two", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Three", comparison))
+                    {
+                        result = global::SortedEnum.Three;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "One", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Two", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Three", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 50:
+                            if (global::System.MemoryExtensions.Equals(value, "2", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        case 51:
+                            if (global::System.MemoryExtensions.Equals(value, "3", comparison))
+                            {
+                                result = global::SortedEnum.Three;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "2", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "3", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseDisplayNameOrdinal(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 5:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 66:
+                            if (global::System.MemoryExtensions.Equals(value, "Bravo", comparison))
+                            {
+                                result = global::SortedEnum.One;
+                                return true;
+                            }
+                            return false;
+                        case 65:
+                            if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 7:
+                    if (global::System.MemoryExtensions.Equals(value, "Charlie", comparison))
+                    {
+                        result = global::SortedEnum.Three;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseDisplayNameCulture(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "Bravo", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Charlie", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseDescriptionOrdinal(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 6:
+                    if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+                    {
+                        result = global::SortedEnum.One;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    switch ((int)char.ToUpperInvariant(value[0]))
+                    {
+                        case 70:
+                            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+                            {
+                                result = global::SortedEnum.Two;
+                                return true;
+                            }
+                            return false;
+                        case 84:
+                            if (global::System.MemoryExtensions.Equals(value, "Third", comparison))
+                            {
+                                result = global::SortedEnum.Three;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseDescriptionCulture(global::System.ReadOnlySpan<char> value, out global::SortedEnum result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "Second", comparison))
+            {
+                result = global::SortedEnum.One;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "First", comparison))
+            {
+                result = global::SortedEnum.Two;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Third", comparison))
+            {
+                result = global::SortedEnum.Three;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
         private static class _displayNamesCache
         {
             internal static readonly (global::SortedEnum, string)[] Values = new (global::SortedEnum, string)[]

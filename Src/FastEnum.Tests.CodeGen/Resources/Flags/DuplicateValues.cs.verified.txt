@@ -57,55 +57,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ProfileFormat.Name) == global::Some.Namespace.Here.ProfileFormat.Name)
             {
-                if (value.Equals("Unknown", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.Profile.Unknown;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("WindowsLegacy", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("WindowsServer2022", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsServer2022;
-                    return true;
-                }
-
-                if (value.Equals("NewestServer", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.NewestServer;
-                    return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Value) == global::Some.Namespace.Here.ProfileFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.Profile.Unknown;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (value.Equals("256", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsServer2022;
-                    return true;
-                }
-
-                if (value.Equals("256", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.NewestServer;
-                    return true;
-                }
             }
             result = default;
             return false;
@@ -122,55 +90,23 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.ProfileFormat.Name) == global::Some.Namespace.Here.ProfileFormat.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "Unknown", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.Profile.Unknown;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "WindowsLegacy", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "WindowsServer2022", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsServer2022;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "NewestServer", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.NewestServer;
-                    return true;
-                }
             }
             if ((format & global::Some.Namespace.Here.ProfileFormat.Value) == global::Some.Namespace.Here.ProfileFormat.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::Some.Namespace.Here.Profile.Unknown;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "256", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.WindowsServer2022;
-                    return true;
-                }
-
-                if (global::System.MemoryExtensions.Equals(value, "256", comparison))
-                {
-                    result = global::Some.Namespace.Here.Profile.NewestServer;
-                    return true;
-                }
             }
             result = default;
             return false;
@@ -244,6 +180,282 @@ public static partial class Enums
                 256
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 7:
+                    if (value!.Equals("Unknown", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.Unknown;
+                        return true;
+                    }
+                    return false;
+                case 13:
+                    if (value!.Equals("WindowsLegacy", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                        return true;
+                    }
+                    return false;
+                case 17:
+                    if (value!.Equals("WindowsServer2022", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                        return true;
+                    }
+                    return false;
+                case 12:
+                    if (value!.Equals("NewestServer", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.NewestServer;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("Unknown", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.Unknown;
+                return true;
+            }
+
+            if (value!.Equals("WindowsLegacy", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                return true;
+            }
+
+            if (value!.Equals("WindowsServer2022", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                return true;
+            }
+
+            if (value!.Equals("NewestServer", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.NewestServer;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.Profile.Unknown;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 3:
+                    if (value!.Equals("256", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                        return true;
+                    }
+                    if (value!.Equals("256", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.NewestServer;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.Unknown;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                return true;
+            }
+
+            if (value!.Equals("256", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                return true;
+            }
+
+            if (value!.Equals("256", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.NewestServer;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 7:
+                    if (global::System.MemoryExtensions.Equals(value, "Unknown", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.Unknown;
+                        return true;
+                    }
+                    return false;
+                case 13:
+                    if (global::System.MemoryExtensions.Equals(value, "WindowsLegacy", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                        return true;
+                    }
+                    return false;
+                case 17:
+                    if (global::System.MemoryExtensions.Equals(value, "WindowsServer2022", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                        return true;
+                    }
+                    return false;
+                case 12:
+                    if (global::System.MemoryExtensions.Equals(value, "NewestServer", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.NewestServer;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "Unknown", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.Unknown;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "WindowsLegacy", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "WindowsServer2022", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "NewestServer", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.NewestServer;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::Some.Namespace.Here.Profile.Unknown;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                case 3:
+                    if (global::System.MemoryExtensions.Equals(value, "256", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                        return true;
+                    }
+                    if (global::System.MemoryExtensions.Equals(value, "256", comparison))
+                    {
+                        result = global::Some.Namespace.Here.Profile.NewestServer;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::Some.Namespace.Here.Profile result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.Unknown;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsLegacy;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "256", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.WindowsServer2022;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "256", comparison))
+            {
+                result = global::Some.Namespace.Here.Profile.NewestServer;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }

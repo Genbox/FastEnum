@@ -25,8 +25,8 @@ public class InvariantCultureTests
 
             string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code);
 
-            Assert.Contains("value.Equals(\"-1234\"", output, StringComparison.Ordinal);
-            Assert.Contains("value.Equals(\"1234567890\"", output, StringComparison.Ordinal);
+            Assert.Contains(".Equals(\"-1234\"", output, StringComparison.Ordinal);
+            Assert.Contains(".Equals(\"1234567890\"", output, StringComparison.Ordinal);
             Assert.DoesNotContain('١', output); //Arabic-Indic digit one; indicates culture bleed
         }
         finally

@@ -67,7 +67,7 @@ public static partial class Enums
         {
             if ((format & global::Some.Namespace.Here.MyEnumFormat.Name) == global::Some.Namespace.Here.MyEnumFormat.Name)
             {
-                if (value.Equals("Value1", comparison))
+                if (value!.Equals("Value1", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value1;
                     return true;
@@ -75,7 +75,7 @@ public static partial class Enums
             }
             if ((format & global::Some.Namespace.Here.MyEnumFormat.Value) == global::Some.Namespace.Here.MyEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value1;
                     return true;
@@ -83,7 +83,7 @@ public static partial class Enums
             }
             if ((format & global::Some.Namespace.Here.MyEnumFormat.DisplayName) == global::Some.Namespace.Here.MyEnumFormat.DisplayName)
             {
-                if (value.Equals("Name", comparison))
+                if (value!.Equals("Name", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value1;
                     return true;
@@ -91,7 +91,7 @@ public static partial class Enums
             }
             if ((format & global::Some.Namespace.Here.MyEnumFormat.Description) == global::Some.Namespace.Here.MyEnumFormat.Description)
             {
-                if (value.Equals("Description", comparison))
+                if (value!.Equals("Description", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value1;
                     return true;

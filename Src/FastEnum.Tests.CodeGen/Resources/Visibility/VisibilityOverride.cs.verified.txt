@@ -53,7 +53,7 @@ internal static partial class Enums
         {
             if ((format & global::MyPublicEnumFormat.Name) == global::MyPublicEnumFormat.Name)
             {
-                if (value.Equals("First", comparison))
+                if (value!.Equals("First", comparison))
                 {
                     result = global::MyPublicEnum.First;
                     return true;
@@ -61,7 +61,7 @@ internal static partial class Enums
             }
             if ((format & global::MyPublicEnumFormat.Value) == global::MyPublicEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyPublicEnum.First;
                     return true;
@@ -296,7 +296,7 @@ internal static partial class Enums
         {
             if ((format & global::PublicExtensionEnumFormat.Name) == global::PublicExtensionEnumFormat.Name)
             {
-                if (value.Equals("None", comparison))
+                if (value!.Equals("None", comparison))
                 {
                     result = global::PublicExtensionEnum.None;
                     return true;
@@ -304,7 +304,7 @@ internal static partial class Enums
             }
             if ((format & global::PublicExtensionEnumFormat.Value) == global::PublicExtensionEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::PublicExtensionEnum.None;
                     return true;

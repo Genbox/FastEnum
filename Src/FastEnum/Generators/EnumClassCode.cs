@@ -173,6 +173,44 @@ internal static class EnumClassCode
 
             string ParseBlock(string format, Func<EnumMemberSpec, string?> getText)
             {
+                string[] texts = members.Select(getText).Where(text => text != null).Select(text => text!).ToArray();
+                bool useTree = texts.Length > 1 && texts.All(text => text.All(c => c <= 127));
+                string fastMethod = $"TryParse{format}Ordinal";
+                if (useTree)
+                {
+                    string valueType = isSpan ? "global::System.ReadOnlySpan<char>" : "string";
+                    int partition = 0;
+                    string ExtractMethod(string body)
+                    {
+                        string name = $"{fastMethod}{partition++}";
+                        AddMethod(name, "result = default;\n" + body);
+                        return $"return {name}(value, out result, comparison);";
+                    }
+
+                    string tree = EnumParseCode.Create(members, getText, ParseCheck, ExtractMethod);
+                    AddMethod(fastMethod, "result = default;\n" + tree);
+
+                    string slowMethod = $$"""
+                        {{string.Concat(GetChecks()).Trim()}}
+                        result = default;
+                        return false;
+                        """;
+                    AddMethod($"TryParse{format}Culture", slowMethod);
+
+                    void AddMethod(string name, string body)
+                    {
+                        string method = $$"""
+                            private static bool {{name}}({{valueType}} value, out {{enumName}} result, global::System.StringComparison comparison)
+                            {
+                                {{IndentFollowingLines(body, 1)}}
+                            }
+                            """;
+                        if (isSpan)
+                            method = "#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER\n" + method + "\n#endif";
+                        fields.Add(method);
+                    }
+                }
+
                 string start = $$"""
                                  if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
                                  {
@@ -181,7 +219,16 @@ internal static class EnumClassCode
                 {
                     HashSet<string> handledTexts = new HashSet<string>(StringComparer.Ordinal);
                     string entries = string.Join(",\n", members.Where(x => getText(x) is string text && handledTexts.Add(text))
-                                                              .Select(x => $"{{ \"{EscapeString(getText(x)!)}\", {enumName}.{x.EmittedIdentifier} }}"));
+                                                              .Select(x => $$"""{ {{FormatStringLiteral(getText(x)!)}}, {{enumName}}.{{x.EmittedIdentifier}} }"""));
+                    string slowBody = useTree ? $$"""
+                        if (comparison == global::System.StringComparison.OrdinalIgnoreCase && value != null)
+                            return {{fastMethod}}(value, out result, comparison);
+                        return TryParse{{format}}Culture(value!, out result, comparison);
+                        """ : $$"""
+                        {{string.Concat(GetChecks()).Trim()}}
+                        result = default;
+                        return false;
+                        """;
                     // Separate initialization from the hot path and keep other comparisons in declaration order.
                     fields.Add(IndentFollowingLines($$"""
                         private static class _{{format}}ParseCache
@@ -194,9 +241,7 @@ internal static class EnumClassCode
 
                         private static bool TryParse{{format}}Slow(string value, out {{enumName}} result, global::System.StringComparison comparison)
                         {
-                            {{IndentFollowingLines(string.Concat(GetChecks()).Trim(), 1)}}
-                            result = default;
-                            return false;
+                            {{IndentFollowingLines(slowBody, 1)}}
                         }
                         """, 2));
                     return $$"""
@@ -207,6 +252,22 @@ internal static class EnumClassCode
                                     return true;
                             }
                             else if (TryParse{{format}}Slow(value!, out result, comparison))
+                                return true;
+                        }
+                        """;
+                }
+
+                if (useTree)
+                {
+                    string notNull = isSpan ? string.Empty : "value != null && ";
+                    return $$"""
+                        {{start}}
+                            if ({{notNull}}(comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                if ({{fastMethod}}(value, out result, comparison))
+                                    return true;
+                            }
+                            else if (TryParse{{format}}Culture(value!, out result, comparison))
                                 return true;
                         }
                         """;
@@ -228,13 +289,20 @@ internal static class EnumClassCode
                 }
             }
 
-            string ParseCheck(EnumMemberSpec member, string text) => $$"""
-                                                                       if ({{(isSpan ? $"global::System.MemoryExtensions.Equals(value, \"{EscapeString(text)}\", comparison)" : $"value.Equals(\"{EscapeString(text)}\", comparison)")}})
-                                                                       {
-                                                                           result = {{enumName}}.{{member.EmittedIdentifier}};
-                                                                           return true;
-                                                                       }
-                                                                       """;
+            string ParseCheck(EnumMemberSpec member, string text)
+            {
+                string literal = FormatStringLiteral(text);
+                string comparison = isSpan
+                    ? $"global::System.MemoryExtensions.Equals(value, {literal}, comparison)"
+                    : $"value!.Equals({literal}, comparison)";
+                return $$"""
+                    if ({{comparison}})
+                    {
+                        result = {{enumName}}.{{member.EmittedIdentifier}};
+                        return true;
+                    }
+                    """;
+            }
         }
 
         string IsDefined()

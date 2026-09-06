@@ -57,7 +57,7 @@ public static partial class Enums
         {
             if ((format & global::Test.Namespace.MyEnumFormat.Name) == global::Test.Namespace.MyEnumFormat.Name)
             {
-                if (value.Equals("Value", comparison))
+                if (value!.Equals("Value", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value;
                     return true;
@@ -65,7 +65,7 @@ public static partial class Enums
             }
             if ((format & global::Test.Namespace.MyEnumFormat.Value) == global::Test.Namespace.MyEnumFormat.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::Some.Namespace.Here.MyEnum.Value;
                     return true;

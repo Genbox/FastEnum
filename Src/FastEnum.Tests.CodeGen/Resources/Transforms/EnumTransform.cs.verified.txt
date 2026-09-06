@@ -53,7 +53,7 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum1Format.Name) == global::MyEnum1Format.Name)
             {
-                if (value.Equals("NotFirst", comparison))
+                if (value!.Equals("NotFirst", comparison))
                 {
                     result = global::MyEnum1.First;
                     return true;
@@ -61,7 +61,7 @@ internal static partial class Enums
             }
             if ((format & global::MyEnum1Format.Value) == global::MyEnum1Format.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyEnum1.First;
                     return true;
@@ -296,7 +296,7 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum2Format.Name) == global::MyEnum2Format.Name)
             {
-                if (value.Equals("FIRST", comparison))
+                if (value!.Equals("FIRST", comparison))
                 {
                     result = global::MyEnum2.First;
                     return true;
@@ -304,7 +304,7 @@ internal static partial class Enums
             }
             if ((format & global::MyEnum2Format.Value) == global::MyEnum2Format.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyEnum2.First;
                     return true;
@@ -539,7 +539,7 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum3Format.Name) == global::MyEnum3Format.Name)
             {
-                if (value.Equals("Last", comparison))
+                if (value!.Equals("Last", comparison))
                 {
                     result = global::MyEnum3.First;
                     return true;
@@ -547,7 +547,7 @@ internal static partial class Enums
             }
             if ((format & global::MyEnum3Format.Value) == global::MyEnum3Format.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyEnum3.First;
                     return true;
@@ -782,7 +782,7 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum4Format.Name) == global::MyEnum4Format.Name)
             {
-                if (value.Equals("fIRST", comparison))
+                if (value!.Equals("fIRST", comparison))
                 {
                     result = global::MyEnum4.First;
                     return true;
@@ -790,7 +790,7 @@ internal static partial class Enums
             }
             if ((format & global::MyEnum4Format.Value) == global::MyEnum4Format.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value!.Equals("0", comparison))
                 {
                     result = global::MyEnum4.First;
                     return true;
@@ -1025,31 +1025,23 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum5Format.Name) == global::MyEnum5Format.Name)
             {
-                if (value.Equals("Beta", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum5.Beta;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("Alpha", comparison))
-                {
-                    result = global::MyEnum5.Alpha;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::MyEnum5Format.Value) == global::MyEnum5Format.Value)
             {
-                if (value.Equals("0", comparison))
+                if (value != null && (comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum5.Beta;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (value.Equals("1", comparison))
-                {
-                    result = global::MyEnum5.Alpha;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1066,31 +1058,23 @@ internal static partial class Enums
         {
             if ((format & global::MyEnum5Format.Name) == global::MyEnum5Format.Name)
             {
-                if (global::System.MemoryExtensions.Equals(value, "Beta", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum5.Beta;
-                    return true;
+                    if (TryParseNameOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
-                {
-                    result = global::MyEnum5.Alpha;
+                else if (TryParseNameCulture(value!, out result, comparison))
                     return true;
-                }
             }
             if ((format & global::MyEnum5Format.Value) == global::MyEnum5Format.Value)
             {
-                if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                if ((comparison == global::System.StringComparison.Ordinal || comparison == global::System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result = global::MyEnum5.Beta;
-                    return true;
+                    if (TryParseValueOrdinal(value, out result, comparison))
+                        return true;
                 }
-
-                if (global::System.MemoryExtensions.Equals(value, "1", comparison))
-                {
-                    result = global::MyEnum5.Alpha;
+                else if (TryParseValueCulture(value!, out result, comparison))
                     return true;
-                }
             }
             result = default;
             return false;
@@ -1163,6 +1147,182 @@ internal static partial class Enums
                 1
             };
         }
+        private static bool TryParseNameOrdinal(string value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (value!.Equals("Beta", comparison))
+                    {
+                        result = global::MyEnum5.Beta;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (value!.Equals("Alpha", comparison))
+                    {
+                        result = global::MyEnum5.Alpha;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseNameCulture(string value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("Beta", comparison))
+            {
+                result = global::MyEnum5.Beta;
+                return true;
+            }
+
+            if (value!.Equals("Alpha", comparison))
+            {
+                result = global::MyEnum5.Alpha;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        private static bool TryParseValueOrdinal(string value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (value!.Equals("0", comparison))
+                            {
+                                result = global::MyEnum5.Beta;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (value!.Equals("1", comparison))
+                            {
+                                result = global::MyEnum5.Alpha;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        private static bool TryParseValueCulture(string value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            if (value!.Equals("0", comparison))
+            {
+                result = global::MyEnum5.Beta;
+                return true;
+            }
+
+            if (value!.Equals("1", comparison))
+            {
+                result = global::MyEnum5.Alpha;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameOrdinal(global::System.ReadOnlySpan<char> value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 4:
+                    if (global::System.MemoryExtensions.Equals(value, "Beta", comparison))
+                    {
+                        result = global::MyEnum5.Beta;
+                        return true;
+                    }
+                    return false;
+                case 5:
+                    if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
+                    {
+                        result = global::MyEnum5.Alpha;
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseNameCulture(global::System.ReadOnlySpan<char> value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "Beta", comparison))
+            {
+                result = global::MyEnum5.Beta;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "Alpha", comparison))
+            {
+                result = global::MyEnum5.Alpha;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueOrdinal(global::System.ReadOnlySpan<char> value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            result = default;
+            switch (value.Length)
+            {
+                case 1:
+                    switch ((int)value[0])
+                    {
+                        case 48:
+                            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+                            {
+                                result = global::MyEnum5.Beta;
+                                return true;
+                            }
+                            return false;
+                        case 49:
+                            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+                            {
+                                result = global::MyEnum5.Alpha;
+                                return true;
+                            }
+                            return false;
+                        default:
+                            return false;
+                    }
+                default:
+                    return false;
+            }
+        }
+        #endif
+        #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+        private static bool TryParseValueCulture(global::System.ReadOnlySpan<char> value, out global::MyEnum5 result, global::System.StringComparison comparison)
+        {
+            if (global::System.MemoryExtensions.Equals(value, "0", comparison))
+            {
+                result = global::MyEnum5.Beta;
+                return true;
+            }
+
+            if (global::System.MemoryExtensions.Equals(value, "1", comparison))
+            {
+                result = global::MyEnum5.Alpha;
+                return true;
+            }
+            result = default;
+            return false;
+        }
+        #endif
 
     }
 }
