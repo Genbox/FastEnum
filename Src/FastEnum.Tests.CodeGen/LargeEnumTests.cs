@@ -22,14 +22,12 @@ public class LargeEnumTests
         TestHelper.GetGeneratedOutput<EnumGenerator>($"[FastEnum] public enum LargeEnum : {underlyingType} {{ {members} }}");
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void LargeEnumWithOmissionsCompiles(bool disableCache)
+    [Fact]
+    public void LargeEnumWithOmissionsCompiles()
     {
         string members = string.Join(",\n", Enumerable.Range(0, 1024).Select(i => $"Value{i} = {i * 2}"));
         string code = $$"""
-                        [FastEnum(DisableCache = {{(disableCache ? "true" : "false")}})]
+                        [FastEnum]
                         public enum LargeEnum
                         {
                             [EnumOmitValue(Exclude = EnumOmitExclude.IsDefined)]

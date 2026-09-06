@@ -6,7 +6,7 @@ internal static class EnumLookupCode
 {
     internal const int HashThreshold = 32;
 
-    internal static bool UsesSwitch(EnumSpec spec, int entryCount) => spec.Data.DisableCache || entryCount < HashThreshold;
+    internal static bool UsesSwitch(int entryCount) => entryCount < HashThreshold;
 
     // Callers filter omissions and resolve aliases before constructing the lookup.
     internal static string Create(EnumSpec spec, EnumMemberSpec[] members, string name, string input,
@@ -18,7 +18,7 @@ internal static class EnumLookupCode
         if (members.Length == 0)
             return missing;
 
-        if (UsesSwitch(spec, members.Length))
+        if (UsesSwitch(members.Length))
         {
             string arms = string.Join("\n", members.Select(x => $"    {FormatPrimitive(x.Value)} => {(result == null ? "true" : result(x))},"));
             return $$"""

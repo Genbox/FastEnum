@@ -5,21 +5,13 @@ namespace Genbox.FastEnum.Tests.Functionality;
 public class FeatureCoverageTests
 {
     [Fact]
-    public void CollectionsAreCachedByDefaultAndCanBeUncached()
+    public void CollectionsAreCached()
     {
         Assert.Same(Enums.TestEnum.GetMemberNames(), Enums.TestEnum.GetMemberNames());
         Assert.Same(Enums.TestEnum.GetMemberValues(), Enums.TestEnum.GetMemberValues());
         Assert.Same(Enums.TestEnum.GetUnderlyingValues(), Enums.TestEnum.GetUnderlyingValues());
         Assert.Same(Enums.TestEnum.GetDisplayNames(), Enums.TestEnum.GetDisplayNames());
         Assert.Same(Enums.TestEnum.GetDescriptions(), Enums.TestEnum.GetDescriptions());
-
-        Assert.NotSame(Enums.UncachedEnum.GetMemberNames(), Enums.UncachedEnum.GetMemberNames());
-        Assert.NotSame(Enums.UncachedEnum.GetMemberValues(), Enums.UncachedEnum.GetMemberValues());
-        Assert.NotSame(Enums.UncachedEnum.GetUnderlyingValues(), Enums.UncachedEnum.GetUnderlyingValues());
-        Assert.NotSame(Enums.UncachedEnum.GetDisplayNames(), Enums.UncachedEnum.GetDisplayNames());
-        Assert.NotSame(Enums.UncachedEnum.GetDescriptions(), Enums.UncachedEnum.GetDescriptions());
-        Assert.Equal([(UncachedEnum.First, "First display")], Enums.UncachedEnum.GetDisplayNames());
-        Assert.Equal([(UncachedEnum.First, "First description")], Enums.UncachedEnum.GetDescriptions());
     }
 
     [Fact]

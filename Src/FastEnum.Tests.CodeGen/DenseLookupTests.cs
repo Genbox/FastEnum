@@ -66,16 +66,14 @@ public class DenseLookupTests
         Assert.True(CompileAndRun(source));
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void OmittedValuesAndAliasesPreserveLookupSemantics(bool disableCache)
+    [Fact]
+    public void OmittedValuesAndAliasesPreserveLookupSemantics()
     {
         // An omission in the middle leaves a hole, while the alias must not add another slot.
         string members = string.Join(",\n", Enumerable.Range(0, 34).Select(i =>
             (i == 16 ? "[Genbox.FastEnum.EnumOmitValue] " : "") + $"Value{i} = {i}"));
         string source = $$"""
-                          [Genbox.FastEnum.FastEnum(DisableCache = {{(disableCache ? "true" : "false")}})]
+                          [Genbox.FastEnum.FastEnum]
                           public enum Sample
                           {
                               {{members}},

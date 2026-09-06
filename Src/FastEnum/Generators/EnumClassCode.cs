@@ -209,7 +209,7 @@ internal static class EnumClassCode
                                  {
                                  """;
 
-                if (!isSpan && !options.DisableCache && members.Where(x => getText(x) != null).Skip(128).Any())
+                if (!isSpan && members.Where(x => getText(x) != null).Skip(128).Any())
                 {
                     HashSet<string> handledTexts = new HashSet<string>(StringComparer.Ordinal);
                     string entries = string.Join(",\n", members.Where(x => getText(x) is string text && handledTexts.Add(text))
@@ -342,14 +342,6 @@ internal static class EnumClassCode
             string[] values = elements.ToArray();
             if (values.Length == 0)
                 return $"global::System.Array.Empty<{type}>();";
-
-            string initializer = $$"""
-                                   new {{type}}[] {
-                                                   {{IndentFollowingLines(string.Join(",\n", values), 4)}}
-                                               };
-                                   """;
-            if (options.DisableCache)
-                return initializer;
 
             fields.Add($$"""
                          private static class {{name}}Cache

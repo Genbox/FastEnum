@@ -36,7 +36,6 @@ public class IncrementalGeneratorTests
     [InlineData("[Genbox.FastEnum.FastEnum] public enum Color { Red = 42, Green }")]
     [InlineData("[Genbox.FastEnum.FastEnum] public enum Color { [System.ComponentModel.DataAnnotations.Display(Name = \"Rouge\")] Red, Green }")]
     [InlineData("[Genbox.FastEnum.FastEnum] public enum Color { [Genbox.FastEnum.EnumOmitValue] Red, Green }")]
-    [InlineData("[Genbox.FastEnum.FastEnum(DisableCache = true)] public enum Color { Red, Green }")]
     [InlineData("[Genbox.FastEnum.FastEnum, Genbox.FastEnum.EnumTransform(Preset = Genbox.FastEnum.EnumTransform.UpperCase)] public enum Color { Red, Green }")]
     public void RelevantEditInvalidatesSpecAndUpdatesOutput(string updated)
     {

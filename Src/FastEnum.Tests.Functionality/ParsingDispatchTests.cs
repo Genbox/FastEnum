@@ -66,7 +66,7 @@ public class ParsingDispatchTests
     [Theory]
     [InlineData(StringComparison.Ordinal)]
     [InlineData(StringComparison.OrdinalIgnoreCase)]
-    public void LargeDispatchHandlesEveryMemberWithAndWithoutCaches(StringComparison comparison)
+    public void LargeDispatchHandlesEveryMember(StringComparison comparison)
     {
         for (int i = 0; i < 130; i++)
         {
@@ -76,12 +76,8 @@ public class ParsingDispatchTests
             {
                 Assert.True(Enums.DispatchLargeEnum.TryParse(input, out DispatchLargeEnum value, comparison: comparison));
                 Assert.True(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out DispatchLargeEnum spanValue, comparison: comparison));
-                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, comparison: comparison));
-                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out UncachedDispatchLargeEnum uncachedSpanValue, comparison: comparison));
                 Assert.Equal(i, (int)value);
                 Assert.Equal(i, (int)spanValue);
-                Assert.Equal(i, (int)uncachedValue);
-                Assert.Equal(i, (int)uncachedSpanValue);
             }
         }
 
@@ -91,10 +87,6 @@ public class ParsingDispatchTests
             Assert.Equal(default, value);
             Assert.False(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out value, comparison: comparison));
             Assert.Equal(default, value);
-            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, comparison: comparison));
-            Assert.Equal(default, uncachedValue);
-            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out uncachedValue, comparison: comparison));
-            Assert.Equal(default, uncachedValue);
         }
     }
 
@@ -105,7 +97,7 @@ public class ParsingDispatchTests
 #pragma warning restore RS0030
     [InlineData(StringComparison.CurrentCulture)]
     [InlineData(StringComparison.CurrentCultureIgnoreCase)]
-    public void LargeCultureFallbackWorksWithAndWithoutCaches(StringComparison comparison)
+    public void LargeCultureFallbackPreservesComparisonSemantics(StringComparison comparison)
     {
         (string Text, int Value)[] candidates = [("Item129", 129), ("coop", 1000), ("co-op", 1001)];
 
@@ -118,10 +110,6 @@ public class ParsingDispatchTests
             Assert.Equal(expectedValue, (int)value);
             Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out DispatchLargeEnum spanValue, DispatchLargeEnumFormat.Name, comparison));
             Assert.Equal(expectedValue, (int)spanValue);
-            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, UncachedDispatchLargeEnumFormat.Name, comparison));
-            Assert.Equal(expectedValue, (int)uncachedValue);
-            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out UncachedDispatchLargeEnum uncachedSpanValue, UncachedDispatchLargeEnumFormat.Name, comparison));
-            Assert.Equal(expectedValue, (int)uncachedSpanValue);
         }
     }
 }

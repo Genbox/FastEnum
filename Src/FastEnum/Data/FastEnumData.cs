@@ -10,5 +10,4 @@ internal record FastEnumData
     public Visibility EnumsClassVisibility { get; [UsedImplicitly]set; }
     public string? EnumNameOverride { get; [UsedImplicitly]set; }
     public bool DisableEnumsWrapper { get; [UsedImplicitly]set; }
-    public bool DisableCache { get; [UsedImplicitly]set; }
 }

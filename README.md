@@ -12,7 +12,7 @@ A source generator to generate common methods for your enum types at compile-tim
 * Intuitive API with discoverability through IntelliSense. All enums can be accessed via the `Enums` class.
 * High-performance
     * Zero allocations whenever possible.
-    * `GetMemberNames()`, `GetMemberValues()` etc. are cached by default. Use `DisableCache` to disable it.
+    * `GetMemberNames()`, `GetMemberValues()` etc. are cached to avoid repeat allocations.
     * `MemberCount` and `IsFlagEnum` are constants, allowing the compiler to fold them.
 * Support for names and descriptions from [DisplayAttribute](https://learn.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.displayattribute?view=net-7.0).
 * Support for flag enums, including composite values, negative values, duplicate aliases, transformed names and per-member omissions.
@@ -220,9 +220,9 @@ Enums.OtherEnum.GetMemberNames()
 
 Removes the outer static `Enums` wrapper, changing `Enums.MyEnum` to `MyEnum`. Use `EnumNameOverride` or a different `EnumsClassNamespace` if the helper would otherwise collide with the enum type.
 
-#### DisableCache
+### Cached metadata
 
-By default, arrays returned by metadata methods are cached to avoid repeat allocations. Set this option to return a new array on every call instead.
+Metadata methods return shared cached arrays. Treat these arrays as read-only. If you need to modify an array, first make a copy, for example `(Color[])Enums.Color.GetMemberValues().Clone()`.
 
 ### Transformations
 

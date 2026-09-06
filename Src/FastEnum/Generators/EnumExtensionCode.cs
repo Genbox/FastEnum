@@ -205,7 +205,7 @@ internal static class EnumExtensionCode
                 return "return value.ToString();";
 
             EnumMemberSpec[] members = spec.Members.GroupBy(member => member.Value).Select(group => group.First()).ToArray();
-            if (EnumLookupCode.UsesSwitch(spec, members.Length))
+            if (EnumLookupCode.UsesSwitch(members.Length))
                 return "return " + EnumLookupCode.Create(spec, members, "_stringLookup", "value", GetNameResult, lookupFields, "value.ToString()") + ";";
 
             return $"return {NameLookup()} ?? value.ToString();";
