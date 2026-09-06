@@ -12,6 +12,7 @@ public class IsDefinedLookupBenchmark
     public bool PreviousArrayLookup()
     {
         int[] values = Enums.TestEnum.GetUnderlyingValues();
+
         for (int i = 0; i < values.Length; i++)
         {
             if (values[i] == (int)Value)

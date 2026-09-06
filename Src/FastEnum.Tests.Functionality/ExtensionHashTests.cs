@@ -10,7 +10,7 @@ public class ExtensionHashTests
     {
         for (int i = 0; i < 40; i++)
         {
-            var value = (ExtensionHashEnum)(i * 256L);
+            ExtensionHashEnum value = (ExtensionHashEnum)(i * 256L);
             string suffix = i.ToString(CultureInfo.InvariantCulture);
             string name = i switch { 0 => "Alias", 1 => string.Empty, _ => "Value" + suffix };
             Assert.Equal(name, value.GetString());
@@ -32,6 +32,7 @@ public class ExtensionHashTests
             Assert.Equal(hasMetadata, value.TryGetDescription(out string? description));
             Assert.Equal(hasMetadata ? "Label" + suffix : null, display);
             Assert.Equal(hasMetadata ? "Detail" + suffix : null, description);
+
             if (hasMetadata)
             {
                 Assert.Equal(display, value.GetDisplayName());
@@ -57,10 +58,11 @@ public class ExtensionHashTests
     {
         // Neighbours of the shifted keys exercise misses in populated hash buckets.
         long[] misses = Enumerable.Range(0, 40).Select(i => (i * 256L) + 1)
-            .Concat([long.MinValue, long.MaxValue, -1L]).ToArray();
+                                  .Concat([long.MinValue, long.MaxValue, -1L]).ToArray();
+
         foreach (long raw in misses)
         {
-            var value = (ExtensionHashEnum)raw;
+            ExtensionHashEnum value = (ExtensionHashEnum)raw;
             string numeric = raw.ToString(CultureInfo.InvariantCulture);
             Assert.Equal(numeric, value.GetString());
             Assert.Equal(numeric, value.GetString(ExtensionHashEnumFormat.Name));

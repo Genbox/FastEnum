@@ -11,6 +11,6 @@ internal static class ModuleInitializer
     {
         VerifyDiffPlex.Initialize(OutputType.Compact);
         DiffRunner.Disabled = true;
-        VerifyTests.VerifierSettings.ScrubLinesContaining("global::System.CodeDom.Compiler.GeneratedCodeAttribute");
+        VerifierSettings.ScrubLinesContaining("global::System.CodeDom.Compiler.GeneratedCodeAttribute");
     }
 }

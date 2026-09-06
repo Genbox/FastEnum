@@ -85,14 +85,10 @@ internal class EnumSpec : IEquatable<EnumSpec>
             hashCode = (hashCode * 397) ^ Data.GetHashCode();
 
             foreach (EnumMemberSpec member in Members)
-            {
                 hashCode = (hashCode * 397) ^ member.GetHashCode();
-            }
 
             foreach (Accessibility ac in AccessChain)
-            {
                 hashCode = (hashCode * 397) ^ ac.GetHashCode();
-            }
 
             hashCode = (hashCode * 397) ^ (TransformData != null ? TransformData.GetHashCode() : 0);
             return hashCode;

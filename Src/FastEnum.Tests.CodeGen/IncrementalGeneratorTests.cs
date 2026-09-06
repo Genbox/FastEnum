@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Genbox.FastEnum.Tests.CodeGen.Code;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -46,7 +47,7 @@ public class IncrementalGeneratorTests
         GeneratorRunResult before = Assert.Single(driver.GetRunResult().Results);
 
         compilation = compilation.ReplaceSyntaxTree(original, Parse(updated));
-        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out var diagnostics, TestContext.Current.CancellationToken);
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out ImmutableArray<Diagnostic> diagnostics, TestContext.Current.CancellationToken);
         GeneratorRunResult after = Assert.Single(driver.GetRunResult().Results);
 
         Assert.Empty(diagnostics);
@@ -57,6 +58,7 @@ public class IncrementalGeneratorTests
         Assert.Equal(Sources(before, "Size_"), Sources(after, "Size_"));
         Assert.Contains(after.TrackedSteps["GenerationInputs"].SelectMany(x => x.Outputs),
             x => x.Reason == IncrementalStepRunReason.Unchanged);
+
         // Unchanged inputs must skip emission, rather than merely reproduce identical source text.
         IEnumerable<IncrementalGeneratorRunStep> emissionSteps = after.TrackedOutputSteps.SelectMany(entry => entry.Value).Where(step => step.Inputs.Any(input => input.Source.Name == "GenerationInputs"));
         Assert.Contains(emissionSteps.SelectMany(step => step.Outputs), output => output.Reason == IncrementalStepRunReason.Cached);
@@ -72,7 +74,7 @@ public class IncrementalGeneratorTests
         string[] before = Sources(Assert.Single(driver.GetRunResult().Results), "Size_");
 
         compilation = compilation.ReplaceSyntaxTree(first, Parse(Original));
-        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var diagnostics, TestContext.Current.CancellationToken);
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out ImmutableArray<Diagnostic> diagnostics, TestContext.Current.CancellationToken);
         Assert.Empty(diagnostics);
         Assert.Empty(output.GetDiagnostics(TestContext.Current.CancellationToken).Where(x => x.Severity == DiagnosticSeverity.Error));
         Assert.NotEqual(before, Sources(Assert.Single(driver.GetRunResult().Results), "Size_"));
@@ -86,11 +88,11 @@ public class IncrementalGeneratorTests
         CSharpCompilation compilation = TestHelper.CreateCompilation([first, second]);
         GeneratorDriver driver = CreateDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
         compilation = compilation.RemoveSyntaxTrees(first);
-        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var diagnostics, TestContext.Current.CancellationToken);
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out ImmutableArray<Diagnostic> diagnostics, TestContext.Current.CancellationToken);
         Assert.Empty(diagnostics);
         Assert.Empty(output.GetDiagnostics(TestContext.Current.CancellationToken).Where(x => x.Severity == DiagnosticSeverity.Error));
         string source = string.Join('\n', Sources(Assert.Single(driver.GetRunResult().Results)));
-        Assert.Equal(4, source.Split("[global::System.CodeDom.Compiler.GeneratedCodeAttribute", StringSplitOptions.None).Length - 1);
+        Assert.Equal(4, source.Split("[global::System.CodeDom.Compiler.GeneratedCodeAttribute").Length - 1);
     }
 
     [Fact]
@@ -113,12 +115,11 @@ public class IncrementalGeneratorTests
 
     private static SyntaxTree Parse(string source) => CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken);
 
-    private static CSharpGeneratorDriver CreateDriver() => CSharpGeneratorDriver.Create(
-        [new EnumGenerator().AsSourceGenerator()],
-        driverOptions: new GeneratorDriverOptions(IncrementalGeneratorOutputKind.None, trackIncrementalGeneratorSteps: true));
+    private static CSharpGeneratorDriver CreateDriver() => CSharpGeneratorDriver.Create([new EnumGenerator().AsSourceGenerator()],
+        driverOptions: new GeneratorDriverOptions(IncrementalGeneratorOutputKind.None, true));
 
     private static string[] Sources(GeneratorRunResult result, string prefix = "") => result.GeneratedSources
-        .Where(x => x.HintName.StartsWith(prefix, StringComparison.Ordinal))
-        .OrderBy(x => x.HintName, StringComparer.Ordinal)
-        .Select(x => x.SourceText.ToString()).ToArray();
+                                                                                            .Where(x => x.HintName.StartsWith(prefix, StringComparison.Ordinal))
+                                                                                            .OrderBy(x => x.HintName, StringComparer.Ordinal)
+                                                                                            .Select(x => x.SourceText.ToString()).ToArray();
 }

@@ -8,10 +8,7 @@ public class EnumExtensionsTest
     private const TestEnum _invalid = (TestEnum)100;
 
     [Fact]
-    public void GetStringTest()
-    {
-        Assert.Equal("First", _valid.GetString());
-    }
+    public void GetStringTest() => Assert.Equal("First", _valid.GetString());
 
     [Fact]
     public void GetUnderlyingValueTest()
@@ -75,11 +72,7 @@ public class EnumExtensionsTest
     [InlineData(TestEnum.First, (TestEnum)0, true)]
     [InlineData(TestEnum.Min, TestEnum.Min, true)]
     [InlineData((TestEnum)32, (TestEnum)32, true)]
-    public void IsFlagSetTest(TestEnum value, TestEnum flag, bool expected)
-    {
-        // Cover zero, partial composites, the sign bit, and unnamed values explicitly.
-        Assert.Equal(expected, value.IsFlagSet(flag));
-    }
+    public void IsFlagSetTest(TestEnum value, TestEnum flag, bool expected) => Assert.Equal(expected, value.IsFlagSet(flag)); // Cover zero, partial composites, the sign bit, and unnamed values explicitly.
 
     [Fact]
     public void EscapedStringsAreReturnedAndParsed()

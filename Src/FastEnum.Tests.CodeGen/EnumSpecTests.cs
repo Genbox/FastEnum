@@ -9,7 +9,7 @@ public class EnumSpecTests
     public void EqualityHandlesNullAndUnrelatedTypes()
     {
         EnumSpec spec = Create();
-        Assert.False(spec.Equals((EnumSpec?)null));
+        Assert.False(spec.Equals(null));
         Assert.False(spec.Equals((object?)null));
         Assert.False(spec.Equals(new object()));
         Assert.True(spec.Equals(spec));

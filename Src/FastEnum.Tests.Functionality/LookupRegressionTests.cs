@@ -24,10 +24,7 @@ public class LookupRegressionTests
     [InlineData(long.MinValue, true)]
     [InlineData(long.MinValue + 1, false)]
     [InlineData(long.MinValue + 2, true)]
-    public void FlagValidationHonorsOmissionsAndIncludedAliases(long rawValue, bool expected)
-    {
-        Assert.Equal(expected, Enums.OmittedValidationFlags.IsDefined((OmittedValidationFlags)rawValue));
-    }
+    public void FlagValidationHonorsOmissionsAndIncludedAliases(long rawValue, bool expected) => Assert.Equal(expected, Enums.OmittedValidationFlags.IsDefined((OmittedValidationFlags)rawValue));
 
     [Fact]
     public void FlagUnderlyingLookupRejectsOmittedAliasesAndAllowsCombinations()

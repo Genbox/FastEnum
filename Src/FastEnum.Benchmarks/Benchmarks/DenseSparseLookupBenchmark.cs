@@ -25,6 +25,7 @@ public class DenseSparseLookupBenchmark
     {
         int stride = Sparse ? 3 : 1;
         inputs = new int[OperationCount];
+
         for (int i = 0; i < inputs.Length; i++)
         {
             int memberIndex = i % MemberCount;
@@ -39,6 +40,7 @@ public class DenseSparseLookupBenchmark
     public int PreviousIsDefined()
     {
         int count = 0;
+
         if (Sparse)
         {
             foreach (int input in inputs)
@@ -55,6 +57,7 @@ public class DenseSparseLookupBenchmark
                     count++;
             }
         }
+
         return count;
     }
 
@@ -62,6 +65,7 @@ public class DenseSparseLookupBenchmark
     public int GeneratedIsDefined()
     {
         int count = 0;
+
         if (Sparse)
         {
             foreach (int input in inputs)
@@ -78,6 +82,7 @@ public class DenseSparseLookupBenchmark
                     count++;
             }
         }
+
         return count;
     }
 
@@ -85,6 +90,7 @@ public class DenseSparseLookupBenchmark
     public int PreviousGetString()
     {
         int length = 0;
+
         if (Sparse)
         {
             foreach (int input in inputs)
@@ -95,6 +101,7 @@ public class DenseSparseLookupBenchmark
             foreach (int input in inputs)
                 length += (PreviousLookup<DenseLookupEnum>.Find(input) ?? ((DenseLookupEnum)input).ToString()).Length;
         }
+
         return length;
     }
 
@@ -102,6 +109,7 @@ public class DenseSparseLookupBenchmark
     public int GeneratedGetString()
     {
         int length = 0;
+
         if (Sparse)
         {
             foreach (int input in inputs)
@@ -112,19 +120,12 @@ public class DenseSparseLookupBenchmark
             foreach (int input in inputs)
                 length += ((DenseLookupEnum)input).GetString().Length;
         }
+
         return length;
     }
 
     private static class PreviousLookup<T> where T : struct, Enum
     {
-#pragma warning disable S2743 // Separate per-enum tables reproduce the generated static lookup holders.
-        private static readonly int[] values = Enum.GetValues<T>().Select(value => Convert.ToInt32(value, CultureInfo.InvariantCulture)).ToArray();
-        private static readonly string[] names = Enum.GetNames<T>();
-        private static readonly EnumHashTable table = EnumHashTable.Create(values.Select(i => (ulong)i).ToArray());
-        private static readonly int[] buckets = table.Buckets;
-        private static readonly int[] next = table.Next;
-#pragma warning restore S2743
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool Contains(int input)
         {
@@ -133,6 +134,7 @@ public class DenseSparseLookupBenchmark
                 if (values[index] == input)
                     return true;
             }
+
             return false;
         }
 
@@ -144,7 +146,15 @@ public class DenseSparseLookupBenchmark
                 if (values[index] == input)
                     return names[index];
             }
+
             return null;
         }
+#pragma warning disable S2743 // Separate per-enum tables reproduce the generated static lookup holders.
+        private static readonly int[] values = Enum.GetValues<T>().Select(value => Convert.ToInt32(value, CultureInfo.InvariantCulture)).ToArray();
+        private static readonly string[] names = Enum.GetNames<T>();
+        private static readonly EnumHashTable table = EnumHashTable.Create(values.Select(i => (ulong)i).ToArray());
+        private static readonly int[] buckets = table.Buckets;
+        private static readonly int[] next = table.Next;
+#pragma warning restore S2743
     }
 }

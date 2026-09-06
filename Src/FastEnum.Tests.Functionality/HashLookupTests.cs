@@ -32,6 +32,7 @@ public class HashLookupTests
     {
         ulong[] values = Enums.HighBitHashEnum.GetUnderlyingValues();
         ulong original = values[0];
+
         try
         {
             values[0] = 1;

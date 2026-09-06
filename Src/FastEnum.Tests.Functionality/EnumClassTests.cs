@@ -5,10 +5,7 @@ namespace Genbox.FastEnum.Tests.Functionality;
 public class EnumClassTests
 {
     [Fact]
-    public void MemberCountTest()
-    {
-        Assert.Equal(5, Enums.TestEnum.MemberCount);
-    }
+    public void MemberCountTest() => Assert.Equal(5, Enums.TestEnum.MemberCount);
 
     [Fact]
     public void IsFlagEnumTest()

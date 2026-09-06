@@ -24,11 +24,11 @@ public class MetadataParsingTests
     [InlineData("", MetadataDispatchEnumFormat.Name, StringComparison.Ordinal, MetadataDispatchEnum.Third)]
     [InlineData("", MetadataDispatchEnumFormat.Default, StringComparison.OrdinalIgnoreCase, MetadataDispatchEnum.Third)]
     public void ParsingPreservesDeclarationOrderAndFormatPrecedence(string input, MetadataDispatchEnumFormat format,
-        StringComparison comparison, MetadataDispatchEnum expected)
+                                                                    StringComparison comparison, MetadataDispatchEnum expected)
     {
-        Assert.True(Enums.MetadataDispatchEnum.TryParse(input, out var result, format, comparison));
+        Assert.True(Enums.MetadataDispatchEnum.TryParse(input, out MetadataDispatchEnum result, format, comparison));
         Assert.Equal(expected, result);
-        Assert.True(Enums.MetadataDispatchEnum.TryParse(input.AsSpan(), out var spanResult, format, comparison));
+        Assert.True(Enums.MetadataDispatchEnum.TryParse(input.AsSpan(), out MetadataDispatchEnum spanResult, format, comparison));
         Assert.Equal(expected, spanResult);
     }
 
@@ -43,7 +43,7 @@ public class MetadataParsingTests
     [InlineData("", MetadataDispatchEnumFormat.None)]
     public void ParsingMissesResetTheResult(string input, MetadataDispatchEnumFormat format)
     {
-        Assert.False(Enums.MetadataDispatchEnum.TryParse(input, out var result, format));
+        Assert.False(Enums.MetadataDispatchEnum.TryParse(input, out MetadataDispatchEnum result, format));
         Assert.Equal(default, result);
         Assert.False(Enums.MetadataDispatchEnum.TryParse(input.AsSpan(), out result, format));
         Assert.Equal(default, result);

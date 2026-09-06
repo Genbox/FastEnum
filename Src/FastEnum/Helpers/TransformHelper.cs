@@ -69,17 +69,11 @@ internal static class TransformHelper
             for (; namePtr < length; namePtr++)
             {
                 if (casePattern[namePtr] == 'U')
-                {
                     chars[charPtr++] = char.ToUpperInvariant(name[namePtr]);
-                }
                 else if (casePattern[namePtr] == 'L')
-                {
                     chars[charPtr++] = char.ToLowerInvariant(name[namePtr]);
-                }
                 else if (casePattern[namePtr] == '_')
-                {
                     chars[charPtr++] = name[namePtr];
-                }
                 else if (casePattern[namePtr] == 'O')
                 {
                     //do nothing
@@ -88,9 +82,7 @@ internal static class TransformHelper
 
             //If there is anything left of name that we have not copied, copy it now.
             for (; namePtr < name.Length; namePtr++)
-            {
                 chars[charPtr++] = name[namePtr];
-            }
 
             return new string(chars, 0, charPtr);
         }

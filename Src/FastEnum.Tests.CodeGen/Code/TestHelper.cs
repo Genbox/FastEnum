@@ -57,10 +57,7 @@ internal static class TestHelper
         return sb.ToString();
     }
 
-    private static string GetHeader()
-    {
-        return _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.cs"));
-    }
+    private static string GetHeader() => _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.cs"));
 
     // Runtime references keep unit tests independent of assembly load order. Target-framework
     // compatibility is checked separately by Scripts/Test-Package.ps1 using SDK reference packs.
@@ -69,10 +66,10 @@ internal static class TestHelper
         string platformAssemblies = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")
                                     ?? throw new InvalidOperationException("Runtime assembly references are unavailable.");
         IEnumerable<PortableExecutableReference> references = platformAssemblies.Split(Path.PathSeparator)
-            .Append(typeof(EnumGenerator).Assembly.Location)
-            .Append(typeof(DisplayAttribute).Assembly.Location)
-            .Distinct(StringComparer.Ordinal)
-            .Select(path => MetadataReference.CreateFromFile(path));
+                                                                                .Append(typeof(EnumGenerator).Assembly.Location)
+                                                                                .Append(typeof(DisplayAttribute).Assembly.Location)
+                                                                                .Distinct(StringComparer.Ordinal)
+                                                                                .Select(path => MetadataReference.CreateFromFile(path));
 
         return CSharpCompilation.Create("generator", syntaxTrees, references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));

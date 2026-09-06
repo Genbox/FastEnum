@@ -88,7 +88,7 @@ internal static class Program
     {
         imuppercase,
         [EnumTransformValue(ValueOverride = "my-value")]
-        myvalue,
+        myvalue
     }
 
     [FastEnum]
@@ -96,7 +96,7 @@ internal static class Program
     internal enum EnumWithRegexTransform
     {
         EnumValue1,
-        EnumValue2,
+        EnumValue2
     }
 
     [FastEnum]
@@ -104,7 +104,7 @@ internal static class Program
     internal enum EnumWithCasePatternTransform
     {
         Value1,
-        Value2,
+        Value2
     }
 
     [FastEnum]

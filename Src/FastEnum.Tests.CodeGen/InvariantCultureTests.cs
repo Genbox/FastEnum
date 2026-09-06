@@ -1,6 +1,5 @@
 using System.Globalization;
 using Genbox.FastEnum.Tests.CodeGen.Code;
-using Xunit;
 
 namespace Genbox.FastEnum.Tests.CodeGen;
 

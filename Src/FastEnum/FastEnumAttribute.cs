@@ -1,11 +1,11 @@
-// ReSharper disable RedundantNameQualifier
+using System.Diagnostics;
 
 namespace Genbox.FastEnum;
 
 /// <summary>Add to enums to indicate that extension methods should be generated for the type</summary>
-[global::System.Diagnostics.Conditional("FASTENUM_INCLUDE_ATTRIBUTE")]
-[global::System.AttributeUsage(AttributeTargets.Enum)]
-public sealed class FastEnumAttribute : global::System.Attribute
+[Conditional("FASTENUM_INCLUDE_ATTRIBUTE")]
+[AttributeUsage(AttributeTargets.Enum)]
+public sealed class FastEnumAttribute : Attribute
 {
     /// <summary>
     /// Override the name of the extension class. If not provided, the enum name with "Extensions" appended will be used. For example for an Enum called StatusCodes, the default name
@@ -34,6 +34,6 @@ public sealed class FastEnumAttribute : global::System.Attribute
     /// <summary>Enable this to avoid generating the static Enums class that wraps all the enums. Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace across projects</summary>
     public bool DisableEnumsWrapper { get; set; }
 
-    /// <summary>By default, arrays from methods such as GetMemberValues() and GetMemberNames() are cached. Set this to <see langword="true"/> to avoid caching. Numeric lookups then use switches instead of range checks and cached lookup tables.</summary>
+    /// <summary>By default, arrays from methods such as GetMemberValues() and GetMemberNames() are cached. Set this to <see langword="true" /> to avoid caching. Numeric lookups then use switches instead of range checks and cached lookup tables.</summary>
     public bool DisableCache { get; set; }
 }

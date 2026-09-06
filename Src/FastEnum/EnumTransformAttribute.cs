@@ -1,11 +1,11 @@
-//ReSharper disable RedundantNameQualifier
+using System.Diagnostics;
 
 namespace Genbox.FastEnum;
 
 /// <summary>Configures transformations and ordering for generated enum data.</summary>
-[global::System.Diagnostics.Conditional("FASTENUM_INCLUDE_ATTRIBUTE")]
-[global::System.AttributeUsage(AttributeTargets.Enum)]
-public sealed class EnumTransformAttribute : global::System.Attribute
+[Conditional("FASTENUM_INCLUDE_ATTRIBUTE")]
+[AttributeUsage(AttributeTargets.Enum)]
+public sealed class EnumTransformAttribute : Attribute
 {
     /// <summary>
     /// Transform all enum strings via a preset. Affects GetMemberNames() and GetString() output.

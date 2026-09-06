@@ -60,7 +60,7 @@ public class LargeEnumTests
 
         string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code);
         SyntaxNode root = await CSharpSyntaxTree.ParseText(output, cancellationToken: TestContext.Current.CancellationToken)
-                                               .GetRootAsync(TestContext.Current.CancellationToken);
+                                                .GetRootAsync(TestContext.Current.CancellationToken);
         MethodDeclarationSyntax method = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
                                              .Single(x => x.Identifier.ValueText == "IsDefined");
 

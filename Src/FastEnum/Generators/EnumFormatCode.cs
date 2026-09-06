@@ -33,16 +33,20 @@ internal static class EnumFormatCode
                  }
                  """;
 
-        string DisplayNameMember() => !spec.HasDisplay ? string.Empty : """
+        string DisplayNameMember() => !spec.HasDisplay
+            ? string.Empty
+            : """
 
-                                                                             /// <summary>Use display names.</summary>
-                                                                             DisplayName = 4,
-                                                                         """;
+                  /// <summary>Use display names.</summary>
+                  DisplayName = 4,
+              """;
 
-        string DescriptionMember() => !spec.HasDescription ? string.Empty : """
+        string DescriptionMember() => !spec.HasDescription
+            ? string.Empty
+            : """
 
-                                                                                   /// <summary>Use descriptions.</summary>
-                                                                                   Description = 8,
-                                                                               """;
+                  /// <summary>Use descriptions.</summary>
+                  Description = 8,
+              """;
     }
 }

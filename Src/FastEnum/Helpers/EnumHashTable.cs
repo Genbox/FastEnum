@@ -43,6 +43,7 @@ internal sealed class EnumHashTable
 
         int[] buckets = Enumerable.Repeat(-1, size).ToArray();
         int[] next = new int[values.Length];
+
         for (int i = 0; i < values.Length; i++)
         {
             int bucket = (int)((values[i] >> bestShift) & (uint)mask);

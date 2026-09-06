@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Genbox.FastEnum;
 
-/// <summary>Generates optimized helper APIs for enums marked with <see cref="FastEnumAttribute"/>.</summary>
+/// <summary>Generates optimized helper APIs for enums marked with <see cref="FastEnumAttribute" />.</summary>
 [Generator(LanguageNames.CSharp)]
 public class EnumGenerator : IIncrementalGenerator
 {
@@ -26,11 +26,11 @@ public class EnumGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValueProvider<ImmutableArray<EnumSpec>> collectedEnums = context.SyntaxProvider
-            .ForAttributeWithMetadataName(FastEnumAttr, static (node, _) => node is EnumDeclarationSyntax declaration && declaration.AttributeLists.Count > 0, Transform)
-            .Where(spec => spec != null)
-            .WithTrackingName("EnumSpecs")
-            .Collect()
-            .WithTrackingName("CollectedEnums")!;
+                                                                                   .ForAttributeWithMetadataName(FastEnumAttr, static (node, _) => node is EnumDeclarationSyntax declaration && declaration.AttributeLists.Count > 0, Transform)
+                                                                                   .Where(spec => spec != null)
+                                                                                   .WithTrackingName("EnumSpecs")
+                                                                                   .Collect()
+                                                                                   .WithTrackingName("CollectedEnums")!;
 
         IncrementalValueProvider<GenerationPlan> plan = collectedEnums.Select(static (specs, _) => CreatePlan(specs));
         context.RegisterSourceOutput(plan.Select(static (value, _) => value.Error), static (spc, message) =>
@@ -44,7 +44,7 @@ public class EnumGenerator : IIncrementalGenerator
 
         // Structural equality stops unchanged inputs before the expensive source emission callback.
         IncrementalValuesProvider<GenerationInput> inputs = plan.SelectMany(static (value, _) => value.Inputs)
-            .WithTrackingName("GenerationInputs");
+                                                                .WithTrackingName("GenerationInputs");
         context.RegisterSourceOutput(inputs, EmitSources);
     }
 
@@ -54,6 +54,7 @@ public class EnumGenerator : IIncrementalGenerator
             return;
 
         EnumSpec spec = input.Spec;
+
         try
         {
             context.AddSource($"{spec.FullName}_EnumFormat.g.cs", GetSource(Header, spec, EnumFormatCode.Generate));
@@ -67,10 +68,6 @@ public class EnumGenerator : IIncrementalGenerator
         }
     }
 
-    private sealed record GenerationInput(EnumSpec Spec, bool IsWrapperPublic, bool IncludeWrapperAttribute, bool IncludeExtensionAttribute);
-
-    private sealed record GenerationPlan(string? Error, ImmutableArray<GenerationInput> Inputs);
-
     private static GenerationPlan CreatePlan(ImmutableArray<EnumSpec> specs)
     {
         if (!IsSpecsValid(specs, out string? message))
@@ -78,6 +75,7 @@ public class EnumGenerator : IIncrementalGenerator
 
         // Every declaration of a shared partial wrapper must use the same visibility.
         HashSet<string> publicWrappers = new HashSet<string>(StringComparer.Ordinal);
+
         foreach (EnumSpec spec in specs)
         {
             FastEnumData data = spec.Data;
@@ -90,6 +88,7 @@ public class EnumGenerator : IIncrementalGenerator
         // Apply GeneratedCodeAttribute only to the first declaration of each shared type.
         HashSet<string> attributedTypes = new HashSet<string>(StringComparer.Ordinal);
         ImmutableArray<GenerationInput>.Builder inputs = ImmutableArray.CreateBuilder<GenerationInput>(specs.Length);
+
         foreach (EnumSpec spec in specs)
         {
             FastEnumData data = spec.Data;
@@ -304,9 +303,9 @@ public class EnumGenerator : IIncrementalGenerator
     private static SourceText GetSource(string header, EnumSpec spec, Func<EnumSpec, string> generate)
     {
         string source = $"""
-                          {header}
-                          {generate(spec)}
-                          """;
+                         {header}
+                         {generate(spec)}
+                         """;
         return SourceText.From(source, Encoding.UTF8);
     }
 
@@ -399,6 +398,7 @@ public class EnumGenerator : IIncrementalGenerator
         }
 
         string enumName = NormalizeIdentifier(fastEnumData.EnumNameOverride ?? symbol.Name);
+
         // Symbol display formats handle containing types; only code references retain escapes and the global qualifier.
         string enumFullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat).Replace("@", "");
         string fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
@@ -411,9 +411,10 @@ public class EnumGenerator : IIncrementalGenerator
         return new EnumSpec(enumName, EscapeIdentifier(enumName), enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData, hasFileLocalType);
     }
 
-    private static string EscapeIdentifier(string value)
-    {
-        // Roslyn symbol names omit the source '@', so restore it for keyword identifiers.
-        return SyntaxFacts.GetKeywordKind(value) != SyntaxKind.None || SyntaxFacts.GetContextualKeywordKind(value) != SyntaxKind.None ? $"@{value}" : value;
-    }
+    // Roslyn symbol names omit the source '@', so restore it for keyword identifiers.
+    private static string EscapeIdentifier(string value) => SyntaxFacts.GetKeywordKind(value) != SyntaxKind.None || SyntaxFacts.GetContextualKeywordKind(value) != SyntaxKind.None ? $"@{value}" : value;
+
+    private sealed record GenerationInput(EnumSpec Spec, bool IsWrapperPublic, bool IncludeWrapperAttribute, bool IncludeExtensionAttribute);
+
+    private sealed record GenerationPlan(string? Error, ImmutableArray<GenerationInput> Inputs);
 }

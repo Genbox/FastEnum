@@ -87,5 +87,5 @@ internal enum ExtensionHashEnum : long
     [Display(Name = "Label38", Description = "Detail38")]
     Value38 = 9728,
     [Display(Name = "Label39", Description = "Detail39")]
-    Value39 = 9984,
+    Value39 = 9984
 }

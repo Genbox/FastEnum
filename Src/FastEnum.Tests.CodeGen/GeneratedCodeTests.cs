@@ -1,4 +1,6 @@
+using System.Collections.Immutable;
 using Genbox.FastEnum.Tests.CodeGen.Code;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Genbox.FastEnum.Tests.CodeGen;
@@ -25,7 +27,7 @@ public class GeneratedCodeTests
                             """;
 
         CSharpParseOptions options = new CSharpParseOptions(preprocessorSymbols: [frameworkSymbol]);
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out var generatorDiagnostics, out var compilerDiagnostics, options);
+        TestHelper.GetGeneratedOutput<EnumGenerator>(code, out ImmutableArray<Diagnostic> generatorDiagnostics, out IEnumerable<Diagnostic> compilerDiagnostics, options);
         Assert.Empty(generatorDiagnostics);
         Assert.Empty(compilerDiagnostics);
     }

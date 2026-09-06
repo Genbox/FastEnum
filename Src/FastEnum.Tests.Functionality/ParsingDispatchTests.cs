@@ -11,12 +11,14 @@ public class ParsingDispatchTests
     public void CharacterDispatchMatchesOrdinalComparisonForEveryChar(StringComparison comparison)
     {
         string[] names = ["K", "S", "I", "i"];
+
         for (int c = char.MinValue; c <= char.MaxValue; c++)
         {
             string input = ((char)c).ToString();
             int expected = Array.FindIndex(names, name => string.Equals(name, input, comparison));
-            Assert.Equal(expected >= 0, Enums.AsciiDispatchEnum.TryParse(input, out var value, AsciiDispatchEnumFormat.Name, comparison));
-            Assert.Equal(expected >= 0, Enums.AsciiDispatchEnum.TryParse(input.AsSpan(), out var spanValue, AsciiDispatchEnumFormat.Name, comparison));
+            Assert.Equal(expected >= 0, Enums.AsciiDispatchEnum.TryParse(input, out AsciiDispatchEnum value, AsciiDispatchEnumFormat.Name, comparison));
+            Assert.Equal(expected >= 0, Enums.AsciiDispatchEnum.TryParse(input.AsSpan(), out AsciiDispatchEnum spanValue, AsciiDispatchEnumFormat.Name, comparison));
+
             if (expected >= 0)
             {
                 Assert.Equal((AsciiDispatchEnum)expected, value);
@@ -27,6 +29,7 @@ public class ParsingDispatchTests
             bool numericMatch = c is >= '0' and <= '3';
             Assert.Equal(numericMatch, Enums.AsciiDispatchEnum.TryParse(input, out value, AsciiDispatchEnumFormat.Value, comparison));
             Assert.Equal(numericMatch, Enums.AsciiDispatchEnum.TryParse(input.AsSpan(), out spanValue, AsciiDispatchEnumFormat.Value, comparison));
+
             if (numericMatch)
             {
                 Assert.Equal(c - '0', (int)value);
@@ -45,11 +48,13 @@ public class ParsingDispatchTests
     public void CultureComparisonsRetainTheirOriginalSemantics(StringComparison comparison)
     {
         string[] names = ["coop", "co-op"];
+
         foreach (string input in new[] { "coop", "COOP", "co\u00adop", "co-op", "CO-OP", "missing" })
         {
             int expected = Array.FindIndex(names, name => string.Equals(input, name, comparison));
-            Assert.Equal(expected >= 0, Enums.CultureDispatchEnum.TryParse(input, out var value, CultureDispatchEnumFormat.Name, comparison));
-            Assert.Equal(expected >= 0, Enums.CultureDispatchEnum.TryParse(input.AsSpan(), out var spanValue, CultureDispatchEnumFormat.Name, comparison));
+            Assert.Equal(expected >= 0, Enums.CultureDispatchEnum.TryParse(input, out CultureDispatchEnum value, CultureDispatchEnumFormat.Name, comparison));
+            Assert.Equal(expected >= 0, Enums.CultureDispatchEnum.TryParse(input.AsSpan(), out CultureDispatchEnum spanValue, CultureDispatchEnumFormat.Name, comparison));
+
             if (expected >= 0)
             {
                 Assert.Equal((CultureDispatchEnum)expected, value);
@@ -66,12 +71,13 @@ public class ParsingDispatchTests
         for (int i = 0; i < 130; i++)
         {
             string name = (comparison == StringComparison.Ordinal ? "Item" : "item") + i.ToString(CultureInfo.InvariantCulture);
+
             foreach (string input in new[] { name, i.ToString(CultureInfo.InvariantCulture) })
             {
-                Assert.True(Enums.DispatchLargeEnum.TryParse(input, out var value, comparison: comparison));
-                Assert.True(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out var spanValue, comparison: comparison));
-                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input, out var uncachedValue, comparison: comparison));
-                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out var uncachedSpanValue, comparison: comparison));
+                Assert.True(Enums.DispatchLargeEnum.TryParse(input, out DispatchLargeEnum value, comparison: comparison));
+                Assert.True(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out DispatchLargeEnum spanValue, comparison: comparison));
+                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, comparison: comparison));
+                Assert.True(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out UncachedDispatchLargeEnum uncachedSpanValue, comparison: comparison));
                 Assert.Equal(i, (int)value);
                 Assert.Equal(i, (int)spanValue);
                 Assert.Equal(i, (int)uncachedValue);
@@ -81,11 +87,11 @@ public class ParsingDispatchTests
 
         foreach (string input in new[] { "", "Missing", "Item130", "Item00", "Xtem129", "Item129x", "-1", "130" })
         {
-            Assert.False(Enums.DispatchLargeEnum.TryParse(input, out var value, comparison: comparison));
+            Assert.False(Enums.DispatchLargeEnum.TryParse(input, out DispatchLargeEnum value, comparison: comparison));
             Assert.Equal(default, value);
             Assert.False(Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out value, comparison: comparison));
             Assert.Equal(default, value);
-            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input, out var uncachedValue, comparison: comparison));
+            Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, comparison: comparison));
             Assert.Equal(default, uncachedValue);
             Assert.False(Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out uncachedValue, comparison: comparison));
             Assert.Equal(default, uncachedValue);
@@ -102,18 +108,19 @@ public class ParsingDispatchTests
     public void LargeCultureFallbackWorksWithAndWithoutCaches(StringComparison comparison)
     {
         (string Text, int Value)[] candidates = [("Item129", 129), ("coop", 1000), ("co-op", 1001)];
+
         foreach (string input in new[] { "Item129", "ITEM129", "coop", "COOP", "co\u00adop", "co-op", "CO-OP", "missing" })
         {
             int index = Array.FindIndex(candidates, candidate => string.Equals(input, candidate.Text, comparison));
             bool expected = index >= 0;
             int expectedValue = expected ? candidates[index].Value : 0;
-            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input, out var value, DispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input, out DispatchLargeEnum value, DispatchLargeEnumFormat.Name, comparison));
             Assert.Equal(expectedValue, (int)value);
-            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out var spanValue, DispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expected, Enums.DispatchLargeEnum.TryParse(input.AsSpan(), out DispatchLargeEnum spanValue, DispatchLargeEnumFormat.Name, comparison));
             Assert.Equal(expectedValue, (int)spanValue);
-            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input, out var uncachedValue, UncachedDispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input, out UncachedDispatchLargeEnum uncachedValue, UncachedDispatchLargeEnumFormat.Name, comparison));
             Assert.Equal(expectedValue, (int)uncachedValue);
-            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out var uncachedSpanValue, UncachedDispatchLargeEnumFormat.Name, comparison));
+            Assert.Equal(expected, Enums.UncachedDispatchLargeEnum.TryParse(input.AsSpan(), out UncachedDispatchLargeEnum uncachedSpanValue, UncachedDispatchLargeEnumFormat.Name, comparison));
             Assert.Equal(expectedValue, (int)uncachedSpanValue);
         }
     }

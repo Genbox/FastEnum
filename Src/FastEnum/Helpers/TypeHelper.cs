@@ -28,6 +28,6 @@ internal static class TypeHelper
     private static class PropertyCache<T>
     {
         internal static readonly Dictionary<string, PropertyInfo> Properties = typeof(T).GetProperties()
-            .ToDictionary(property => property.Name, StringComparer.Ordinal);
+                                                                                        .ToDictionary(property => property.Name, StringComparer.Ordinal);
     }
 }

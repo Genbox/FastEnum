@@ -3,6 +3,6 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Running;
 
 ManualConfig config = ManualConfig.Create(DefaultConfig.Instance)
-    .AddDiagnoser(MemoryDiagnoser.Default);
+                                  .AddDiagnoser(MemoryDiagnoser.Default);
 
 BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, config);

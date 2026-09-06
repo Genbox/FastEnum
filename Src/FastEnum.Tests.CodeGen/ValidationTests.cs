@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using Genbox.FastEnum.Tests.CodeGen.Code;
 using Microsoft.CodeAnalysis;
 
@@ -12,10 +13,10 @@ public class ValidationTests
     [InlineData("file class Outer { public class Inner { [FastEnum] public enum Local { Value } } }")]
     public void FileLocalTypesProduceValidationDiagnostic(string source)
     {
-        string generated = TestHelper.GetGeneratedOutput<EnumGenerator>(source, out var diagnostics, out var compilerDiagnostics);
+        string generated = TestHelper.GetGeneratedOutput<EnumGenerator>(source, out ImmutableArray<Diagnostic> diagnostics, out IEnumerable<Diagnostic> compilerDiagnostics);
         Diagnostic diagnostic = Assert.Single(diagnostics);
         Assert.Equal("FE001", diagnostic.Id);
-        Assert.Contains("file-local", diagnostic.GetMessage(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal);
+        Assert.Contains("file-local", diagnostic.GetMessage(CultureInfo.InvariantCulture), StringComparison.Ordinal);
         Assert.DoesNotContain(compilerDiagnostics, x => x.Severity == DiagnosticSeverity.Error);
         Assert.Empty(generated);
     }
