@@ -7,7 +7,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
     //This class overrides equality to provide caching to the source generator framework. It cannot just be a record
     //as it contains lists that has to be compared, so we need to override equality anyway.
 
-    public EnumSpec(string name, string emittedIdentifier, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasGenericContainingType, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, FastEnumData data, EnumMemberSpec[] members, EnumTransformData? transformData)
+    public EnumSpec(string name, string emittedIdentifier, string fullName, string fullyQualifiedName, string? @namespace, Accessibility[] accessChain, bool hasGenericContainingType, bool hasDisplay, bool hasDescription, bool hasFlags, string underlyingType, FastEnumData data, EnumMemberSpec[] members, EnumTransformData? transformData, bool hasFileLocalType = false)
     {
         Name = name;
         EmittedIdentifier = emittedIdentifier;
@@ -16,6 +16,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
         Namespace = @namespace;
         AccessChain = accessChain;
         HasGenericContainingType = hasGenericContainingType;
+        HasFileLocalType = hasFileLocalType;
         HasDisplay = hasDisplay;
         HasDescription = hasDescription;
         HasFlags = hasFlags;
@@ -33,6 +34,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
     public Accessibility[] AccessChain { get; }
     public bool IsPubliclyAccessible => Array.TrueForAll(AccessChain, x => x == Accessibility.Public);
     public bool HasGenericContainingType { get; }
+    public bool HasFileLocalType { get; }
     public bool HasDisplay { get; }
     public bool HasDescription { get; }
     public bool HasFlags { get; }
@@ -50,6 +52,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
                Namespace == other.Namespace &&
                ListEqual(AccessChain, other.AccessChain) &&
                HasGenericContainingType == other.HasGenericContainingType &&
+               HasFileLocalType == other.HasFileLocalType &&
                HasDisplay == other.HasDisplay &&
                HasDescription == other.HasDescription &&
                HasFlags == other.HasFlags &&
@@ -71,6 +74,7 @@ internal class EnumSpec : IEquatable<EnumSpec>
             hashCode = (hashCode * 397) ^ FullyQualifiedName.GetDeterministicHashCode();
             hashCode = (hashCode * 397) ^ (Namespace != null ? Namespace.GetDeterministicHashCode() : 0);
             hashCode = (hashCode * 397) ^ HasGenericContainingType.GetHashCode();
+            hashCode = (hashCode * 397) ^ HasFileLocalType.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDisplay.GetHashCode();
             hashCode = (hashCode * 397) ^ HasDescription.GetHashCode();
             hashCode = (hashCode * 397) ^ HasFlags.GetHashCode();

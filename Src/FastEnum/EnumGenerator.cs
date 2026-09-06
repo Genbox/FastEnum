@@ -72,6 +72,9 @@ public class EnumGenerator : IIncrementalGenerator
     {
         foreach (EnumSpec es in specs)
         {
+            if (es.HasFileLocalType)
+                return Fail($"FastEnum is not supported on file-local enum '{es.FullName}' or an enum inside a file-local containing type", out message);
+
             if (es.HasGenericContainingType)
                 return Fail($"FastEnum is not supported on enum '{es.FullName}' inside a generic containing type", out message);
         }
@@ -363,9 +366,11 @@ public class EnumGenerator : IIncrementalGenerator
         List<Accessibility> accessChain = new List<Accessibility>();
 
         INamedTypeSymbol? curSym = symbol;
+        bool hasFileLocalType = false;
 
         while (curSym != null)
         {
+            hasFileLocalType |= curSym.IsFileLocal;
             accessChain.Add(curSym.DeclaredAccessibility);
             curSym = curSym.ContainingType;
         }
@@ -380,7 +385,7 @@ public class EnumGenerator : IIncrementalGenerator
         for (INamedTypeSymbol? containingType = symbol.ContainingType; containingType != null; containingType = containingType.ContainingType)
             hasGenericContainingType |= containingType.Arity > 0;
 
-        return new EnumSpec(enumName, EscapeIdentifier(enumName), enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData);
+        return new EnumSpec(enumName, EscapeIdentifier(enumName), enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData, hasFileLocalType);
     }
 
     private static string EscapeIdentifier(string value)

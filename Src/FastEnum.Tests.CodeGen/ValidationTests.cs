@@ -7,6 +7,20 @@ namespace Genbox.FastEnum.Tests.CodeGen;
 public class ValidationTests
 {
     [Theory]
+    [InlineData("[FastEnum] file enum Local { Value }")]
+    [InlineData("file class Outer { [FastEnum] public enum Local { Value } }")]
+    [InlineData("file class Outer { public class Inner { [FastEnum] public enum Local { Value } } }")]
+    public void FileLocalTypesProduceValidationDiagnostic(string source)
+    {
+        string generated = TestHelper.GetGeneratedOutput<EnumGenerator>(source, out var diagnostics, out var compilerDiagnostics);
+        Diagnostic diagnostic = Assert.Single(diagnostics);
+        Assert.Equal("FE001", diagnostic.Id);
+        Assert.Contains("file-local", diagnostic.GetMessage(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal);
+        Assert.DoesNotContain(compilerDiagnostics, x => x.Severity == DiagnosticSeverity.Error);
+        Assert.Empty(generated);
+    }
+
+    [Theory]
     [InlineData("EnumsClassVisibility")]
     [InlineData("ExtensionClassVisibility")]
     public async Task TestPublicOverrideCannotExposeInternalAncestor(string propertyName)

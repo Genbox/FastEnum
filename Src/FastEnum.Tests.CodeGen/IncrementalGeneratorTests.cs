@@ -57,6 +57,24 @@ public class IncrementalGeneratorTests
         Assert.Equal(Sources(before, "Size_"), Sources(after, "Size_"));
     }
 
+    [Fact]
+    public void FileLocalEditInvalidatesPreviouslyValidSpec()
+    {
+        SyntaxTree original = Parse("[Genbox.FastEnum.FastEnum] internal enum Color { Red }");
+        CSharpCompilation compilation = TestHelper.CreateCompilation([original]);
+        GeneratorDriver driver = CreateDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        compilation = compilation.ReplaceSyntaxTree(original, Parse("[Genbox.FastEnum.FastEnum] file enum Color { Red }"));
+        driver = driver.RunGenerators(compilation, TestContext.Current.CancellationToken);
+        GeneratorRunResult result = Assert.Single(driver.GetRunResult().Results);
+        Assert.Equal("FE001", Assert.Single(result.Diagnostics).Id);
+        Assert.Empty(result.GeneratedSources);
+        compilation = compilation.ReplaceSyntaxTree(compilation.SyntaxTrees.Single(), original);
+        driver = driver.RunGenerators(compilation, TestContext.Current.CancellationToken);
+        result = Assert.Single(driver.GetRunResult().Results);
+        Assert.Empty(result.Diagnostics);
+        Assert.Equal(3, result.GeneratedSources.Length);
+    }
+
     private static SyntaxTree Parse(string source) => CSharpSyntaxTree.ParseText(source, cancellationToken: TestContext.Current.CancellationToken);
 
     private static CSharpGeneratorDriver CreateDriver() => CSharpGeneratorDriver.Create(

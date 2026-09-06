@@ -385,6 +385,7 @@ Green
 
 * Enums must be `public` or `internal`; private and protected nested enums are not supported, and containing types cannot be less visible than the enum.
 * Enums inside generic containing types are not supported.
+* File-local enums and enums inside file-local containing types are not supported; the generator reports `FE001`.
 * An enum can have only one `[EnumTransform]` attribute.
 
 ### Notes
