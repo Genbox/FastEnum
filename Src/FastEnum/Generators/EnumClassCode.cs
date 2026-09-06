@@ -277,21 +277,24 @@ internal static class EnumClassCode
             if (values.Length == 0)
                 return $"global::System.Array.Empty<{type}>();";
 
-            string assignment;
-
-            if (options.DisableCache)
-                assignment = $"new {type}[]";
-            else
-            {
-                fields.Add($"private static {type}[]? {name};");
-                assignment = $"{name} ??= new {type}[]";
-            }
-
-            return $$"""
-                     {{assignment}} {
+            string initializer = $$"""
+                     new {{type}}[] {
                                      {{IndentFollowingLines(string.Join(",\n", values), 4)}}
                                  };
                      """;
+            if (options.DisableCache)
+                return initializer;
+
+            fields.Add($$"""
+                private static class {{name}}Cache
+                {
+                    internal static readonly {{type}}[] Values = new {{type}}[]
+                    {
+                        {{IndentFollowingLines(string.Join(",\n", values), 2)}}
+                    };
+                }
+                """);
+            return $"{name}Cache.Values;";
         }
 
         static bool IsIncluded(EnumMemberSpec member, EnumOmitExclude exclusion) => member.OmitValueData?.Exclude.HasFlag(exclusion) != true;

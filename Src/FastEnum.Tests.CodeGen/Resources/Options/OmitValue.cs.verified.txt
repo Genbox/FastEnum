@@ -37,42 +37,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "Keep",
-                "OmitMemberValue",
-                "OmitUnderlying",
-                "OmitUnderlyingLookup",
-                "OmitDisplay",
-                "OmitIsDefined",
-                "OmitString",
-                "KeepExplicitly"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum[] GetMemberValues() => _values ??= new global::MyEnum[] {
-                global::MyEnum.Keep,
-                global::MyEnum.OmitNameParse,
-                global::MyEnum.OmitUnderlying,
-                global::MyEnum.OmitUnderlyingLookup,
-                global::MyEnum.OmitDisplay,
-                global::MyEnum.OmitIsDefined,
-                global::MyEnum.OmitString,
-                global::MyEnum.KeepExplicitly
-            };
+        public static global::MyEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                2,
-                3,
-                5,
-                6,
-                7,
-                8,
-                9
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -416,9 +389,48 @@ internal static partial class Enums
         /// <returns>An array of enum values paired with their descriptions.</returns>
         public static (global::MyEnum, string)[] GetDescriptions() => global::System.Array.Empty<(global::MyEnum, string)>();
 
-        private static string[]? _names;
-        private static global::MyEnum[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "Keep",
+                "OmitMemberValue",
+                "OmitUnderlying",
+                "OmitUnderlyingLookup",
+                "OmitDisplay",
+                "OmitIsDefined",
+                "OmitString",
+                "KeepExplicitly"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum[] Values = new global::MyEnum[]
+            {
+                global::MyEnum.Keep,
+                global::MyEnum.OmitNameParse,
+                global::MyEnum.OmitUnderlying,
+                global::MyEnum.OmitUnderlyingLookup,
+                global::MyEnum.OmitDisplay,
+                global::MyEnum.OmitIsDefined,
+                global::MyEnum.OmitString,
+                global::MyEnum.KeepExplicitly
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                2,
+                3,
+                5,
+                6,
+                7,
+                8,
+                9
+            };
+        }
 
     }
 }

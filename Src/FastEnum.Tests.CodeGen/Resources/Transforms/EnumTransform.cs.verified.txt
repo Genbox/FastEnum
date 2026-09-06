@@ -33,21 +33,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "NotFirst"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum1[] GetMemberValues() => _values ??= new global::MyEnum1[] {
-                global::MyEnum1.First
-            };
+        public static global::MyEnum1[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -148,9 +142,27 @@ internal static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::MyEnum1[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "NotFirst"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum1[] Values = new global::MyEnum1[]
+            {
+                global::MyEnum1.First
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }
@@ -264,21 +276,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "FIRST"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum2[] GetMemberValues() => _values ??= new global::MyEnum2[] {
-                global::MyEnum2.First
-            };
+        public static global::MyEnum2[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -379,9 +385,27 @@ internal static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::MyEnum2[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "FIRST"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum2[] Values = new global::MyEnum2[]
+            {
+                global::MyEnum2.First
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }
@@ -495,21 +519,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "Last"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum3[] GetMemberValues() => _values ??= new global::MyEnum3[] {
-                global::MyEnum3.First
-            };
+        public static global::MyEnum3[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -610,9 +628,27 @@ internal static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::MyEnum3[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "Last"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum3[] Values = new global::MyEnum3[]
+            {
+                global::MyEnum3.First
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }
@@ -726,21 +762,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "fIRST"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum4[] GetMemberValues() => _values ??= new global::MyEnum4[] {
-                global::MyEnum4.First
-            };
+        public static global::MyEnum4[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -841,9 +871,27 @@ internal static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::MyEnum4[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "fIRST"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum4[] Values = new global::MyEnum4[]
+            {
+                global::MyEnum4.First
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }
@@ -957,24 +1005,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "Beta",
-                "Alpha"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::MyEnum5[] GetMemberValues() => _values ??= new global::MyEnum5[] {
-                global::MyEnum5.Alpha,
-                global::MyEnum5.Beta
-            };
+        public static global::MyEnum5[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                1
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -1100,9 +1139,30 @@ internal static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::MyEnum5[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "Beta",
+                "Alpha"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::MyEnum5[] Values = new global::MyEnum5[]
+            {
+                global::MyEnum5.Alpha,
+                global::MyEnum5.Beta
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                1
+            };
+        }
 
     }
 }

@@ -33,21 +33,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::First[] GetMemberValues() => _values ??= new global::First[] {
-                global::First.None
-            };
+        public static global::First[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -148,9 +142,27 @@ public static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::First[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::First[] Values = new global::First[]
+            {
+                global::First.None
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }
@@ -264,21 +276,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Second[] GetMemberValues() => _values ??= new global::Second[] {
-                global::Second.None
-            };
+        public static global::Second[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -379,9 +385,27 @@ public static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::Second[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Second[] Values = new global::Second[]
+            {
+                global::Second.None
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0
+            };
+        }
 
     }
 }

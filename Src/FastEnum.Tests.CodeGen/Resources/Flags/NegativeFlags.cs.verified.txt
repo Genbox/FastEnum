@@ -33,30 +33,15 @@ internal static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "One",
-                "Negative",
-                "Combo"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::SignedFlags[] GetMemberValues() => _values ??= new global::SignedFlags[] {
-                global::SignedFlags.None,
-                global::SignedFlags.One,
-                global::SignedFlags.Negative,
-                global::SignedFlags.Combo
-            };
+        public static global::SignedFlags[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static long[] GetUnderlyingValues() => _underlyingValues ??= new long[] {
-                0L,
-                1L,
-                -2L,
-                -1L
-            };
+        public static long[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -225,9 +210,36 @@ internal static partial class Enums
             return unchecked(((long)18446744073709551615UL & (long)input) == (long)input);
         }
 
-        private static string[]? _names;
-        private static global::SignedFlags[]? _values;
-        private static long[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "One",
+                "Negative",
+                "Combo"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::SignedFlags[] Values = new global::SignedFlags[]
+            {
+                global::SignedFlags.None,
+                global::SignedFlags.One,
+                global::SignedFlags.Negative,
+                global::SignedFlags.Combo
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly long[] Values = new long[]
+            {
+                0L,
+                1L,
+                -2L,
+                -1L
+            };
+        }
 
     }
 }

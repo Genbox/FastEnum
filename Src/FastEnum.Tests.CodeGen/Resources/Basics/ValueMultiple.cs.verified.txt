@@ -37,24 +37,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "First",
-                "Second"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.MyEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.MyEnum[] {
-                global::Some.Namespace.Here.MyEnum.First,
-                global::Some.Namespace.Here.MyEnum.Second
-            };
+        public static global::Some.Namespace.Here.MyEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                1
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -180,9 +171,30 @@ public static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.MyEnum[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "First",
+                "Second"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.MyEnum[] Values = new global::Some.Namespace.Here.MyEnum[]
+            {
+                global::Some.Namespace.Here.MyEnum.First,
+                global::Some.Namespace.Here.MyEnum.Second
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                1
+            };
+        }
 
     }
 }

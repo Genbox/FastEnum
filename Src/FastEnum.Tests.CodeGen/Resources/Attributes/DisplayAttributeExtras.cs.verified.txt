@@ -37,24 +37,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "Value",
-                "ResourceKey"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::DisplayExtras[] GetMemberValues() => _values ??= new global::DisplayExtras[] {
-                global::DisplayExtras.Value,
-                global::DisplayExtras.ResourceKey
-            };
+        public static global::DisplayExtras[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                1
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -228,22 +219,51 @@ public static partial class Enums
 
         /// <summary>Gets the display names defined for the enum members.</summary>
         /// <returns>An array of enum values paired with their display names.</returns>
-        public static (global::DisplayExtras, string)[] GetDisplayNames() => _displayNames ??= new (global::DisplayExtras, string)[] {
-                (global::DisplayExtras.Value, "First\u0085Second\u2028Third\u2029Fourth"),
-                (global::DisplayExtras.ResourceKey, "Label")
-            };
+        public static (global::DisplayExtras, string)[] GetDisplayNames() => _displayNamesCache.Values;
 
         /// <summary>Gets the descriptions defined for the enum members.</summary>
         /// <returns>An array of enum values paired with their descriptions.</returns>
-        public static (global::DisplayExtras, string)[] GetDescriptions() => _descriptions ??= new (global::DisplayExtras, string)[] {
+        public static (global::DisplayExtras, string)[] GetDescriptions() => _descriptionsCache.Values;
+
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "Value",
+                "ResourceKey"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::DisplayExtras[] Values = new global::DisplayExtras[]
+            {
+                global::DisplayExtras.Value,
+                global::DisplayExtras.ResourceKey
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                1
+            };
+        }
+        private static class _displayNamesCache
+        {
+            internal static readonly (global::DisplayExtras, string)[] Values = new (global::DisplayExtras, string)[]
+            {
+                (global::DisplayExtras.Value, "First\u0085Second\u2028Third\u2029Fourth"),
+                (global::DisplayExtras.ResourceKey, "Label")
+            };
+        }
+        private static class _descriptionsCache
+        {
+            internal static readonly (global::DisplayExtras, string)[] Values = new (global::DisplayExtras, string)[]
+            {
                 (global::DisplayExtras.Value, "Details\u2029Next")
             };
-
-        private static string[]? _names;
-        private static global::DisplayExtras[]? _values;
-        private static int[]? _underlyingValues;
-        private static (global::DisplayExtras, string)[]? _displayNames;
-        private static (global::DisplayExtras, string)[]? _descriptions;
+        }
 
     }
 }

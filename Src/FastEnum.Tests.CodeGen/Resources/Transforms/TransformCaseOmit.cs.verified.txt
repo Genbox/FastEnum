@@ -33,24 +33,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "NE",
-                "WO"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::CasePatternEnum[] GetMemberValues() => _values ??= new global::CasePatternEnum[] {
-                global::CasePatternEnum.One,
-                global::CasePatternEnum.Two
-            };
+        public static global::CasePatternEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                1
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -176,9 +167,30 @@ public static partial class Enums
             });
         }
 
-        private static string[]? _names;
-        private static global::CasePatternEnum[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "NE",
+                "WO"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::CasePatternEnum[] Values = new global::CasePatternEnum[]
+            {
+                global::CasePatternEnum.One,
+                global::CasePatternEnum.Two
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                1
+            };
+        }
 
     }
 }

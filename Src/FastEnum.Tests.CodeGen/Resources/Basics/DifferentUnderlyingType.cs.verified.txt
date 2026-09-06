@@ -37,24 +37,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.ByteEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.ByteEnum[] {
-                global::Some.Namespace.Here.ByteEnum.None,
-                global::Some.Namespace.Here.ByteEnum.Value
-            };
+        public static global::Some.Namespace.Here.ByteEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static byte[] GetUnderlyingValues() => _underlyingValues ??= new byte[] {
-                0,
-                255
-            };
+        public static byte[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -175,9 +166,30 @@ public static partial class Enums
             return unchecked(((byte)255UL & (byte)input) == (byte)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.ByteEnum[]? _values;
-        private static byte[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.ByteEnum[] Values = new global::Some.Namespace.Here.ByteEnum[]
+            {
+                global::Some.Namespace.Here.ByteEnum.None,
+                global::Some.Namespace.Here.ByteEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly byte[] Values = new byte[]
+            {
+                0,
+                255
+            };
+        }
 
     }
 }
@@ -301,24 +313,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.SByteEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.SByteEnum[] {
-                global::Some.Namespace.Here.SByteEnum.None,
-                global::Some.Namespace.Here.SByteEnum.Value
-            };
+        public static global::Some.Namespace.Here.SByteEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static sbyte[] GetUnderlyingValues() => _underlyingValues ??= new sbyte[] {
-                0,
-                -128
-            };
+        public static sbyte[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -439,9 +442,30 @@ public static partial class Enums
             return unchecked(((sbyte)18446744073709551488UL & (sbyte)input) == (sbyte)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.SByteEnum[]? _values;
-        private static sbyte[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.SByteEnum[] Values = new global::Some.Namespace.Here.SByteEnum[]
+            {
+                global::Some.Namespace.Here.SByteEnum.None,
+                global::Some.Namespace.Here.SByteEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly sbyte[] Values = new sbyte[]
+            {
+                0,
+                -128
+            };
+        }
 
     }
 }
@@ -565,24 +589,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.ShortEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.ShortEnum[] {
-                global::Some.Namespace.Here.ShortEnum.None,
-                global::Some.Namespace.Here.ShortEnum.Value
-            };
+        public static global::Some.Namespace.Here.ShortEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static short[] GetUnderlyingValues() => _underlyingValues ??= new short[] {
-                0,
-                -32768
-            };
+        public static short[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -703,9 +718,30 @@ public static partial class Enums
             return unchecked(((short)18446744073709518848UL & (short)input) == (short)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.ShortEnum[]? _values;
-        private static short[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.ShortEnum[] Values = new global::Some.Namespace.Here.ShortEnum[]
+            {
+                global::Some.Namespace.Here.ShortEnum.None,
+                global::Some.Namespace.Here.ShortEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly short[] Values = new short[]
+            {
+                0,
+                -32768
+            };
+        }
 
     }
 }
@@ -829,24 +865,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.UShortEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.UShortEnum[] {
-                global::Some.Namespace.Here.UShortEnum.None,
-                global::Some.Namespace.Here.UShortEnum.Value
-            };
+        public static global::Some.Namespace.Here.UShortEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static ushort[] GetUnderlyingValues() => _underlyingValues ??= new ushort[] {
-                0,
-                65535
-            };
+        public static ushort[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -967,9 +994,30 @@ public static partial class Enums
             return unchecked(((ushort)65535UL & (ushort)input) == (ushort)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.UShortEnum[]? _values;
-        private static ushort[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.UShortEnum[] Values = new global::Some.Namespace.Here.UShortEnum[]
+            {
+                global::Some.Namespace.Here.UShortEnum.None,
+                global::Some.Namespace.Here.UShortEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly ushort[] Values = new ushort[]
+            {
+                0,
+                65535
+            };
+        }
 
     }
 }
@@ -1093,24 +1141,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.IntEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.IntEnum[] {
-                global::Some.Namespace.Here.IntEnum.None,
-                global::Some.Namespace.Here.IntEnum.Value
-            };
+        public static global::Some.Namespace.Here.IntEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                0,
-                -2147483648
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -1231,9 +1270,30 @@ public static partial class Enums
             return unchecked(((int)18446744071562067968UL & (int)input) == (int)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.IntEnum[]? _values;
-        private static int[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.IntEnum[] Values = new global::Some.Namespace.Here.IntEnum[]
+            {
+                global::Some.Namespace.Here.IntEnum.None,
+                global::Some.Namespace.Here.IntEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                0,
+                -2147483648
+            };
+        }
 
     }
 }
@@ -1357,24 +1417,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.UIntEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.UIntEnum[] {
-                global::Some.Namespace.Here.UIntEnum.None,
-                global::Some.Namespace.Here.UIntEnum.Value
-            };
+        public static global::Some.Namespace.Here.UIntEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static uint[] GetUnderlyingValues() => _underlyingValues ??= new uint[] {
-                0U,
-                4294967295U
-            };
+        public static uint[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -1495,9 +1546,30 @@ public static partial class Enums
             return unchecked(((uint)4294967295UL & (uint)input) == (uint)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.UIntEnum[]? _values;
-        private static uint[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.UIntEnum[] Values = new global::Some.Namespace.Here.UIntEnum[]
+            {
+                global::Some.Namespace.Here.UIntEnum.None,
+                global::Some.Namespace.Here.UIntEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly uint[] Values = new uint[]
+            {
+                0U,
+                4294967295U
+            };
+        }
 
     }
 }
@@ -1621,24 +1693,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.LongEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.LongEnum[] {
-                global::Some.Namespace.Here.LongEnum.None,
-                global::Some.Namespace.Here.LongEnum.Value
-            };
+        public static global::Some.Namespace.Here.LongEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static long[] GetUnderlyingValues() => _underlyingValues ??= new long[] {
-                0L,
-                -9223372036854775808L
-            };
+        public static long[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -1759,9 +1822,30 @@ public static partial class Enums
             return unchecked(((long)9223372036854775808UL & (long)input) == (long)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.LongEnum[]? _values;
-        private static long[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.LongEnum[] Values = new global::Some.Namespace.Here.LongEnum[]
+            {
+                global::Some.Namespace.Here.LongEnum.None,
+                global::Some.Namespace.Here.LongEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly long[] Values = new long[]
+            {
+                0L,
+                -9223372036854775808L
+            };
+        }
 
     }
 }
@@ -1885,24 +1969,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "None",
-                "Value"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::Some.Namespace.Here.ULongEnum[] GetMemberValues() => _values ??= new global::Some.Namespace.Here.ULongEnum[] {
-                global::Some.Namespace.Here.ULongEnum.None,
-                global::Some.Namespace.Here.ULongEnum.Value
-            };
+        public static global::Some.Namespace.Here.ULongEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static ulong[] GetUnderlyingValues() => _underlyingValues ??= new ulong[] {
-                0UL,
-                18446744073709551615UL
-            };
+        public static ulong[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -2023,9 +2098,30 @@ public static partial class Enums
             return unchecked(((ulong)18446744073709551615UL & (ulong)input) == (ulong)input);
         }
 
-        private static string[]? _names;
-        private static global::Some.Namespace.Here.ULongEnum[]? _values;
-        private static ulong[]? _underlyingValues;
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "None",
+                "Value"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::Some.Namespace.Here.ULongEnum[] Values = new global::Some.Namespace.Here.ULongEnum[]
+            {
+                global::Some.Namespace.Here.ULongEnum.None,
+                global::Some.Namespace.Here.ULongEnum.Value
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly ulong[] Values = new ulong[]
+            {
+                0UL,
+                18446744073709551615UL
+            };
+        }
 
     }
 }

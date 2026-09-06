@@ -37,27 +37,15 @@ public static partial class Enums
 
         /// <summary>Gets the generated names of the enum members.</summary>
         /// <returns>An array containing the generated member names.</returns>
-        public static string[] GetMemberNames() => _names ??= new string[] {
-                "One",
-                "Three",
-                "Two"
-            };
+        public static string[] GetMemberNames() => _namesCache.Values;
 
         /// <summary>Gets the enum member values.</summary>
         /// <returns>An array containing the enum member values.</returns>
-        public static global::SortedEnum[] GetMemberValues() => _values ??= new global::SortedEnum[] {
-                global::SortedEnum.Three,
-                global::SortedEnum.One,
-                global::SortedEnum.Two
-            };
+        public static global::SortedEnum[] GetMemberValues() => _valuesCache.Values;
 
         /// <summary>Gets the underlying numeric values of the enum members.</summary>
         /// <returns>An array containing the underlying values.</returns>
-        public static int[] GetUnderlyingValues() => _underlyingValues ??= new int[] {
-                1,
-                2,
-                3
-            };
+        public static int[] GetUnderlyingValues() => _underlyingValuesCache.Values;
 
         /// <summary>Attempts to parse a string into an enum value.</summary>
         /// <param name="value">The string to parse.</param>
@@ -290,25 +278,57 @@ public static partial class Enums
 
         /// <summary>Gets the display names defined for the enum members.</summary>
         /// <returns>An array of enum values paired with their display names.</returns>
-        public static (global::SortedEnum, string)[] GetDisplayNames() => _displayNames ??= new (global::SortedEnum, string)[] {
+        public static (global::SortedEnum, string)[] GetDisplayNames() => _displayNamesCache.Values;
+
+        /// <summary>Gets the descriptions defined for the enum members.</summary>
+        /// <returns>An array of enum values paired with their descriptions.</returns>
+        public static (global::SortedEnum, string)[] GetDescriptions() => _descriptionsCache.Values;
+
+        private static class _namesCache
+        {
+            internal static readonly string[] Values = new string[]
+            {
+                "One",
+                "Three",
+                "Two"
+            };
+        }
+        private static class _valuesCache
+        {
+            internal static readonly global::SortedEnum[] Values = new global::SortedEnum[]
+            {
+                global::SortedEnum.Three,
+                global::SortedEnum.One,
+                global::SortedEnum.Two
+            };
+        }
+        private static class _underlyingValuesCache
+        {
+            internal static readonly int[] Values = new int[]
+            {
+                1,
+                2,
+                3
+            };
+        }
+        private static class _displayNamesCache
+        {
+            internal static readonly (global::SortedEnum, string)[] Values = new (global::SortedEnum, string)[]
+            {
                 (global::SortedEnum.Three, "Charlie"),
                 (global::SortedEnum.One, "Bravo"),
                 (global::SortedEnum.Two, "Alpha")
             };
-
-        /// <summary>Gets the descriptions defined for the enum members.</summary>
-        /// <returns>An array of enum values paired with their descriptions.</returns>
-        public static (global::SortedEnum, string)[] GetDescriptions() => _descriptions ??= new (global::SortedEnum, string)[] {
+        }
+        private static class _descriptionsCache
+        {
+            internal static readonly (global::SortedEnum, string)[] Values = new (global::SortedEnum, string)[]
+            {
                 (global::SortedEnum.Two, "First"),
                 (global::SortedEnum.One, "Second"),
                 (global::SortedEnum.Three, "Third")
             };
-
-        private static string[]? _names;
-        private static global::SortedEnum[]? _values;
-        private static int[]? _underlyingValues;
-        private static (global::SortedEnum, string)[]? _displayNames;
-        private static (global::SortedEnum, string)[]? _descriptions;
+        }
 
     }
 }
