@@ -58,6 +58,14 @@ internal static class CodeGenHelper
         _ => throw new InvalidOperationException("Unsupported literal type")
     };
 
+    internal static string CreateFlagMaskCheck(EnumMemberSpec[] members, string underlyingType, string input)
+    {
+        ulong mask = members.Aggregate(0UL, (bits, member) => bits | ToUInt64(member.Value));
+        return mask == 0
+            ? $"({underlyingType}){input} == 0"
+            : $"unchecked((({underlyingType}){mask}UL & ({underlyingType}){input}) == ({underlyingType}){input})";
+    }
+
     internal static ulong ToUInt64(object value) => value switch
     {
         byte b => b,

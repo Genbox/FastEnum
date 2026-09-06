@@ -29,8 +29,8 @@ public class FeatureCoverageTests
     {
         Assert.Equal(11, Enums.OmitCoverageEnum.MemberCount);
 
-        Assert.DoesNotContain(Enums.OmitCoverageEnum.GetMemberNames(), x => string.Equals(x, nameof(OmitCoverageEnum.OmitAll), StringComparison.Ordinal));
-        Assert.DoesNotContain(Enums.OmitCoverageEnum.GetMemberNames(), x => string.Equals(x, nameof(OmitCoverageEnum.NoMemberName), StringComparison.Ordinal));
+        Assert.DoesNotContain(nameof(OmitCoverageEnum.OmitAll), Enums.OmitCoverageEnum.GetMemberNames(), StringComparer.Ordinal);
+        Assert.DoesNotContain(nameof(OmitCoverageEnum.NoMemberName), Enums.OmitCoverageEnum.GetMemberNames(), StringComparer.Ordinal);
         Assert.DoesNotContain(OmitCoverageEnum.OmitAll, Enums.OmitCoverageEnum.GetMemberValues());
         Assert.DoesNotContain(OmitCoverageEnum.NoMemberValue, Enums.OmitCoverageEnum.GetMemberValues());
         Assert.DoesNotContain(1, Enums.OmitCoverageEnum.GetUnderlyingValues());
@@ -53,7 +53,7 @@ public class FeatureCoverageTests
         Assert.Equal(string.Empty, OmitCoverageEnum.OmitAll.GetString());
         Assert.Equal(string.Empty, OmitCoverageEnum.NoString.GetString());
 
-        Assert.Contains(Enums.OmitCoverageEnum.GetMemberNames(), x => string.Equals(x, nameof(OmitCoverageEnum.NoOmission), StringComparison.Ordinal));
+        Assert.Contains(nameof(OmitCoverageEnum.NoOmission), Enums.OmitCoverageEnum.GetMemberNames(), StringComparer.Ordinal);
         Assert.Contains(OmitCoverageEnum.NoOmission, Enums.OmitCoverageEnum.GetMemberValues());
         Assert.True(OmitCoverageEnum.NoOmission.TryGetUnderlyingValue(out int underlyingValue));
         Assert.Equal(11, underlyingValue);

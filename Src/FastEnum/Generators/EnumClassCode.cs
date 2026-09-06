@@ -164,8 +164,9 @@ internal static class EnumClassCode
 
             string ParseBlock(string format, Func<EnumMemberSpec, string?> getText)
             {
-                string[] texts = members.Select(getText).Where(text => text != null).Select(text => text!).ToArray();
-                bool useTree = texts.Length > 1 && texts.All(text => text.All(c => c <= 127));
+                (EnumMemberSpec Member, string? Text)[] entries = members.Select(member => (Member: member, Text: getText(member))).ToArray();
+                (EnumMemberSpec Member, string Text)[] textEntries = entries.Where(entry => entry.Text != null).Select(entry => (entry.Member, Text: entry.Text!)).ToArray();
+                bool useTree = textEntries.Length > 1 && textEntries.All(entry => entry.Text.All(c => c <= 127));
                 string fastMethod = $"TryParse{format}Ordinal";
 
                 if (useTree)
@@ -180,7 +181,7 @@ internal static class EnumClassCode
                         return $"return {name}(value, out result, comparison);";
                     }
 
-                    string tree = EnumParseCode.Create(members, getText, ParseCheck, ExtractMethod);
+                    string tree = EnumParseCode.Create(textEntries, ParseCheck, ExtractMethod);
                     AddMethod(fastMethod, "result = default;\n" + tree);
 
                     string slowMethod = $$"""
@@ -209,11 +210,10 @@ internal static class EnumClassCode
                                  {
                                  """;
 
-                if (!isSpan && members.Where(x => getText(x) != null).Skip(128).Any())
+                if (!isSpan && textEntries.Length > 128)
                 {
                     HashSet<string> handledTexts = new HashSet<string>(StringComparer.Ordinal);
-                    string entries = string.Join(",\n", members.Where(x => getText(x) is string text && handledTexts.Add(text))
-                                                               .Select(x => $$"""{ {{FormatStringLiteral(getText(x)!)}}, {{enumName}}.{{x.EmittedIdentifier}} }"""));
+                    string dictionaryEntries = string.Join(",\n", textEntries.Where(entry => handledTexts.Add(entry.Text)).Select(entry => $$"""{ {{FormatStringLiteral(entry.Text)}}, {{enumName}}.{{entry.Member.EmittedIdentifier}} }"""));
                     string slowBody = useTree
                         ? $$"""
                             if (comparison == global::System.StringComparison.OrdinalIgnoreCase && value != null)
@@ -232,7 +232,7 @@ internal static class EnumClassCode
                                                       {
                                                           internal static readonly global::System.Collections.Generic.Dictionary<string, {{enumName}}> Values = new global::System.Collections.Generic.Dictionary<string, {{enumName}}>(global::System.StringComparer.Ordinal)
                                                           {
-                                                              {{IndentFollowingLines(entries, 2)}}
+                                                              {{IndentFollowingLines(dictionaryEntries, 2)}}
                                                           };
                                                       }
 
@@ -274,13 +274,13 @@ internal static class EnumClassCode
 
                 IEnumerable<string> GetChecks()
                 {
-                    for (int i = 0; i < members.Length; i++)
+                    for (int i = 0; i < entries.Length; i++)
                     {
-                        string? text = getText(members[i]);
+                        (EnumMemberSpec member, string? text) = entries[i];
                         if (text != null)
-                            yield return $"\n{ParseCheck(members[i], text)}";
+                            yield return $"\n{ParseCheck(member, text)}";
 
-                        if (i < members.Length - 1)
+                        if (i < entries.Length - 1)
                             yield return "\n";
                     }
                 }
@@ -312,9 +312,6 @@ internal static class EnumClassCode
                                            .Where(x => IsIncluded(x, EnumOmitExclude.IsDefined) && handledValues.Add(x.Value))
                                            .ToArray();
 
-            if (members.Length == 0)
-                return "return false;";
-
             string lookup = EnumLookupCode.Create(spec, members, "_isDefinedLookup", "input", null, fields);
             return $"return {lookup};";
         }
@@ -330,11 +327,7 @@ internal static class EnumClassCode
             string exclusions = omitted.Length == 0
                 ? string.Empty
                 : "!(" + EnumLookupCode.Create(spec, omitted, "_isDefinedExcludedLookup", "input", null, fields) + ") && ";
-            ulong mask = includedMembers.Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
-            string maskCheck = mask == 0
-                ? $"({underlyingType})input == 0"
-                : $"unchecked((({underlyingType}){mask}UL & ({underlyingType})input) == ({underlyingType})input)";
-            return exclusions + maskCheck;
+            return exclusions + CreateFlagMaskCheck(includedMembers, underlyingType, "input");
         }
 
         string Assignment(string name, string type, IEnumerable<string> elements)

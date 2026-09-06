@@ -22,7 +22,7 @@ public class InvariantCultureTests
                                 }
                                 """;
 
-            string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code);
+            string output = TestHelper.GetGeneratedOutput(code);
 
             Assert.Contains(".Equals(\"-1234\"", output, StringComparison.Ordinal);
             Assert.Contains(".Equals(\"1234567890\"", output, StringComparison.Ordinal);

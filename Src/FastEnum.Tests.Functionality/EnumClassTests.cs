@@ -15,28 +15,20 @@ public class EnumClassTests
     }
 
     [Fact]
-    public void TryParseTest()
+    public void TryParseUsesDefaultFormatAndComparison()
     {
         Assert.True(Enums.TestEnum.TryParse("First", out TestEnum result));
         Assert.Equal(TestEnum.First, result);
-
-        Assert.True(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name, StringComparison.OrdinalIgnoreCase));
+        Assert.True(Enums.TestEnum.TryParse("First".AsSpan(), out result));
         Assert.Equal(TestEnum.First, result);
+        Assert.False(Enums.TestEnum.TryParse("missing", out result));
+        Assert.Equal(default, result);
+        Assert.False(Enums.TestEnum.TryParse("missing".AsSpan(), out result));
+        Assert.Equal(default, result);
         Assert.False(Enums.TestEnum.TryParse("first", out result, TestEnumFormat.Name));
-
-        Assert.True(Enums.TestEnum.TryParse("8", out result, TestEnumFormat.Value));
-        Assert.Equal(TestEnum.First, result);
-
-        Assert.False(Enums.TestEnum.TryParse("doesnotexist", out result));
-
-        //Check that we also support parsing display names
-        Assert.True(Enums.TestEnum.TryParse("FirstDisplayName", out result, TestEnumFormat.DisplayName));
-        Assert.Equal(TestEnum.First, result);
-
-        Assert.True(Enums.TestEnum.TryParse("FirstDescription", out result, TestEnumFormat.Description));
-        Assert.Equal(TestEnum.First, result);
-
-        Assert.False(Enums.TestEnum.TryParse("First", out result, TestEnumFormat.None));
+        Assert.Equal(default, result);
+        Assert.False(Enums.TestEnum.TryParse("first".AsSpan(), out result, TestEnumFormat.Name));
+        Assert.Equal(default, result);
     }
 
     [Fact]
@@ -46,8 +38,7 @@ public class EnumClassTests
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("first", TestEnumFormat.Default, StringComparison.OrdinalIgnoreCase));
         Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("8", TestEnumFormat.Value));
 
-        ReadOnlySpan<char> span = "First";
-        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse(span));
+        Assert.Equal(TestEnum.First, Enums.TestEnum.Parse("First".AsSpan()));
 
         Assert.Throws<ArgumentOutOfRangeException>(() => Enums.TestEnum.Parse("doesnotexist"));
     }
@@ -60,9 +51,12 @@ public class EnumClassTests
     [InlineData("FirstDisplayName", TestEnumFormat.DisplayName, StringComparison.Ordinal, true)]
     [InlineData("FirstDescription", TestEnumFormat.Description, StringComparison.Ordinal, true)]
     [InlineData("missing", TestEnumFormat.Default, StringComparison.Ordinal, false)]
-    public void SpanParsingHonorsFormatsAndComparison(string text, TestEnumFormat format, StringComparison comparison, bool expected)
+    [InlineData("First", TestEnumFormat.None, StringComparison.Ordinal, false)]
+    public void ParsingHonorsFormatsAndComparison(string text, TestEnumFormat format, StringComparison comparison, bool expected)
     {
-        Assert.Equal(expected, Enums.TestEnum.TryParse(text.AsSpan(), out TestEnum result, format, comparison));
+        Assert.Equal(expected, Enums.TestEnum.TryParse(text, out TestEnum result, format, comparison));
+        Assert.Equal(expected ? TestEnum.First : default, result);
+        Assert.Equal(expected, Enums.TestEnum.TryParse(text.AsSpan(), out result, format, comparison));
         Assert.Equal(expected ? TestEnum.First : default, result);
     }
 
@@ -81,71 +75,19 @@ public class EnumClassTests
     }
 
     [Fact]
-    public void GetMemberNamesTest()
-    {
-        string[] names =
-        [
-            nameof(TestEnum.First),
-            nameof(TestEnum.Second),
-            nameof(TestEnum.Third),
-            nameof(TestEnum.Other),
-            nameof(TestEnum.Min)
-        ];
-
-        Assert.Equal(names, Enums.TestEnum.GetMemberNames());
-    }
+    public void GetMemberNamesTest() => Assert.Equal([nameof(TestEnum.First), nameof(TestEnum.Second), nameof(TestEnum.Third), nameof(TestEnum.Other), nameof(TestEnum.Min)], Enums.TestEnum.GetMemberNames());
 
     [Fact]
-    public void GetMemberValuesTest()
-    {
-        TestEnum[] values =
-        [
-            TestEnum.First,
-            TestEnum.Second,
-            TestEnum.Third,
-            TestEnum.Other,
-            TestEnum.Min
-        ];
-
-        Assert.Equal(values, Enums.TestEnum.GetMemberValues());
-    }
+    public void GetMemberValuesTest() => Assert.Equal([TestEnum.First, TestEnum.Second, TestEnum.Third, TestEnum.Other, TestEnum.Min], Enums.TestEnum.GetMemberValues());
 
     [Fact]
-    public void GetUnderlyingValuesTest()
-    {
-        long[] underlyingValues =
-        [
-            8,
-            1,
-            2,
-            256,
-            long.MinValue
-        ];
-
-        Assert.Equal(underlyingValues, Enums.TestEnum.GetUnderlyingValues());
-    }
+    public void GetUnderlyingValuesTest() => Assert.Equal([8, 1, 2, 256, long.MinValue], Enums.TestEnum.GetUnderlyingValues());
 
     [Fact]
-    public void GetDisplayNamesTest()
-    {
-        (TestEnum, string)[] displayNames =
-        [
-            (TestEnum.First, "FirstDisplayName")
-        ];
-
-        Assert.Equal(displayNames, Enums.TestEnum.GetDisplayNames());
-    }
+    public void GetDisplayNamesTest() => Assert.Equal([(TestEnum.First, "FirstDisplayName")], Enums.TestEnum.GetDisplayNames());
 
     [Fact]
-    public void GetDescriptionsTest()
-    {
-        (TestEnum, string)[] descriptions =
-        [
-            (TestEnum.First, "FirstDescription")
-        ];
-
-        Assert.Equal(descriptions, Enums.TestEnum.GetDescriptions());
-    }
+    public void GetDescriptionsTest() => Assert.Equal([(TestEnum.First, "FirstDescription")], Enums.TestEnum.GetDescriptions());
 
     [Fact]
     public void EscapedStringsAreHandled()
@@ -153,7 +95,7 @@ public class EnumClassTests
         Assert.True(Enums.EscapedEnum.TryParse("Val\"With\\Slash", out EscapedEnum parsed));
         Assert.Equal(EscapedEnum.Value1, parsed);
 
-        Assert.Equal(new[] { "Val\"With\\Slash" }, Enums.EscapedEnum.GetMemberNames());
+        Assert.Equal(["Val\"With\\Slash"], Enums.EscapedEnum.GetMemberNames());
         Assert.Equal([(EscapedEnum.Value1, "C:\\Path\\File\"Name")], Enums.EscapedEnum.GetDisplayNames());
         Assert.Equal([(EscapedEnum.Value1, "Line1\\Line2")], Enums.EscapedEnum.GetDescriptions());
     }

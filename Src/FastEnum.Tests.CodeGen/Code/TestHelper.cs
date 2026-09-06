@@ -11,25 +11,19 @@ internal static class TestHelper
     private static string? _headerCache;
     private static readonly string _resourcesDir = AppContext.BaseDirectory + "../../../Resources";
 
-    private static readonly HashSet<string> _ignore =
-    [
-        "CS8019"
-    ];
+    private static readonly ImmutableArray<PortableExecutableReference> _references = CreateReferences();
 
-    public static string GetGeneratedOutput<T>(string source, bool checkForErrors = true) where T : IIncrementalGenerator, new()
+    public static string GetGeneratedOutput(string source, CSharpParseOptions? parseOptions = null)
     {
-        string res = GetGeneratedOutput<T>(source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag);
+        string res = GetGeneratedOutput(source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag, parseOptions);
 
-        if (checkForErrors)
-            Assert.Empty(codeGenDiag);
-
-        if (checkForErrors)
-            Assert.Empty(compilerDiag);
+        Assert.Empty(codeGenDiag);
+        Assert.Empty(compilerDiag);
 
         return res;
     }
 
-    public static string GetGeneratedOutput<T>(string source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag, CSharpParseOptions? parseOptions = null) where T : IIncrementalGenerator, new()
+    public static string GetGeneratedOutput(string source, out ImmutableArray<Diagnostic> codeGenDiag, out IEnumerable<Diagnostic> compilerDiag, CSharpParseOptions? parseOptions = null)
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
@@ -39,19 +33,14 @@ internal static class TestHelper
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, cancellationToken: cancellationToken);
         CSharpCompilation compilation = CreateCompilation([syntaxTree]);
 
-        T generator = new T();
-        IEnumerable<ISourceGenerator> generators = [generator.AsSourceGenerator()];
-
-        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create(generators, parseOptions: parseOptions);
+        CSharpGeneratorDriver driver = CSharpGeneratorDriver.Create([new EnumGenerator().AsSourceGenerator()], parseOptions: parseOptions);
 
         driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation outputCompilation, out codeGenDiag, cancellationToken);
-        compilerDiag = outputCompilation.GetDiagnostics(cancellationToken).Where(x => !_ignore.Contains(x.Id));
-
-        List<SyntaxTree> trees = outputCompilation.SyntaxTrees.ToList();
+        compilerDiag = outputCompilation.GetDiagnostics(cancellationToken).Where(x => x.Id != "CS8019");
 
         StringBuilder sb = new StringBuilder();
 
-        foreach (SyntaxTree tree in trees.Skip(1))
+        foreach (SyntaxTree tree in outputCompilation.SyntaxTrees.Skip(1))
             sb.AppendLine(tree.ToString());
 
         return sb.ToString();
@@ -59,19 +48,19 @@ internal static class TestHelper
 
     private static string GetHeader() => _headerCache ??= File.ReadAllText(Path.Combine(_resourcesDir, "_Header.cs"));
 
+    internal static CSharpCompilation CreateCompilation(IEnumerable<SyntaxTree> syntaxTrees) => CSharpCompilation.Create("generator", syntaxTrees, _references, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
     // Runtime references keep unit tests independent of assembly load order. Target-framework
     // compatibility is checked separately by Scripts/Test-Package.ps1 using SDK reference packs.
-    internal static CSharpCompilation CreateCompilation(IEnumerable<SyntaxTree> syntaxTrees)
+    private static ImmutableArray<PortableExecutableReference> CreateReferences()
     {
         string platformAssemblies = (string?)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")
                                     ?? throw new InvalidOperationException("Runtime assembly references are unavailable.");
-        IEnumerable<PortableExecutableReference> references = platformAssemblies.Split(Path.PathSeparator)
-                                                                                .Append(typeof(EnumGenerator).Assembly.Location)
-                                                                                .Append(typeof(DisplayAttribute).Assembly.Location)
-                                                                                .Distinct(StringComparer.Ordinal)
-                                                                                .Select(path => MetadataReference.CreateFromFile(path));
-
-        return CSharpCompilation.Create("generator", syntaxTrees, references,
-            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        return platformAssemblies.Split(Path.PathSeparator)
+                                 .Append(typeof(EnumGenerator).Assembly.Location)
+                                 .Append(typeof(DisplayAttribute).Assembly.Location)
+                                 .Distinct(StringComparer.Ordinal)
+                                 .Select(path => MetadataReference.CreateFromFile(path))
+                                 .ToImmutableArray();
     }
 }

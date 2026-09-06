@@ -24,7 +24,7 @@ public class BugTests
                         }
                         """;
 
-        Assert.NotEmpty(TestHelper.GetGeneratedOutput<EnumGenerator>(code));
+        Assert.NotEmpty(TestHelper.GetGeneratedOutput(code));
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class BugTests
                             }
                             """;
 
-        await Verify(TestHelper.GetGeneratedOutput<EnumGenerator>(code))
+        await Verify(TestHelper.GetGeneratedOutput(code))
               .UseFileName(nameof(TestIssue3))
               .UseDirectory("Issues");
     }

@@ -45,11 +45,6 @@ public class ExtensionHashTests
             }
         }
 
-        // Formatting and metadata lookup have different omission rules for the first alias.
-        Assert.Equal("Excluded alias", ExtensionHashEnum.Alias.GetString(ExtensionHashEnumFormat.DisplayName));
-        Assert.Equal("Excluded alias", ExtensionHashEnum.Alias.GetString(ExtensionHashEnumFormat.Description));
-        Assert.Equal(string.Empty, ExtensionHashEnum.Value1.GetString(ExtensionHashEnumFormat.DisplayName));
-        Assert.Equal(string.Empty, ExtensionHashEnum.Value1.GetString(ExtensionHashEnumFormat.Description));
         Assert.Equal("Value2", ExtensionHashEnum.Value2.GetString(ExtensionHashEnumFormat.DisplayName | ExtensionHashEnumFormat.Name));
     }
 

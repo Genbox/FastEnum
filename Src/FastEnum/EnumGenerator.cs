@@ -389,10 +389,12 @@ public class EnumGenerator : IIncrementalGenerator
 
         INamedTypeSymbol? curSym = symbol;
         bool hasFileLocalType = false;
+        bool hasGenericContainingType = false;
 
         while (curSym != null)
         {
             hasFileLocalType |= curSym.IsFileLocal;
+            hasGenericContainingType |= curSym.Arity > 0;
             accessChain.Add(curSym.DeclaredAccessibility);
             curSym = curSym.ContainingType;
         }
@@ -403,11 +405,6 @@ public class EnumGenerator : IIncrementalGenerator
         string enumFullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat).Replace("@", "");
         string fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         string? enumNamespace = symbol.ContainingNamespace.IsGlobalNamespace ? null : symbol.ContainingNamespace.ToDisplayString();
-        bool hasGenericContainingType = false;
-
-        for (INamedTypeSymbol? containingType = symbol.ContainingType; containingType != null; containingType = containingType.ContainingType)
-            hasGenericContainingType |= containingType.Arity > 0;
-
         return new EnumSpec(enumName, EscapeIdentifier(enumName), enumFullName, fqn, enumNamespace, accessChain.ToArray(), hasGenericContainingType, hasName, hasDescription, hasFlags, underlyingType, fastEnumData, members.ToArray(), enumTransformData, hasFileLocalType);
     }
 

@@ -17,7 +17,7 @@ public class CodeGenTests
     {
         string inputPath = Path.Combine(_resourcesDir, testName);
         string inputSource = await File.ReadAllTextAsync(inputPath, TestContext.Current.CancellationToken);
-        string actual = GetGeneratedOutput<EnumGenerator>(inputSource);
+        string actual = GetGeneratedOutput(inputSource);
 
         string fileName = Path.GetFileName(testName);
         string? category = Path.GetDirectoryName(testName);

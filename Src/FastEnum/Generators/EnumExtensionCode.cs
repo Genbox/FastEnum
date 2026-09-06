@@ -146,9 +146,9 @@ internal static class EnumExtensionCode
         string GetStringWithFormat()
         {
             List<string> blocks = new List<string>();
-            if (spec.HasDisplay && Array.Exists(spec.Members, x => x.DisplayData?.Name != null))
+            if (spec.HasDisplay)
                 AddTextBlock("DisplayName", x => x.DisplayData?.Name);
-            if (spec.HasDescription && Array.Exists(spec.Members, x => x.DisplayData?.Description != null))
+            if (spec.HasDescription)
                 AddTextBlock("Description", x => x.DisplayData?.Description);
 
             if (spec.Members.Length > 0)
@@ -214,9 +214,7 @@ internal static class EnumExtensionCode
         string GetUnderlyingLookup()
         {
             const string failure = "underlyingValue = default;\nreturn false;";
-            EnumMemberSpec[] included = spec.Members
-                                            .Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
-                                            .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+            EnumMemberSpec[] included = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true).ToArray();
             if (included.Length == 0)
                 return failure;
             string match;
@@ -224,16 +222,11 @@ internal static class EnumExtensionCode
             if (spec.HasFlags)
             {
                 HashSet<object> includedValues = new HashSet<object>(included.Select(x => x.Value));
-                EnumMemberSpec[] excluded = spec.Members.Where(x => !includedValues.Contains(x.Value))
-                                                .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+                EnumMemberSpec[] excluded = spec.Members.Where(x => !includedValues.Contains(x.Value)).ToArray();
                 string omitted = Lookup("_underlyingExcludedLookup", excluded, null);
-                ulong mask = included.Aggregate(0UL, (bits, member) => bits | ToUInt64(member.Value));
-                string maskCheck = mask == 0
-                    ? $"({underlyingType})value == 0"
-                    : $"unchecked((({underlyingType}){mask}UL & ({underlyingType})value) == ({underlyingType})value)";
 
                 // Every included member already satisfies the mask; only explicit exclusions need a lookup.
-                match = (excluded.Length == 0 ? string.Empty : $"!({omitted}) && ") + maskCheck;
+                match = (excluded.Length == 0 ? string.Empty : $"!({omitted}) && ") + CreateFlagMaskCheck(included, underlyingType, "value");
             }
             else
                 match = Lookup("_underlyingLookup", included, null);
@@ -250,9 +243,7 @@ internal static class EnumExtensionCode
 
         string GetMetadataLookup(Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion, string variable)
         {
-            EnumMemberSpec[] members = spec.Members
-                                           .Where(x => x.OmitValueData?.Exclude.HasFlag(exclusion) != true && getText(x) != null)
-                                           .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+            EnumMemberSpec[] members = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(exclusion) != true && getText(x) != null).ToArray();
 
             if (members.Length == 0)
             {

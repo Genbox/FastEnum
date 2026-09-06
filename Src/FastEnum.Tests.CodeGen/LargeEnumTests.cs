@@ -19,7 +19,7 @@ public class LargeEnumTests
     public void LookupCompilesForEveryUnderlyingType(string underlyingType, int firstValue)
     {
         string members = string.Join(",\n", Enumerable.Range(0, 129).Select(i => $"Value{i} = {firstValue + i}"));
-        TestHelper.GetGeneratedOutput<EnumGenerator>($"[FastEnum] public enum LargeEnum : {underlyingType} {{ {members} }}");
+        TestHelper.GetGeneratedOutput($"[FastEnum] public enum LargeEnum : {underlyingType} {{ {members} }}");
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class LargeEnumTests
                         }
                         """;
 
-        TestHelper.GetGeneratedOutput<EnumGenerator>(code);
+        TestHelper.GetGeneratedOutput(code);
     }
 
     [Theory]
@@ -56,7 +56,7 @@ public class LargeEnumTests
                         }
                         """;
 
-        string output = TestHelper.GetGeneratedOutput<EnumGenerator>(code);
+        string output = TestHelper.GetGeneratedOutput(code);
         SyntaxNode root = await CSharpSyntaxTree.ParseText(output, cancellationToken: TestContext.Current.CancellationToken)
                                                 .GetRootAsync(TestContext.Current.CancellationToken);
         MethodDeclarationSyntax method = root.DescendantNodes().OfType<MethodDeclarationSyntax>()

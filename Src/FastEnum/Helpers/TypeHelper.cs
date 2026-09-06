@@ -9,9 +9,6 @@ internal static class TypeHelper
     {
         T instance = new T();
 
-        if (data.Length == 0)
-            return instance;
-
         foreach (KeyValuePair<string, TypedConstant> pair in data)
         {
             // Data models may intentionally map only a subset of an attribute's properties.

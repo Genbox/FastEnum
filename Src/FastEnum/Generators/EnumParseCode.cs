@@ -4,11 +4,8 @@ internal static class EnumParseCode
 {
     // ASCII keys can be partitioned without changing ordinal comparison semantics.
     // Leaves still compare the whole input, preserving aliases and case sensitivity.
-    internal static string Create(EnumMemberSpec[] members, Func<EnumMemberSpec, string?> getText,
-                                  Func<EnumMemberSpec, string, string> check, Func<string, string> extractMethod)
+    internal static string Create((EnumMemberSpec Member, string Text)[] entries, Func<EnumMemberSpec, string, string> check, Func<string, string> extractMethod)
     {
-        (EnumMemberSpec Member, string Text)[] entries = members.Select(member => (Member: member, Text: getText(member)))
-                                                                .Where(entry => entry.Text != null).Select(entry => (entry.Member, Text: entry.Text!)).ToArray();
         string cases = string.Join("\n", entries.GroupBy(entry => entry.Text.Length).Select(group => $$"""
                                                                                                        case {{group.Key}}:
                                                                                                            {{IndentFollowingLines(Branch(group.ToArray()), 1)}}

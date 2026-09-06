@@ -51,27 +51,15 @@ internal static class EnumLookupCode
         AddArray("int", "_next", table.Next.Select(x => x.ToString(CultureInfo.InvariantCulture)));
         string key = table.Shift == 0 ? "unchecked((int)input)" : $"unchecked((int)((ulong)input >> {table.Shift}))";
 
-        // A nested holder initializes only this lookup and never exposes its arrays.
-        string declarations = string.Join("\n", arrays);
-        fields.Add($$"""
-                     private static class {{name}}
+        return AddLookupHolder($$"""
+                     int bucket = {{key}} & {{table.Buckets.Length - 1}};
+                     for (int index = _buckets[bucket]; index >= 0; index = _next[index])
                      {
-                         {{IndentFollowingLines(declarations, 1)}}
-
-                         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-                         internal static {{returnType}} Find({{type}} input)
-                         {
-                             int bucket = {{key}} & {{table.Buckets.Length - 1}};
-                             for (int index = _buckets[bucket]; index >= 0; index = _next[index])
-                             {
-                                 if (_values[index] == input)
-                                     return {{found}};
-                             }
-                             return {{missing}};
-                         }
+                         if (_values[index] == input)
+                             return {{found}};
                      }
+                     return {{missing}};
                      """);
-        return $"{name}.Find(({type}){input})";
 
         string CreateDenseLookup(ulong minimumValue)
         {
@@ -92,16 +80,24 @@ internal static class EnumLookupCode
 
             IEnumerable<string> orderedResults = members.OrderBy(member => (IComparable)member.Value).Select(result);
             AddArray("string", "_results", orderedResults);
+            return AddLookupHolder($$"""
+                         {{indexType}} index = unchecked(({{indexType}})input - {{minimumLiteral}});
+                         return index < ({{indexType}})_results.Length ? _results[(int)index] : {{missing}};
+                         """);
+        }
+
+        string AddLookupHolder(string body)
+        {
+            // A nested holder initializes only this lookup and never exposes its arrays.
             fields.Add($$"""
                          private static class {{name}}
                          {
                              {{IndentFollowingLines(string.Join("\n", arrays), 1)}}
 
                              [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
-                             internal static string? Find({{type}} input)
+                             internal static {{returnType}} Find({{type}} input)
                              {
-                                 {{indexType}} index = unchecked(({{indexType}})input - {{minimumLiteral}});
-                                 return index < ({{indexType}})_results.Length ? _results[(int)index] : {{missing}};
+                                 {{IndentFollowingLines(body, 2)}}
                              }
                          }
                          """);
