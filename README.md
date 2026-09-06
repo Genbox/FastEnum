@@ -411,32 +411,32 @@ Here are benchmarks for calling different methods in .NET versus using FastEnum 
 
 | Operation       | Enum size  | FastEnum |      .NET | Enums.NET |
 |-----------------|------------|---------:|----------:|----------:|
-| Get names       | Small enum |  0.57 ns |  10.00 ns |   0.83 ns |
-| Get names       | Large enum |  1.04 ns | 379.99 ns |   0.84 ns |
-| Get values      | Small enum |  0.62 ns |  12.05 ns |   0.64 ns |
-| Get values      | Large enum |  0.65 ns | 160.60 ns |   0.61 ns |
-| ToString        | Small enum |  0.85 ns |   5.77 ns |   0.86 ns |
-| ToString        | Large enum |  6.75 ns |  17.40 ns |   0.85 ns |
-| IsDefined, hit  | Small enum |  0.00 ns |   0.11 ns |   0.11 ns |
-| IsDefined, hit  | Large enum |  0.12 ns |   7.98 ns |   0.11 ns |
-| IsDefined, miss | Small enum |  0.00 ns |   0.13 ns |   0.12 ns |
-| IsDefined, miss | Large enum |  0.14 ns |   8.14 ns |   0.11 ns |
+| Get names       | Small enum |  0.55 ns |   9.43 ns |   0.90 ns |
+| Get names       | Large enum |  0.57 ns | 377.64 ns |   2.93 ns |
+| Get values      | Small enum |  0.63 ns |  10.99 ns |   0.61 ns |
+| Get values      | Large enum |  0.68 ns | 160.08 ns |   2.65 ns |
+| ToString        | Small enum |  0.48 ns |   5.57 ns |   0.94 ns |
+| ToString        | Large enum |  0.67 ns |  17.04 ns |   2.91 ns |
+| IsDefined, hit  | Small enum |  0.01 ns |   0.14 ns |   0.10 ns |
+| IsDefined, hit  | Large enum |  0.12 ns |   9.95 ns |   1.65 ns |
+| IsDefined, miss | Small enum |  0.00 ns |   0.12 ns |   0.12 ns |
+| IsDefined, miss | Large enum |  0.11 ns |   8.87 ns |   1.70 ns |
 
 #### Parsing
 
 Exact matches and misses are case-sensitive. Ignore-case rows use a lowercase name. The large-enum hit is the last member (Value1023).
 
-| Input / scenario    | Enum size  |     FastEnum |        .NET |    Enums.NET |
-|---------------------|------------|-------------:|------------:|-------------:|
-| String, hit         | Small enum |      4.05 ns |    12.53 ns |      6.68 ns |
-| String, miss        | Small enum |      6.10 ns |    11.95 ns |      9.47 ns |
-| String, ignore case | Small enum |      5.60 ns |    15.07 ns |      8.12 ns |
-| Span, hit           | Small enum |      5.07 ns |    12.52 ns | Not measured |
-| Span, miss          | Small enum |      7.86 ns |    10.06 ns | Not measured |
-| Span, ignore case   | Small enum |      6.90 ns |    12.99 ns | Not measured |
-| String, hit         | Large enum |      3.06 ns | 2,364.06 ns |      9.12 ns |
-| String, miss        | Large enum |      5.40 ns | 2,458.26 ns |      7.94 ns |
-| String, ignore case | Large enum |  1,728.37 ns | 2,552.43 ns |     17.99 ns |
-| Span, hit           | Large enum |  6,678.79 ns | 2,170.81 ns | Not measured |
-| Span, miss          | Large enum | 14,496.06 ns | 2,301.40 ns | Not measured |
-| Span, ignore case   | Large enum |  6,842.16 ns | 2,535.38 ns | Not measured |
+| Input / scenario    | Enum size  | FastEnum |        .NET |    Enums.NET |
+|---------------------|------------|---------:|------------:|-------------:|
+| String, hit         | Small enum |  1.36 ns |    13.32 ns |      7.99 ns |
+| String, miss        | Small enum |  1.57 ns |    12.44 ns |      7.66 ns |
+| String, ignore case | Small enum |  2.79 ns |    14.34 ns |      9.38 ns |
+| Span, hit           | Small enum |  2.82 ns |    11.64 ns | Not measured |
+| Span, miss          | Small enum |  1.99 ns |    12.21 ns | Not measured |
+| Span, ignore case   | Small enum |  3.59 ns |    13.97 ns | Not measured |
+| String, hit         | Large enum |  4.90 ns | 2,407.66 ns |     17.10 ns |
+| String, miss        | Large enum |  6.67 ns | 2,499.93 ns |     10.79 ns |
+| String, ignore case | Large enum | 12.51 ns | 2,691.91 ns |     20.37 ns |
+| Span, hit           | Large enum |  4.53 ns | 2,857.93 ns | Not measured |
+| Span, miss          | Large enum |  2.82 ns | 2,287.15 ns | Not measured |
+| Span, ignore case   | Large enum | 16.28 ns | 2,711.36 ns | Not measured |
