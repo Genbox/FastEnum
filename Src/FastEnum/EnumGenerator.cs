@@ -25,47 +25,85 @@ public class EnumGenerator : IIncrementalGenerator
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValueProvider<ImmutableArray<EnumSpec>> sp = context.SyntaxProvider
-                                                                       .ForAttributeWithMetadataName(FastEnumAttr, static (node, _) => node is EnumDeclarationSyntax m && m.AttributeLists.Count > 0, Transform)
-                                                                       .Where(x => x != null)
-                                                                       .WithTrackingName("EnumSpecs")
-                                                                       .Collect()
-                                                                       .WithTrackingName("CollectedEnums")!;
+        IncrementalValueProvider<ImmutableArray<EnumSpec>> collectedEnums = context.SyntaxProvider
+            .ForAttributeWithMetadataName(FastEnumAttr, static (node, _) => node is EnumDeclarationSyntax declaration && declaration.AttributeLists.Count > 0, Transform)
+            .Where(spec => spec != null)
+            .WithTrackingName("EnumSpecs")
+            .Collect()
+            .WithTrackingName("CollectedEnums")!;
 
-        context.RegisterSourceOutput(sp, (spc, specs) =>
+        IncrementalValueProvider<GenerationPlan> plan = collectedEnums.Select(static (specs, _) => CreatePlan(specs));
+        context.RegisterSourceOutput(plan.Select(static (value, _) => value.Error), static (spc, message) =>
         {
-            if (spc.CancellationToken.IsCancellationRequested)
-                return;
-
-            if (!IsSpecsValid(specs, out string? message))
+            if (message != null)
             {
                 DiagnosticDescriptor report = new DiagnosticDescriptor("FE001", "FastEnum", $"Validation failed with message: {message}", "errors", DiagnosticSeverity.Error, true);
                 spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
-                return;
-            }
-
-            HashSet<string> attributedTypes = new HashSet<string>(StringComparer.Ordinal);
-
-            foreach (EnumSpec enumSpec in specs)
-            {
-                try
-                {
-                    FastEnumData data = enumSpec.Data;
-                    bool wrapperPublic = IsEnumsClassPublic(specs, enumSpec);
-                    bool attributeWrapper = !data.DisableEnumsWrapper && attributedTypes.Add(JoinName(data.EnumsClassNamespace ?? enumSpec.Namespace, data.EnumsClassName ?? "Enums"));
-                    bool attributeExtension = attributedTypes.Add(JoinName(data.ExtensionClassNamespace ?? enumSpec.Namespace, data.ExtensionClassName ?? $"{enumSpec.Name}Extensions"));
-
-                    spc.AddSource($"{enumSpec.FullName}_EnumFormat.g.cs", GetSource(Header, enumSpec, EnumFormatCode.Generate));
-                    spc.AddSource($"{enumSpec.FullName}_Enums.g.cs", GetSource(Header, enumSpec, spec => EnumClassCode.Generate(spec, wrapperPublic, attributeWrapper)));
-                    spc.AddSource($"{enumSpec.FullName}_Extensions.g.cs", GetSource(Header, enumSpec, spec => EnumExtensionCode.Generate(spec, attributeExtension)));
-                }
-                catch (Exception e)
-                {
-                    DiagnosticDescriptor report = new DiagnosticDescriptor("ESG002", "FastEnum", $"An error happened while generating code for {enumSpec.FullName}. Error: {e.Message}", "errors", DiagnosticSeverity.Error, true);
-                    spc.ReportDiagnostic(Diagnostic.Create(report, Location.None));
-                }
             }
         });
+
+        // Structural equality stops unchanged inputs before the expensive source emission callback.
+        IncrementalValuesProvider<GenerationInput> inputs = plan.SelectMany(static (value, _) => value.Inputs)
+            .WithTrackingName("GenerationInputs");
+        context.RegisterSourceOutput(inputs, EmitSources);
+    }
+
+    private static void EmitSources(SourceProductionContext context, GenerationInput input)
+    {
+        if (context.CancellationToken.IsCancellationRequested)
+            return;
+
+        EnumSpec spec = input.Spec;
+        try
+        {
+            context.AddSource($"{spec.FullName}_EnumFormat.g.cs", GetSource(Header, spec, EnumFormatCode.Generate));
+            context.AddSource($"{spec.FullName}_Enums.g.cs", GetSource(Header, spec, enumSpec => EnumClassCode.Generate(enumSpec, input.IsWrapperPublic, input.IncludeWrapperAttribute)));
+            context.AddSource($"{spec.FullName}_Extensions.g.cs", GetSource(Header, spec, enumSpec => EnumExtensionCode.Generate(enumSpec, input.IncludeExtensionAttribute)));
+        }
+        catch (Exception exception)
+        {
+            DiagnosticDescriptor report = new DiagnosticDescriptor("ESG002", "FastEnum", $"An error happened while generating code for {spec.FullName}. Error: {exception.Message}", "errors", DiagnosticSeverity.Error, true);
+            context.ReportDiagnostic(Diagnostic.Create(report, Location.None));
+        }
+    }
+
+    private sealed record GenerationInput(EnumSpec Spec, bool IsWrapperPublic, bool IncludeWrapperAttribute, bool IncludeExtensionAttribute);
+
+    private sealed record GenerationPlan(string? Error, ImmutableArray<GenerationInput> Inputs);
+
+    private static GenerationPlan CreatePlan(ImmutableArray<EnumSpec> specs)
+    {
+        if (!IsSpecsValid(specs, out string? message))
+            return new GenerationPlan(message, ImmutableArray<GenerationInput>.Empty);
+
+        // Every declaration of a shared partial wrapper must use the same visibility.
+        HashSet<string> publicWrappers = new HashSet<string>(StringComparer.Ordinal);
+        foreach (EnumSpec spec in specs)
+        {
+            FastEnumData data = spec.Data;
+            bool isPublic = data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.IsPubliclyAccessible);
+
+            if (!data.DisableEnumsWrapper && isPublic)
+                publicWrappers.Add(JoinName(data.EnumsClassNamespace ?? spec.Namespace, data.EnumsClassName ?? "Enums"));
+        }
+
+        // Apply GeneratedCodeAttribute only to the first declaration of each shared type.
+        HashSet<string> attributedTypes = new HashSet<string>(StringComparer.Ordinal);
+        ImmutableArray<GenerationInput>.Builder inputs = ImmutableArray.CreateBuilder<GenerationInput>(specs.Length);
+        foreach (EnumSpec spec in specs)
+        {
+            FastEnumData data = spec.Data;
+            string wrapperName = JoinName(data.EnumsClassNamespace ?? spec.Namespace, data.EnumsClassName ?? "Enums");
+            string extensionName = JoinName(data.ExtensionClassNamespace ?? spec.Namespace, data.ExtensionClassName ?? $"{spec.Name}Extensions");
+            bool hasWrapper = !data.DisableEnumsWrapper;
+            bool isWrapperPublic = hasWrapper && publicWrappers.Contains(wrapperName);
+            bool includeWrapperAttribute = hasWrapper && attributedTypes.Add(wrapperName);
+            bool includeExtensionAttribute = attributedTypes.Add(extensionName);
+
+            inputs.Add(new GenerationInput(spec, isWrapperPublic, includeWrapperAttribute, includeExtensionAttribute));
+        }
+
+        return new GenerationPlan(null, inputs.MoveToImmutable());
     }
 
     private static bool IsSpecsValid(ImmutableArray<EnumSpec> specs, out string? message)
@@ -226,21 +264,6 @@ public class EnumGenerator : IIncrementalGenerator
     private static string NormalizeQualifiedName(string value) => string.Join(".", Array.ConvertAll(value.Split('.'), NormalizeIdentifier));
 
     private static string NormalizeIdentifier(string value) => value.Length > 0 && value[0] == '@' ? value.Substring(1) : value;
-
-    private static bool IsEnumsClassPublic(ImmutableArray<EnumSpec> specs, EnumSpec target)
-    {
-        FastEnumData targetData = target.Data;
-        string targetWrapper = JoinName(targetData.EnumsClassNamespace ?? target.Namespace, targetData.EnumsClassName ?? "Enums");
-
-        return specs.Any(spec =>
-        {
-            FastEnumData data = spec.Data;
-            string wrapper = JoinName(data.EnumsClassNamespace ?? spec.Namespace, data.EnumsClassName ?? "Enums");
-            return !data.DisableEnumsWrapper &&
-                   wrapper == targetWrapper &&
-                   (data.EnumsClassVisibility == Visibility.Public || (data.EnumsClassVisibility == Visibility.Inherit && spec.IsPubliclyAccessible));
-        });
-    }
 
     private static bool IsValidIdentifierOverride(string? value, string propertyName, out string? message) => IsValidOverride(value, propertyName, "identifier", IsValidIdentifier, out message);
 

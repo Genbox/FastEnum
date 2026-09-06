@@ -45,6 +45,9 @@ internal class EnumSpec : IEquatable<EnumSpec>
 
     public bool Equals(EnumSpec? other)
     {
+        if (ReferenceEquals(this, other))
+            return true;
+
         return other != null && Name == other.Name &&
                EmittedIdentifier == other.EmittedIdentifier &&
                FullName == other.FullName &&

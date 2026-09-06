@@ -55,6 +55,42 @@ public class IncrementalGeneratorTests
         Assert.Contains(after.TrackedSteps["EnumSpecs"].SelectMany(x => x.Outputs), x => x.Reason is IncrementalStepRunReason.Cached or IncrementalStepRunReason.Unchanged);
         Assert.NotEqual(Sources(before), Sources(after));
         Assert.Equal(Sources(before, "Size_"), Sources(after, "Size_"));
+        Assert.Contains(after.TrackedSteps["GenerationInputs"].SelectMany(x => x.Outputs),
+            x => x.Reason == IncrementalStepRunReason.Unchanged);
+        // Unchanged inputs must skip emission, rather than merely reproduce identical source text.
+        IEnumerable<IncrementalGeneratorRunStep> emissionSteps = after.TrackedOutputSteps.SelectMany(entry => entry.Value).Where(step => step.Inputs.Any(input => input.Source.Name == "GenerationInputs"));
+        Assert.Contains(emissionSteps.SelectMany(step => step.Outputs), output => output.Reason == IncrementalStepRunReason.Cached);
+    }
+
+    [Fact]
+    public void SharedWrapperVisibilityUpdatesOtherEnums()
+    {
+        SyntaxTree first = Parse("[Genbox.FastEnum.FastEnum] internal enum Color { Red }");
+        SyntaxTree second = Parse("[Genbox.FastEnum.FastEnum] internal enum Size { Small }");
+        CSharpCompilation compilation = TestHelper.CreateCompilation([first, second]);
+        GeneratorDriver driver = CreateDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        string[] before = Sources(Assert.Single(driver.GetRunResult().Results), "Size_");
+
+        compilation = compilation.ReplaceSyntaxTree(first, Parse(Original));
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var diagnostics, TestContext.Current.CancellationToken);
+        Assert.Empty(diagnostics);
+        Assert.Empty(output.GetDiagnostics(TestContext.Current.CancellationToken).Where(x => x.Severity == DiagnosticSeverity.Error));
+        Assert.NotEqual(before, Sources(Assert.Single(driver.GetRunResult().Results), "Size_"));
+    }
+
+    [Fact]
+    public void RemovingFirstEnumReassignsSharedAttributes()
+    {
+        SyntaxTree first = Parse("[Genbox.FastEnum.FastEnum(ExtensionClassName = \"Shared\")] public enum Color { Red }");
+        SyntaxTree second = Parse("[Genbox.FastEnum.FastEnum(ExtensionClassName = \"Shared\")] public enum Size { Small }");
+        CSharpCompilation compilation = TestHelper.CreateCompilation([first, second]);
+        GeneratorDriver driver = CreateDriver().RunGenerators(compilation, TestContext.Current.CancellationToken);
+        compilation = compilation.RemoveSyntaxTrees(first);
+        driver = driver.RunGeneratorsAndUpdateCompilation(compilation, out Compilation output, out var diagnostics, TestContext.Current.CancellationToken);
+        Assert.Empty(diagnostics);
+        Assert.Empty(output.GetDiagnostics(TestContext.Current.CancellationToken).Where(x => x.Severity == DiagnosticSeverity.Error));
+        string source = string.Join('\n', Sources(Assert.Single(driver.GetRunResult().Results)));
+        Assert.Equal(4, source.Split("[global::System.CodeDom.Compiler.GeneratedCodeAttribute", StringSplitOptions.None).Length - 1);
     }
 
     [Fact]
