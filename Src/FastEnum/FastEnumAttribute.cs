@@ -34,6 +34,6 @@ public sealed class FastEnumAttribute : global::System.Attribute
     /// <summary>Enable this to avoid generating the static Enums class that wraps all the enums. Enums.MyEnum becomes MyEnum. This is handy if you want to set all enums inside the same namespace across projects</summary>
     public bool DisableEnumsWrapper { get; set; }
 
-    /// <summary>By default, arrays from methods such as GetMemberValues() and GetMemberNames() are cached. Set this to <see langword="true"/> to avoid caching. Numeric lookups then use switches instead of cached hash tables.</summary>
+    /// <summary>By default, arrays from methods such as GetMemberValues() and GetMemberNames() are cached. Set this to <see langword="true"/> to avoid caching. Numeric lookups then use switches instead of range checks and cached lookup tables.</summary>
     public bool DisableCache { get; set; }
 }
