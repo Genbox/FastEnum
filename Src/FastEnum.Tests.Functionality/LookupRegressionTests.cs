@@ -42,5 +42,21 @@ public class LookupRegressionTests
     {
         Assert.False(Enums.FullyOmittedFlags.IsDefined(FullyOmittedFlags.None));
         Assert.False(Enums.FullyOmittedFlags.IsDefined(FullyOmittedFlags.First));
+        Assert.False(FullyOmittedFlags.None.TryGetUnderlyingValue(out _));
+        Assert.False(FullyOmittedFlags.First.TryGetUnderlyingValue(out _));
+    }
+
+    [Fact]
+    public void FlagsWithoutIncludedMembersRejectZero()
+    {
+        Assert.False(Enums.EmptyFlags.IsDefined(default));
+        Assert.False(default(EmptyFlags).TryGetUnderlyingValue(out int emptyValue));
+        Assert.Equal(0, emptyValue);
+        Assert.Throws<ArgumentOutOfRangeException>(() => default(EmptyFlags).GetUnderlyingValue());
+
+        Assert.False(Enums.OmittedNonzeroFlags.IsDefined(default));
+        Assert.False(default(OmittedNonzeroFlags).TryGetUnderlyingValue(out int omittedValue));
+        Assert.Equal(0, omittedValue);
+        Assert.Throws<ArgumentOutOfRangeException>(() => default(OmittedNonzeroFlags).GetUnderlyingValue());
     }
 }

@@ -150,7 +150,6 @@ public static partial class EmptyEnumExtensions
     /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetUnderlyingValue(this global::Some.Namespace.Here.EmptyEnum value, out int underlyingValue)
     {
-        
         underlyingValue = default;
         return false;
     }

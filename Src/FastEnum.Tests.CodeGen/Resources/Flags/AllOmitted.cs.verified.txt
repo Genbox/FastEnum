@@ -168,16 +168,6 @@ public static partial class AllOmittedExtensions
     /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetUnderlyingValue(this global::AllOmitted value, out int underlyingValue)
     {
-        if (!((((int)value) switch
-        {
-            0 => true,
-            1 => true,
-            _ => false
-        })) && (int)value == 0)
-        {
-            underlyingValue = (int)value;
-            return true;
-        }
         underlyingValue = default;
         return false;
     }
@@ -346,11 +336,6 @@ public static partial class EmptyFlagsExtensions
     /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
     public static bool TryGetUnderlyingValue(this global::EmptyFlags value, out int underlyingValue)
     {
-        if ((int)value == 0)
-        {
-            underlyingValue = (int)value;
-            return true;
-        }
         underlyingValue = default;
         return false;
     }

@@ -51,8 +51,6 @@ internal static class EnumExtensionCode
                      public static bool TryGetUnderlyingValue(this {{enumName}} value, out {{underlyingType}} underlyingValue)
                      {
                          {{IndentFollowingLines(GetUnderlyingLookup(), 2)}}
-                         underlyingValue = default;
-                         return false;
                      }
 
                      /// <summary>Gets the underlying numeric value of an enum value.</summary>
@@ -201,11 +199,12 @@ internal static class EnumExtensionCode
 
         string GetUnderlyingLookup()
         {
+            const string failure = "underlyingValue = default;\nreturn false;";
             EnumMemberSpec[] included = spec.Members
                 .Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
                 .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
-            if (included.Length == 0 && !spec.HasFlags)
-                return string.Empty;
+            if (included.Length == 0)
+                return failure;
             string match;
             if (spec.HasFlags)
             {
@@ -227,6 +226,7 @@ internal static class EnumExtensionCode
                     underlyingValue = ({{underlyingType}})value;
                     return true;
                 }
+                {{failure}}
                 """;
         }
 
