@@ -24,15 +24,18 @@ internal static class EnumClassCode
         string underlyingValues = Assignment("_underlyingValues", underlyingType, GetUnderlyingValues());
         string tryParse = TryParse(false);
         string tryParseSpan = TryParse(true);
-        bool hashIsDefined = false;
         string isDefined = IsDefined();
         string displayNames = MetadataMethod(spec.HasDisplay, "display names", "DisplayNames", "_displayNames", x => x.DisplayData?.Name, transform?.SortDisplayNames ?? EnumOrder.None, EnumOmitExclude.TryGetDisplayName);
         string descriptions = MetadataMethod(spec.HasDescription, "descriptions", "Descriptions", "_descriptions", x => x.DisplayData?.Description, transform?.SortDescriptions ?? EnumOrder.None, EnumOmitExclude.TryGetDescription);
-        string generatedFields = fields.Count == 0 ? string.Empty : $"\n\n{string.Join("\n", fields.Select(x => $"{Indent(2)}{x}"))}\n";
+        string generatedFields = fields.Count == 0 ? string.Empty : $"\n\n{string.Join("\n", fields.Select(x => $"{Indent(2)}{IndentFollowingLines(x, 2)}"))}\n";
         int memberCount = spec.Members.Count(x => x.OmitValueData?.Exclude != EnumOmitExclude.All);
         string wrapperAttribute = attributeWrapper ? $"{EnumGenerator.GeneratedCodeAttribute}\n" : string.Empty;
         string? wrapper = !options.DisableEnumsWrapper
-            ? $"/// <summary>Contains generated helpers for <see cref=\"{enumName}\"/>.</summary>\n{wrapperAttribute}{wrapperVisibility} static partial class {wrapperName}\n{{"
+            ? $$"""
+                /// <summary>Contains generated helpers for <see cref="{{enumName}}"/>.</summary>
+                {{wrapperAttribute}}{{wrapperVisibility}} static partial class {{wrapperName}}
+                {
+                """
             : null;
 
         return $$"""
@@ -73,9 +76,10 @@ internal static class EnumClassCode
                          /// <summary>Determines whether an enum value is defined by the generated metadata.</summary>
                          /// <param name="input">The enum value to test.</param>
                          /// <returns><see langword="true"/> if the value is defined; otherwise, <see langword="false"/>.</returns>
-                         {{(hashIsDefined ? "[global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]\n        " : null)}}public static bool IsDefined({{enumName}} input)
+                         [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+                         public static bool IsDefined({{enumName}} input)
                          {
-                             {{isDefined}}
+                             {{IndentFollowingLines(isDefined, 3)}}
                          }{{displayNames}}{{descriptions}}{{generatedFields}}
                      }{{(!options.DisableEnumsWrapper ? "\n}" : null)}}
                  """;
@@ -121,7 +125,7 @@ internal static class EnumClassCode
                 2);
         }
 
-        IEnumerable<string> GetMemberNames() => GetMembers(transform?.SortMemberNames ?? EnumOrder.None, EnumOmitExclude.GetMemberNames, m => TransformHelper.TransformName(spec, m), m => $"\"{EscapeString(TransformHelper.TransformName(spec, m))}\"");
+        IEnumerable<string> GetMemberNames() => GetMembers(transform?.SortMemberNames ?? EnumOrder.None, EnumOmitExclude.GetMemberNames, m => TransformHelper.TransformName(spec, m), m => FormatStringLiteral(TransformHelper.TransformName(spec, m)));
 
         IEnumerable<string> GetMemberValues() => GetMembers(transform?.SortMemberValues ?? EnumOrder.None, EnumOmitExclude.GetMemberValues, ValueKey, m => $"{enumName}.{m.EmittedIdentifier}");
 
@@ -144,7 +148,7 @@ internal static class EnumClassCode
         {
             IEnumerable<EnumMemberSpec> members = spec.Members.Where(x => getText(x) != null && x.OmitValueData?.Exclude.HasFlag(exclusion) != true);
             return ApplySort(members, order, x => getText(x)!)
-                .Select(x => $"({enumName}.{x.EmittedIdentifier}, \"{EscapeString(getText(x)!)}\")");
+                .Select(x => $"({enumName}.{x.EmittedIdentifier}, {FormatStringLiteral(getText(x)!)})");
         }
 
         string TryParse(bool isSpan)
@@ -246,75 +250,8 @@ internal static class EnumClassCode
             if (members.Length == 0)
                 return "return false;";
 
-            // Bound the size of the generated switch for large enums.
-            if (members.Length > 128)
-            {
-                if (!options.DisableCache)
-                    return HashIsDefined(members);
-
-                string[] values = members.OrderBy(ValueKey).Select(x => FormatPrimitive(x.Value)).ToArray();
-                string valuesExpression = Assignment("_isDefinedValues", underlyingType, values);
-
-                return $$"""
-                         {{underlyingType}}[] values = {{valuesExpression}}
-                                     for (int low = 0, high = values.Length - 1; low <= high;)
-                                     {
-                                         int middle = low + ((high - low) >> 1);
-                                         {{underlyingType}} candidate = values[middle];
-                                         if (candidate == ({{underlyingType}})input)
-                                             return true;
-                                         if (candidate < ({{underlyingType}})input)
-                                             low = middle + 1;
-                                         else
-                                             high = middle - 1;
-                                     }
-
-                                     return false;
-                         """;
-            }
-
-            IEnumerable<string> cases = members.Select(x => $"                case {enumName}.{x.EmittedIdentifier}:");
-
-            return $$"""
-                     switch (input)
-                                 {
-                     {{string.Join("\n", cases)}}
-                                         return true;
-                                     default:
-                                         return false;
-                                 }
-                     """;
-        }
-
-        string HashIsDefined(EnumMemberSpec[] members)
-        {
-            hashIsDefined = true;
-            EnumHashTable table = EnumHashTable.Create(members.Select(x => ToUInt64(x.Value)).ToArray());
-            string values = string.Join(", ", members.Select(x => FormatPrimitive(x.Value)));
-            string buckets = string.Join(", ", table.Buckets.Select(x => x.ToString(CultureInfo.InvariantCulture)));
-            string next = string.Join(", ", table.Next.Select(x => x.ToString(CultureInfo.InvariantCulture)));
-            fields.Add(IndentFollowingLines($$"""
-                private static class _IsDefinedCache
-                {
-                    internal static readonly {{underlyingType}}[] Values = new {{underlyingType}}[] { {{values}} };
-                    internal static readonly int[] Buckets = new int[] { {{buckets}} };
-                    internal static readonly int[] Next = new int[] { {{next}} };
-                }
-                """, 2));
-
-            string hash = table.Shift == 0
-                ? "unchecked((int)input)"
-                : $"unchecked((int)((ulong)({underlyingType})input >> {table.Shift}))";
-            return $$"""
-                     int bucket = {{hash}} & {{table.Buckets.Length - 1}};
-                                 for (int index = _IsDefinedCache.Buckets[bucket]; index >= 0; index = _IsDefinedCache.Next[index])
-                                 {
-                                     if (_IsDefinedCache.Values[index] == ({{underlyingType}})input)
-                                         return true;
-                                 }
-
-                                 return false;
-                     """;
+            string lookup = EnumLookupCode.Create(spec, members, "_isDefinedLookup", "input", null, fields);
+            return $"return {lookup};";
         }
 
         string IsFlagDefined()
@@ -324,8 +261,9 @@ internal static class EnumClassCode
                 return "false";
 
             HashSet<object> handledValues = new HashSet<object>(includedMembers.Select(x => x.Value));
-            string exclusions = string.Concat(spec.Members.Where(x => !IsIncluded(x, EnumOmitExclude.IsDefined) && handledValues.Add(x.Value))
-                                                  .Select(x => $"input != {enumName}.{x.EmittedIdentifier} && "));
+            EnumMemberSpec[] omitted = spec.Members.Where(x => !IsIncluded(x, EnumOmitExclude.IsDefined) && handledValues.Add(x.Value)).ToArray();
+            string exclusions = omitted.Length == 0 ? string.Empty
+                : "!(" + EnumLookupCode.Create(spec, omitted, "_isDefinedExcludedLookup", "input", null, fields) + ") && ";
             ulong mask = includedMembers.Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
             string maskCheck = mask == 0
                 ? $"({underlyingType})input == 0"
@@ -357,20 +295,6 @@ internal static class EnumClassCode
         }
 
         static bool IsIncluded(EnumMemberSpec member, EnumOmitExclude exclusion) => member.OmitValueData?.Exclude.HasFlag(exclusion) != true;
-
-        static string IndentFollowingLines(string value, int amount)
-        {
-            string indent = Indent(amount);
-            string[] lines = value.Split('\n');
-
-            for (int i = 1; i < lines.Length; i++)
-            {
-                if (lines[i].Length > 0)
-                    lines[i] = $"{indent}{lines[i]}";
-            }
-
-            return string.Join("\n", lines);
-        }
 
         static IEnumerable<EnumMemberSpec> ApplySort(IEnumerable<EnumMemberSpec> members, EnumOrder order, Func<EnumMemberSpec, IComparable> selector) => order switch
         {

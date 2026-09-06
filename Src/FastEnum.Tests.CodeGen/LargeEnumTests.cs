@@ -16,7 +16,7 @@ public class LargeEnumTests
     [InlineData("uint", 0)]
     [InlineData("long", -128)]
     [InlineData("ulong", 0)]
-    public void HashLookupCompilesForEveryUnderlyingType(string underlyingType, int firstValue)
+    public void LookupCompilesForEveryUnderlyingType(string underlyingType, int firstValue)
     {
         string members = string.Join(",\n", Enumerable.Range(0, 129).Select(i => $"Value{i} = {firstValue + i}"));
         TestHelper.GetGeneratedOutput<EnumGenerator>($"[FastEnum] public enum LargeEnum : {underlyingType} {{ {members} }}");
@@ -42,7 +42,9 @@ public class LargeEnumTests
     }
 
     [Theory]
-    [InlineData(128, false)]
+    [InlineData(31, false)]
+    [InlineData(32, true)]
+    [InlineData(128, true)]
     [InlineData(129, true)]
     [InlineData(1024, true)]
     public async Task IsDefinedLimitsSwitchSize(int memberCount, bool usesLoop)
@@ -62,8 +64,8 @@ public class LargeEnumTests
         MethodDeclarationSyntax method = root.DescendantNodes().OfType<MethodDeclarationSyntax>()
                                              .Single(x => x.Identifier.ValueText == "IsDefined");
 
-        Assert.Equal(usesLoop, method.DescendantNodes().OfType<ForStatementSyntax>().Any());
-        Assert.Equal(!usesLoop, method.DescendantNodes().OfType<SwitchStatementSyntax>().Any());
+        Assert.Equal(usesLoop, root.DescendantNodes().OfType<ForStatementSyntax>().Any());
+        Assert.Equal(!usesLoop, method.DescendantNodes().OfType<SwitchExpressionSyntax>().Any());
         await Verify(method.NormalizeWhitespace().ToFullString()).UseParameters(memberCount, usesLoop).UseDirectory("Snapshots");
     }
 }

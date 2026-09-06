@@ -18,6 +18,9 @@ internal static class EnumExtensionCode
         HashSet<object> values = new HashSet<object>();
         bool hasAliases = spec.Members.Any(x => !values.Add(x.Value));
 
+        List<string> lookupFields = new List<string>();
+        Dictionary<string, string> lookups = new Dictionary<string, string>(StringComparer.Ordinal);
+
         return $$"""
                  {{(namespaceName != null ? $"\nnamespace {namespaceName};\n" : null)}}
                  /// <summary>Provides generated extension methods for <see cref="{{enumName}}"/>.</summary>
@@ -26,9 +29,10 @@ internal static class EnumExtensionCode
                      /// <summary>Gets the generated string representation of an enum value.</summary>
                      /// <param name="value">The enum value.</param>
                      /// <returns>The generated string representation.</returns>
+                     [global::System.Runtime.CompilerServices.MethodImpl(global::System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
                      public static string GetString(this {{enumName}} value)
                      {
-                         {{GetString()}}
+                         {{IndentFollowingLines(GetString(), 2)}}
                      }
 
                      /// <summary>Gets the string representation of an enum value using the specified formats.</summary>
@@ -37,7 +41,7 @@ internal static class EnumExtensionCode
                      /// <returns>The formatted string representation.</returns>
                      public static string GetString(this {{enumName}} value, {{enumFormat}} format = {{enumFormat}}.Default)
                      {
-                         {{GetStringWithFormat()}}
+                         {{IndentFollowingLines(GetStringWithFormat(), 2)}}
                      }
 
                      /// <summary>Attempts to get the underlying numeric value of an enum value.</summary>
@@ -46,7 +50,7 @@ internal static class EnumExtensionCode
                      /// <returns><see langword="true"/> if the lookup succeeded; otherwise, <see langword="false"/>.</returns>
                      public static bool TryGetUnderlyingValue(this {{enumName}} value, out {{underlyingType}} underlyingValue)
                      {
-                         {{PrintSwitch(TryGetUnderlyingValue())}}
+                         {{IndentFollowingLines(GetUnderlyingLookup(), 2)}}
                          underlyingValue = default;
                          return false;
                      }
@@ -61,9 +65,12 @@ internal static class EnumExtensionCode
                              throw new global::System.ArgumentOutOfRangeException($"Invalid value: {value}");
 
                          return underlyingValue;
-                     }{{GetDisplayMethods()}}{{GetDescriptionMethods()}}{{GetFlagsMethod()}}
+                     }{{GetDisplayMethods()}}{{GetDescriptionMethods()}}{{GetFlagsMethod()}}{{GetLookupFields()}}
                  }
                  """;
+
+        string GetLookupFields() => lookupFields.Count == 0 ? string.Empty
+            : "\n\n" + string.Join("\n\n", lookupFields.Select(x => string.Join("\n", x.Split('\n').Select(line => "    " + line))));
 
         string GetDisplayMethods() => GetMetadataMethods(spec.HasDisplay, "display name", "DisplayName", "displayName", x => x.DisplayData?.Name, EnumOmitExclude.TryGetDisplayName);
 
@@ -82,9 +89,7 @@ internal static class EnumExtensionCode
                         #endif
                         out string? {{variable}})
                             {
-                                {{PrintSwitch(GetMetadataCases(getText, exclusion, variable))}}
-                                {{variable}} = null;
-                                return false;
+                                {{IndentFollowingLines(GetMetadataLookup(getText, exclusion, variable), 2)}}
                             }
 
                             /// <summary>Gets the {{label}} of an enum value.</summary>
@@ -110,201 +115,137 @@ internal static class EnumExtensionCode
                            public static bool IsFlagSet(this {enumName} value, {enumName} flag) => (({underlyingType})value & ({underlyingType})flag) == ({underlyingType})flag;
                        """;
 
+        string Lookup(string name, IEnumerable<EnumMemberSpec> members, Func<EnumMemberSpec, string>? result)
+        {
+            // Filtering must precede alias resolution: the first applicable alias wins.
+            EnumMemberSpec[] unique = members.GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+            StringBuilder signature = new StringBuilder(result == null ? "bool" : "string");
+            foreach (EnumMemberSpec member in unique)
+            {
+                string entry = FormatPrimitive(member.Value) + "=" + (result?.Invoke(member) ?? "true");
+                signature.Append(entry.Length).Append(':').Append(entry);
+            }
+            string key = signature.ToString();
+            if (!lookups.TryGetValue(key, out string? expression))
+            {
+                expression = EnumLookupCode.Create(spec, unique, name, "value", result, lookupFields);
+                lookups.Add(key, expression);
+            }
+            return expression;
+        }
+
+        string NameLookup() => Lookup("_stringLookup", spec.Members, GetNameResult);
+
         string GetStringWithFormat()
         {
-            bool hasDisplayNames = spec.HasDisplay && Array.Exists(spec.Members, x => x.DisplayData?.Name != null);
-            bool hasDescriptions = spec.HasDescription && Array.Exists(spec.Members, x => x.DisplayData?.Description != null);
+            List<string> blocks = new List<string>();
+            if (spec.HasDisplay && Array.Exists(spec.Members, x => x.DisplayData?.Name != null))
+                AddTextBlock("DisplayName", x => x.DisplayData?.Name);
+            if (spec.HasDescription && Array.Exists(spec.Members, x => x.DisplayData?.Description != null))
+                AddTextBlock("Description", x => x.DisplayData?.Description);
+            if (spec.Members.Length > 0)
+                blocks.Add(Block("Name", $$"""
+                    string? name = {{NameLookup()}};
+                    if (name != null)
+                        return name;
+                    """));
 
-            return $"""
-                    {string.Join("\n\n        ", GetFormatBlocks())}
-
-                            return value.ToString();
+            string omitted = Lookup("_stringOmittedLookup", spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true), null);
+            string numericFormat = $"return (({underlyingType})value).ToString(global::System.Globalization.NumberFormatInfo.InvariantInfo);";
+            if (omitted != "false")
+            {
+                numericFormat = $$"""
+                    if ({{omitted}})
+                        return string.Empty;
+                    {{numericFormat}}
                     """;
+            }
+            blocks.Add(Block("Value", numericFormat));
+            blocks.Add("return value.ToString();");
+            return string.Join("\n\n", blocks);
 
-            IEnumerable<string> GetFormatBlocks()
+            void AddTextBlock(string format, Func<EnumMemberSpec, string?> getText)
             {
-                if (hasDisplayNames)
-                    yield return GetFormatBlock("DisplayName", GetMetadataChecks(x => x.DisplayData?.Name));
-
-                if (hasDescriptions)
-                    yield return GetFormatBlock("Description", GetMetadataChecks(x => x.DisplayData?.Description));
-
-                yield return GetFormatBlock("Name", GetNameChecks());
-                yield return GetFormatBlock("Value", GetValueStatements());
+                string? Text(EnumMemberSpec member) => member.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true ? string.Empty : getText(member);
+                string lookup = Lookup($"_format{format}Lookup", spec.Members.Where(x => Text(x) != null), x => FormatStringLiteral(Text(x)!));
+                blocks.Add(Block(format, $$"""
+                    string? text = {{lookup}};
+                    if (text != null)
+                        return text;
+                    """));
             }
 
-            string GetFormatBlock(string format, IEnumerable<string> statements)
-            {
-                string[] arr = statements.ToArray();
-
-                if (arr.Length == 0)
+            string Block(string format, string body) => $$"""
+                if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
                 {
-                    return $$"""
-                             if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
-                                     {
-                                     }
-                             """;
+                    {{IndentFollowingLines(body, 1)}}
                 }
-
-                return $$"""
-                         if ((format & {{enumFormat}}.{{format}}) == {{enumFormat}}.{{format}})
-                                 {
-                         {{string.Join("\n", arr)}}
-                                 }
-                         """;
-            }
-
-            IEnumerable<string> GetMetadataChecks(Func<EnumMemberSpec, string?> getValue)
-            {
-                foreach (EnumMemberSpec em in spec.Members)
-                {
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                    {
-                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return string.Empty;";
-                        continue;
-                    }
-
-                    string? value = getValue(em);
-
-                    if (value != null)
-                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return \"{EscapeString(value)}\";";
-                }
-            }
-
-            IEnumerable<string> GetNameChecks()
-            {
-                foreach (EnumMemberSpec em in spec.Members)
-                    yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return {GetNameResult(em)};";
-            }
-
-            IEnumerable<string> GetValueStatements()
-            {
-                foreach (EnumMemberSpec em in spec.Members)
-                {
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
-                        yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return string.Empty;";
-                }
-
-                yield return $"            return (({underlyingType})value).ToString(global::System.Globalization.NumberFormatInfo.InvariantInfo);";
-            }
+                """;
         }
 
         string GetString()
         {
-            if (hasAliases)
-            {
-                // If there are no omissions or transforms, we can just return the value.
-                if (spec.TransformData == null && Array.TrueForAll(spec.Members, x => x.OmitValueData == null && x.TransformValueData == null))
-                    return "return value.ToString();";
+            if (spec.Members.Length == 0)
+                return "return value.ToString();";
 
-                return $"""
-                        {string.Join("\n", GetDuplicateValueChecks())}
-                                    return value.ToString();
-                        """;
-            }
+            // Preserve Enum.ToString's alias selection when no generated override applies.
+            if (hasAliases && spec.TransformData == null && Array.TrueForAll(spec.Members, x => x.OmitValueData == null && x.TransformValueData == null))
+                return "return value.ToString();";
 
-            return $$"""
-                     return value switch
-                             {
-                     {{string.Join("\n", GetSwitchArms())}}
-                             };
-                     """;
+            EnumMemberSpec[] members = spec.Members.GroupBy(member => member.Value).Select(group => group.First()).ToArray();
+            if (EnumLookupCode.UsesSwitch(spec, members.Length))
+                return "return " + EnumLookupCode.Create(spec, members, "_stringLookup", "value", GetNameResult, lookupFields, "value.ToString()") + ";";
 
-            IEnumerable<string> GetDuplicateValueChecks()
-            {
-                foreach (EnumMemberSpec em in spec.Members)
-                    yield return $"            if (value == {enumName}.{em.EmittedIdentifier}) return {GetNameResult(em)};";
-            }
-
-            IEnumerable<string> GetSwitchArms()
-            {
-                foreach (EnumMemberSpec em in spec.Members)
-                    yield return $"            {enumName}.{em.EmittedIdentifier} => {GetNameResult(em)},";
-
-                yield return "            _ => value.ToString()";
-            }
+            return $"return {NameLookup()} ?? value.ToString();";
         }
 
-        IEnumerable<string> TryGetUnderlyingValue()
+        string GetUnderlyingLookup()
         {
-            HashSet<object> handledValues = new HashSet<object>();
-
-            foreach (EnumMemberSpec em in spec.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) == true || !handledValues.Add(em.Value))
-                    continue;
-
-                yield return $"""
-                                          case {enumName}.{em.EmittedIdentifier}:
-                                              underlyingValue = {FormatPrimitive(em.Value)};
-                                              return true;
-                              """;
-            }
-
+            EnumMemberSpec[] included = spec.Members
+                .Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
+                .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+            if (included.Length == 0 && !spec.HasFlags)
+                return string.Empty;
+            string match;
             if (spec.HasFlags)
             {
-                foreach (EnumMemberSpec em in spec.Members)
-                {
-                    if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true || !handledValues.Add(em.Value))
-                        continue;
-
-                    yield return $"""
-                                              case {enumName}.{em.EmittedIdentifier}:
-                                                  break;
-                                  """;
-                }
-
-                ulong mask = spec.Members.Where(x => x.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.TryGetUnderlyingValue) != true)
-                                 .Aggregate(0UL, (value, member) => value | ToUInt64(member.Value));
-
-                // Valid Flags combinations need not have a separately declared alias.
-                yield return $$"""
-                                           default:
-                                               if (unchecked((({{underlyingType}}){{mask}}UL & ({{underlyingType}})value) == ({{underlyingType}})value))
-                                               {
-                                                   underlyingValue = ({{underlyingType}})value;
-                                                   return true;
-                                               }
-
-                                               break;
-                               """;
+                HashSet<object> includedValues = new HashSet<object>(included.Select(x => x.Value));
+                EnumMemberSpec[] excluded = spec.Members.Where(x => !includedValues.Contains(x.Value))
+                    .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+                string omitted = Lookup("_underlyingExcludedLookup", excluded, null);
+                ulong mask = included.Aggregate(0UL, (bits, member) => bits | ToUInt64(member.Value));
+                string maskCheck = mask == 0 ? $"({underlyingType})value == 0"
+                    : $"unchecked((({underlyingType}){mask}UL & ({underlyingType})value) == ({underlyingType})value)";
+                // Every included member already satisfies the mask; only explicit exclusions need a lookup.
+                match = (excluded.Length == 0 ? string.Empty : $"!({omitted}) && ") + maskCheck;
             }
-        }
-
-        IEnumerable<string> GetMetadataCases(Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion, string resultName)
-        {
-            HashSet<object> handledValues = new HashSet<object>();
-
-            foreach (EnumMemberSpec em in spec.Members)
-            {
-                if (em.OmitValueData?.Exclude.HasFlag(exclusion) == true)
-                    continue;
-
-                string? text = getText(em);
-                if (text == null || !handledValues.Add(em.Value))
-                    continue;
-
-                yield return $"""
-                                          case {enumName}.{em.EmittedIdentifier}:
-                                              {resultName} = "{EscapeString(text)}";
-                                              return true;
-                              """;
-            }
-        }
-
-        static string PrintSwitch(IEnumerable<string> cases)
-        {
-            string[] arr = cases.ToArray();
-
-            if (arr.Length == 0)
-                return string.Empty;
-
+            else
+                match = Lookup("_underlyingLookup", included, null);
             return $$"""
-                     switch (value)
-                             {
-                     {{string.Join("\n", arr)}}
-                             }
-                     """;
+                if ({{match}})
+                {
+                    underlyingValue = ({{underlyingType}})value;
+                    return true;
+                }
+                """;
+        }
+
+        string GetMetadataLookup(Func<EnumMemberSpec, string?> getText, EnumOmitExclude exclusion, string variable)
+        {
+            EnumMemberSpec[] members = spec.Members
+                .Where(x => x.OmitValueData?.Exclude.HasFlag(exclusion) != true && getText(x) != null)
+                .GroupBy(x => x.Value).Select(x => x.First()).ToArray();
+            if (members.Length == 0)
+                return $$"""
+                    {{variable}} = null;
+                    return false;
+                    """;
+
+            string lookup = Lookup($"_{variable}Lookup", members, x => FormatStringLiteral(getText(x)!));
+            return $$"""
+                {{variable}} = {{lookup}};
+                return {{variable}} != null;
+                """;
         }
 
         string GetNameResult(EnumMemberSpec em)
@@ -312,7 +253,7 @@ internal static class EnumExtensionCode
             if (em.OmitValueData?.Exclude.HasFlag(EnumOmitExclude.GetString) == true)
                 return "string.Empty";
 
-            return $"\"{EscapeString(TransformHelper.TransformName(spec, em))}\"";
+            return FormatStringLiteral(TransformHelper.TransformName(spec, em));
         }
 
     }

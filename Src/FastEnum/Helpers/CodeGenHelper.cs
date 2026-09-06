@@ -6,6 +6,15 @@ internal static class CodeGenHelper
 {
     internal static string Indent(int amount) => new string(' ', amount * 4);
 
+    internal static string IndentFollowingLines(string text, int amount)
+    {
+        string indent = Indent(amount);
+        return string.Join("\n", text.Split('\n').Select((line, index) =>
+            index == 0 || line.Length == 0 ? line : indent + line));
+    }
+
+    internal static string FormatStringLiteral(string value) => $"\"{EscapeString(value)}\"";
+
     internal static string EscapeString(string value)
     {
         StringBuilder sb = new StringBuilder(value.Length);
